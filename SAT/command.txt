@@ -1,6 +1,4 @@
-python -m venv venv // run in terminal SAT/backend
-
-pip install fastapi uvicorn // run in terminal SAT/backend
 uvicorn main:app --reload // run app
-
-pip install fastapi uvicorn transformers torch huggingface_hub
+venv\Scripts\activate //เพื่อเข้า (venv) ตย.(venv) D:\SAT-project\SAT\backend>
+=>>>> cd SAT\backend จากนั้น พิม venv\Scripts\activate
+pip install -r requirements.txt

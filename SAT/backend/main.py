@@ -1,10 +1,7 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from app.schemas import AnalyzeRequest
 
 app = FastAPI()
-
-class AnalyzeRequest(BaseModel):
-    sentence: str
 
 @app.get("/")
 def root():
