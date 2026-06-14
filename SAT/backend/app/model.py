@@ -33,3 +33,27 @@ def load_model():
         print("✅ Model Loaded Successfully")
 
     return tokenizer, model
+
+def predict_s_expression(sentence: str):
+    tokenizer, model = load_model()
+
+    inputs = tokenizer(
+        sentence,
+        return_tensors="pt",
+        truncation=True,
+        max_length=128
+    )
+
+    outputs = model.generate(
+        **inputs,
+        max_length=256,
+        num_beams=4,
+        early_stopping=True
+    )
+
+    result = tokenizer.decode(
+        outputs[0],
+        skip_special_tokens=True
+    )
+
+    return result
