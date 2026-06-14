@@ -1,4 +1,6 @@
 python -m venv venv // run in terminal SAT/backend
+
+pip install fastapi uvicorn // run in terminal SAT/backend
 uvicorn main:app --reload // run app
 
 pip install fastapi uvicorn transformers torch huggingface_hub
