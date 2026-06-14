@@ -26,14 +26,13 @@ export default function InputPanel({ onAnalyzeComplete }) {
       <textarea
         value={sentence}
         onChange={(e) => setSentence(e.target.value)}
-        className="mt-2 h-32 w-full resize-none rounded-xl bg-gray-100 p-4 outline-none focus:ring-2 focus:ring-slate-900"
-
         onKeyDown={(e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-           e.preventDefault()
-           handleAnalyze()
-          }
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault()
+          handleAnalyze()
+        }
         }}
+        className="mt-2 h-32 w-full resize-none rounded-xl bg-gray-100 p-4 outline-none focus:ring-2 focus:ring-slate-900"
       />
 
       <div className="mt-4 flex gap-3">
