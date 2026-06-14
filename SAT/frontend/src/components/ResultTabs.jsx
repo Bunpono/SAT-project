@@ -1,4 +1,4 @@
-export default function ResultTabs() {
+export default function ResultTabs({ analysis }) {
   return (
     <section className="rounded-2xl bg-white p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-gray-800">Analysis Results</h2>
@@ -26,22 +26,12 @@ export default function ResultTabs() {
 
       <div className="mt-4 rounded-xl border bg-blue-50 p-4">
         <span className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white">
-          POS Analysis
+          Model Output
         </span>
 
-        <div className="mt-4 flex gap-2">
-          {[
-            ["I", "PRO"],
-            ["love", "V"],
-            ["a", "Det"],
-            ["dog.", "N"],
-          ].map(([word, tag]) => (
-            <div key={word} className="rounded-lg border bg-white px-4 py-2 text-center">
-              <div>{word}</div>
-              <div className="text-xs text-gray-500">{tag}</div>
-            </div>
-          ))}
-        </div>
+        <pre className="mt-4 overflow-x-auto rounded-lg bg-white p-4 text-sm text-gray-700">
+          {analysis?.s_expression || "No analysis yet."}
+        </pre>
       </div>
     </section>
   )

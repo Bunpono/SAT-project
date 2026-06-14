@@ -1,24 +1,27 @@
+import { useState } from "react"
 import Header from "../components/Header"
 import InputPanel from "../components/InputPanel"
 import ResultTabs from "../components/ResultTabs"
 import TreePanel from "../components/TreePanel"
 
 export default function Home() {
+  const [analysis, setAnalysis] = useState(null)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 px-10 py-8">
       <div className="mx-auto max-w-7xl">
         <Header />
 
         <div className="mt-8">
-          <InputPanel />
+          <InputPanel onAnalyzeComplete={setAnalysis} />
         </div>
 
         <div className="mt-6">
-          <ResultTabs />
+          <ResultTabs analysis={analysis} />
         </div>
 
         <div className="mt-6">
-          <TreePanel />
+          <TreePanel analysis={analysis} />
         </div>
       </div>
     </div>

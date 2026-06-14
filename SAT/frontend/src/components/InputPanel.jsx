@@ -1,14 +1,18 @@
-export default function InputPanel() {
+import { useState } from "react"
+import { analyzeSentence } from "../services/api"
 
-  const [sentence, setSentence] =
-    useState("I love a dog.")
+export default function InputPanel({ onAnalyzeComplete }) {
+  const [sentence, setSentence] = useState("I love a dog.")
 
   const handleAnalyze = async () => {
-
-    const result =
-      await analyzeSentence(sentence)
-
+    const result = await analyzeSentence(sentence)
     console.log(result)
+    onAnalyzeComplete(result)
+  }
+
+  const handleClear = () => {
+    setSentence("")
+    onAnalyzeComplete(null)
   }
 
   return (
@@ -21,21 +25,22 @@ export default function InputPanel() {
 
       <textarea
         value={sentence}
-        onChange={(e) =>
-          setSentence(e.target.value)
-        }
-        className="mt-2 h-32 w-full resize-none rounded-xl bg-gray-100 p-4 outline-none"
+        onChange={(e) => setSentence(e.target.value)}
+        className="mt-2 h-32 w-full resize-none rounded-xl bg-gray-100 p-4 outline-none focus:ring-2 focus:ring-slate-900"
       />
 
       <div className="mt-4 flex gap-3">
         <button
           onClick={handleAnalyze}
-          className="rounded-lg bg-slate-950 px-5 py-2.5 text-white"
+          className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white"
         >
           Analyze Syntax
         </button>
 
-        <button className="rounded-lg border px-5 py-2.5 text-sm font-semibold text-gray-700">
+        <button
+          onClick={handleClear}
+          className="rounded-lg border px-5 py-2.5 text-sm font-semibold text-gray-700"
+        >
           Clear
         </button>
 
@@ -46,6 +51,3 @@ export default function InputPanel() {
     </section>
   )
 }
-
-import { useState } from "react"
-import { analyzeSentence } from "../services/api"
