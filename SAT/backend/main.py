@@ -3,6 +3,7 @@ from app.schemas import AnalyzeRequest
 from app.model import load_model, predict_s_expression
 from app.parser import s_expression_to_tree
 from fastapi.middleware.cors import CORSMiddleware
+from app.parser import s_expression_to_tree
 
 app = FastAPI()
 app.add_middleware(
@@ -33,10 +34,16 @@ def load_hf_model():
 
 @app.post("/analyze")
 def analyze(data: AnalyzeRequest):
-    result = predict_s_expression(data.sentence)
-    tree = s_expression_to_tree(result)
+    result = predict_s_expression(
+        data.sentence
+    )
+
+    tree = s_expression_to_tree(
+        result
+    )
 
     return {
-    "sentence": data.sentence,
-    "s_expression": result
-}
+        "sentence": data.sentence,
+        "s_expression": result,
+        "tree": tree
+    }

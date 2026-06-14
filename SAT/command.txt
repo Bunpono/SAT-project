@@ -1,4 +1,4 @@
-uvicorn main:app --reload // run app backend
+python -m uvicorn main:app --reload // run app backend
 
 venv\Scripts\activate //เพื่อเข้า (venv) ตย.(venv) D:\SAT-project\SAT\backend>
 =>>>> cd SAT\backend จากนั้น พิม venv\Scripts\activate
