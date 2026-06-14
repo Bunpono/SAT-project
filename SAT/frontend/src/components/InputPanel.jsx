@@ -1,4 +1,16 @@
 export default function InputPanel() {
+
+  const [sentence, setSentence] =
+    useState("I love a dog.")
+
+  const handleAnalyze = async () => {
+
+    const result =
+      await analyzeSentence(sentence)
+
+    console.log(result)
+  }
+
   return (
     <section className="rounded-2xl bg-white p-6 shadow-sm">
       <h2 className="text-lg font-semibold text-gray-800">Input Sentence</h2>
@@ -8,12 +20,18 @@ export default function InputPanel() {
       </label>
 
       <textarea
-        className="mt-2 h-32 w-full resize-none rounded-xl bg-gray-100 p-4 outline-none focus:ring-2 focus:ring-slate-900"
-        defaultValue="I love a dog."
+        value={sentence}
+        onChange={(e) =>
+          setSentence(e.target.value)
+        }
+        className="mt-2 h-32 w-full resize-none rounded-xl bg-gray-100 p-4 outline-none"
       />
 
       <div className="mt-4 flex gap-3">
-        <button className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white">
+        <button
+          onClick={handleAnalyze}
+          className="rounded-lg bg-slate-950 px-5 py-2.5 text-white"
+        >
           Analyze Syntax
         </button>
 
@@ -28,3 +46,6 @@ export default function InputPanel() {
     </section>
   )
 }
+
+import { useState } from "react"
+import { analyzeSentence } from "../services/api"
