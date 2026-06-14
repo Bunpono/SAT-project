@@ -2,7 +2,7 @@ import { useState } from "react"
 import { analyzeSentence } from "../services/api"
 
 export default function InputPanel({ onAnalyzeComplete }) {
-  const [sentence, setSentence] = useState("I love a dog.")
+  const [sentence, setSentence] = useState("She is talking about her dog.")
 
   const handleAnalyze = async () => {
     const result = await analyzeSentence(sentence)
@@ -35,7 +35,7 @@ export default function InputPanel({ onAnalyzeComplete }) {
         className="mt-2 h-32 w-full resize-none rounded-xl bg-gray-100 p-4 outline-none focus:ring-2 focus:ring-slate-900"
       />
 
-      <div className="mt-4 flex gap-3">
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           onClick={handleAnalyze}
           className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">

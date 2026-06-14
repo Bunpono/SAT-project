@@ -13,7 +13,7 @@ export default function TreePanel({ analysis }) {
     : []
 
   return (
-    <section className="grid grid-cols-[360px_1fr] gap-6">
+    <section className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
       <div className="rounded-2xl bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-gray-800">Production Rules</h2>
 
@@ -50,7 +50,7 @@ export default function TreePanel({ analysis }) {
           </div>
         )}
 
-        <div className="mt-5 overflow-hidden rounded-xl border bg-white">
+        <div className="mt-5 w-full overflow-x-auto overflow-y-hidden rounded-xl border bg-white">
           {analysis?.tree ? (
             <StaticTree
               data={analysis.tree}
