@@ -9,7 +9,8 @@ http://127.0.0.1:8000/docs // ทดสอบโมเดล Swagger UI
 
 SAT-project\SAT>
     จากนั้นพิมพ์ npm create vite@latest frontend -- --template reactv
-Local: http://localhost:5173/ // run web 
+SAT-project\SAT\frontend>npm run dev 
+    Local: http://localhost:5173/ // run web 
 
 SAT-project\SAT\frontend
     จากนั้นพิมพ์ npm install tailwindcss @tailwindcss/vite
