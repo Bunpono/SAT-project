@@ -3,15 +3,31 @@ import { analyzeSentence } from "../services/api"
 
 export default function InputPanel({ onAnalyzeComplete }) {
   const [sentence, setSentence] = useState("She is talking about her dog.")
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
 
   const handleAnalyze = async () => {
-    const result = await analyzeSentence(sentence)
-    console.log(result)
-    onAnalyzeComplete(result)
+    if (isAnalyzing) return
+
+    setIsAnalyzing(true)
+    setErrorMessage("")
+
+    try {
+      const result = await analyzeSentence(sentence)
+      onAnalyzeComplete(result)
+    } catch (error) {
+      console.error("Unable to analyze the sentence:", error)
+      setErrorMessage(
+        "The analysis service is temporarily unavailable. Please try again later."
+      )
+    } finally {
+      setIsAnalyzing(false)
+    }
   }
 
   const handleClear = () => {
     setSentence("")
+    setErrorMessage("")
     onAnalyzeComplete(null)
   }
 
@@ -25,7 +41,10 @@ export default function InputPanel({ onAnalyzeComplete }) {
 
       <textarea
         value={sentence}
-        onChange={(e) => setSentence(e.target.value)}
+        onChange={(e) => {
+          setSentence(e.target.value)
+          setErrorMessage("")
+        }}
         onKeyDown={(e) => {
         if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault()
@@ -38,8 +57,10 @@ export default function InputPanel({ onAnalyzeComplete }) {
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           onClick={handleAnalyze}
+          disabled={isAnalyzing}
+          aria-busy={isAnalyzing}
           className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
-          Analyze Syntax
+          {isAnalyzing ? "Analyzing..." : "Analyze Syntax"}
         </button>
 
         <button
@@ -52,6 +73,15 @@ export default function InputPanel({ onAnalyzeComplete }) {
           Report Error
         </button>
       </div>
+
+      {errorMessage && (
+        <div
+          role="alert"
+          className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          {errorMessage}
+        </div>
+      )}
     </section>
   )
 }
