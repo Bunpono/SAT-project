@@ -22,7 +22,7 @@ const steps = [
   {
     title: "Review previous results",
     description:
-      "Open Analysis History to revisit saved results when history is enabled for this application."
+      "Open Analysis History to revisit results saved in your current browser."
   }
 ]
 

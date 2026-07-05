@@ -4,10 +4,43 @@ import InputPanel from "../components/InputPanel"
 import ResultTabs from "../components/ResultTabs"
 import TreePanel from "../components/TreePanel"
 import HowToUse from "../components/HowToUse"
+import AnalysisHistory from "../components/AnalysisHistory"
+import {
+  addAnalysisHistory,
+  clearAnalysisHistory,
+  deleteAnalysisHistory,
+  getAnalysisHistory
+} from "../utils/analysisHistory"
 
 export default function Home() {
   const [analysis, setAnalysis] = useState(null)
   const [activeView, setActiveView] = useState("analysis")
+  const [history, setHistory] = useState(() => getAnalysisHistory())
+
+  const handleAnalysisComplete = (result) => {
+    setAnalysis(result)
+
+    if (result) {
+      setHistory(addAnalysisHistory(result))
+    }
+  }
+
+  const handleViewHistory = (entry) => {
+    setAnalysis({
+      sentence: entry.sentence,
+      s_expression: entry.s_expression,
+      tree: entry.tree
+    })
+    setActiveView("analysis")
+  }
+
+  const handleDeleteHistory = (id) => {
+    setHistory(deleteAnalysisHistory(id))
+  }
+
+  const handleClearHistory = () => {
+    setHistory(clearAnalysisHistory())
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 px-4 py-6 sm:px-6 lg:px-10">
@@ -32,6 +65,18 @@ export default function Home() {
           </button>
           <button
             type="button"
+            onClick={() => setActiveView("history")}
+            aria-pressed={activeView === "history"}
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              activeView === "history"
+                ? "bg-slate-950 text-white"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            Analysis History
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveView("guide")}
             aria-pressed={activeView === "guide"}
             className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
@@ -44,10 +89,10 @@ export default function Home() {
           </button>
         </nav>
 
-        {activeView === "analysis" ? (
+        {activeView === "analysis" && (
           <>
             <div className="mt-6">
-              <InputPanel onAnalyzeComplete={setAnalysis} />
+              <InputPanel onAnalyzeComplete={handleAnalysisComplete} />
             </div>
 
             {analysis && (
@@ -62,7 +107,20 @@ export default function Home() {
               </>
             )}
           </>
-        ) : (
+        )}
+
+        {activeView === "history" && (
+          <div className="mt-6">
+            <AnalysisHistory
+              history={history}
+              onView={handleViewHistory}
+              onDelete={handleDeleteHistory}
+              onClearAll={handleClearHistory}
+            />
+          </div>
+        )}
+
+        {activeView === "guide" && (
           <div className="mt-6">
             <HowToUse />
           </div>
