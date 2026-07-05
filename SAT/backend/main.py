@@ -17,6 +17,17 @@ allowed_origins = [
     *production_origins,
 ]
 
+production_origins = [
+    origin.strip().rstrip("/")
+    for origin in os.getenv("FRONTEND_URL", "").split(",")
+    if origin.strip()
+]
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    *production_origins,
+]
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
