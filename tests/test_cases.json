@@ -1,0 +1,352 @@
+[
+  {
+    "id": "TC-001",
+    "sentence": "The cat sleeps.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with NP and an intransitive VP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-002",
+    "sentence": "Maya reads books.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with a proper-noun NP and a transitive VP containing an object NP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-003",
+    "sentence": "The soup smells fresh.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with a linking verb and an adjective complement.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-004",
+    "sentence": "Birds are singing.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with plural NP and progressive AUX plus Vgp.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-005",
+    "sentence": "A child opened the window.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple transitive clause with determiner-noun subject and object NPs.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-006",
+    "sentence": "Rain fell.",
+    "difficulty": "easy",
+    "expected_structure_note": "Minimal simple S with a mass-noun subject and intransitive verb.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-007",
+    "sentence": "The teacher is patient.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with linking be and an ADJP predicate complement.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-008",
+    "sentence": "Dogs chase balls.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with plural subject, transitive verb, and plural object.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-009",
+    "sentence": "My brother can swim.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with possessive NP and modal AUX in the Vgp.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-010",
+    "sentence": "The lamp stands on the desk.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with an intransitive VP followed by a locative PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-011",
+    "sentence": "Nina carried a basket.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with proper-noun subject and transitive VP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-012",
+    "sentence": "The sky became dark.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with linking verb became and ADJP complement.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-013",
+    "sentence": "We have finished dinner.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with pronoun subject and perfect AUX plus transitive Vgp.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-014",
+    "sentence": "The baby laughed loudly.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with intransitive verb and an ADVP manner modifier.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-015",
+    "sentence": "Her keys are in the drawer.",
+    "difficulty": "easy",
+    "expected_structure_note": "Simple S with linking be and a locative PP predicate.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-016",
+    "sentence": "The careful student answered the question correctly.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with modified subject NP, transitive VP, object NP, and ADVP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-017",
+    "sentence": "Our neighbors planted flowers beside the fence.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple transitive clause with possessive NP and locative PP attachment.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-018",
+    "sentence": "Leo cooked dinner, and Priya washed the dishes.",
+    "difficulty": "medium",
+    "expected_structure_note": "Compound sentence with two coordinated S nodes and transitive VPs.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-019",
+    "sentence": "The train arrived, but the passengers remained calm.",
+    "difficulty": "medium",
+    "expected_structure_note": "Compound sentence joining an intransitive clause and a linking-verb clause.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-020",
+    "sentence": "I will place the package on the shelf.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with modal AUX, transitive Vgp, object NP, and destination PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-021",
+    "sentence": "The small boat moved across the quiet lake.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with modified NPs and a directional PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-022",
+    "sentence": "Sara has been studying in the library.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with perfect-progressive AUX chain, Vgp, and locative PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-023",
+    "sentence": "The old bridge looks remarkably strong.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with modified subject NP, linking verb, and adverb-modified ADJP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-024",
+    "sentence": "The baker gave the customer a warm loaf.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with a ditransitive VP and two object NPs.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-025",
+    "sentence": "A bright kite floated above the playground.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple intransitive clause with modified subject NP and locative PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-026",
+    "sentence": "The manager did not approve the revised plan.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with do-support AUX, negation, and transitive VP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-027",
+    "sentence": "Emma wrote a note and left it near the door.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with one subject and coordinated VPs, plus object NP and locative PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-028",
+    "sentence": "The audience was becoming increasingly restless.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with progressive AUX, linking Vgp, and modified ADJP complement.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-029",
+    "sentence": "Several hikers rested under the tall trees.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with quantified subject NP, intransitive VP, and locative PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-030",
+    "sentence": "The storm damaged roofs throughout the village.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple transitive clause with object NP and extent PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-031",
+    "sentence": "The musician played softly, and the dancers moved gracefully.",
+    "difficulty": "medium",
+    "expected_structure_note": "Compound sentence with coordinated S nodes and manner ADVPs.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-032",
+    "sentence": "They might have forgotten the meeting.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with modal-perfect AUX chain and transitive Vgp.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-033",
+    "sentence": "The red bicycle belongs to my cousin.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with modified NP and a VP selecting a complement PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-034",
+    "sentence": "A curious fox watched the chickens from behind the gate.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple transitive clause with modified subject and nested or sequential PPs.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-035",
+    "sentence": "The room felt cold after sunset.",
+    "difficulty": "medium",
+    "expected_structure_note": "Simple S with linking verb, ADJP complement, and temporal PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-036",
+    "sentence": "The engineer who designed the bridge checks every cable.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex S with a relative clause embedded inside the subject NP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-037",
+    "sentence": "Although the wind was rising, the pilot landed safely.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex sentence with an initial subordinate S and a main S.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-038",
+    "sentence": "The farmer believes that rain will arrive before dawn.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex S with a finite that-clause embedded as the verb complement.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-039",
+    "sentence": "When the bell rang, the students closed their books.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex sentence with an initial temporal subordinate clause and transitive main clause.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-040",
+    "sentence": "Lena prepared the slides while Omar tested the projector.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex sentence with a main S and an adverbial while-clause.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-041",
+    "sentence": "The scientist said that the results were surprisingly clear.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex S with an embedded that-clause containing a linking VP and ADJP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-042",
+    "sentence": "The dog barked because a stranger was approaching the house.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex sentence with a causal subordinate S and progressive Vgp.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-043",
+    "sentence": "I found the notebook that you left beneath the chair.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex S with a relative clause modifying the object NP and a locative PP.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-044",
+    "sentence": "The lights dimmed, and the curtain rose as the music began.",
+    "difficulty": "hard",
+    "expected_structure_note": "Compound-complex structure with coordinated main S nodes and an embedded temporal clause.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-045",
+    "sentence": "If the road remains dry, we will deliver the supplies tonight.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex conditional sentence with linking verb in the subordinate S and modal AUX in the main S.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-046",
+    "sentence": "The chef who won the contest has opened a small restaurant downtown.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex S with subject relative clause, perfect AUX, transitive VP, and locative modifier.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-047",
+    "sentence": "Mira knows that the team can solve the problem if everyone cooperates.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex S with nested complement and conditional clauses plus modal AUX.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-048",
+    "sentence": "The report that the committee released explains why costs increased.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex S with a subject relative clause and an embedded interrogative complement clause.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-049",
+    "sentence": "While the children were sleeping, their parents packed the car and checked the map.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex sentence with progressive subordinate S and coordinated transitive VPs in the main S.",
+    "source_type": "self-created"
+  },
+  {
+    "id": "TC-050",
+    "sentence": "The garden will look beautiful after the flowers have opened.",
+    "difficulty": "hard",
+    "expected_structure_note": "Complex sentence with modal linking VP in the main S and perfect AUX in a temporal clause.",
+    "source_type": "self-created"
+  }
+]

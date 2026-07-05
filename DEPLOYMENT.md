@@ -11,11 +11,9 @@ publishing it, configure these two values:
 1. Set `VITE_API_URL` on Vercel to the public backend URL. If the variable is
    absent, the frontend defaults to `http://127.0.0.1:8000`, which a deployed
    browser cannot use.
-2. `SAT/backend/main.py` currently allows only local Vite origins in CORS. Add
-   the exact deployed Vercel origin before sending production traffic.
-
-The CORS application change is intentionally not included in this frontend
-API integration task.
+2. Set `FRONTEND_URL` on the backend service to the exact deployed Vercel
+   origin. Local Vite origins remain allowed for development. Do not include a
+   path; a trailing slash is optional.
 
 Do not place a real Hugging Face token in source code, `.env.example`, build
 logs, or Vercel frontend variables. `HF_TOKEN` belongs only on the backend.
@@ -38,7 +36,10 @@ logs, or Vercel frontend variables. `HF_TOKEN` belongs only on the backend.
    uvicorn main:app --host 0.0.0.0 --port $PORT
    ```
 
-7. Add the secret environment variable `HF_TOKEN` in the Render dashboard.
+7. Add these environment variables in the Render dashboard:
+   - `HF_TOKEN`: the real Hugging Face token, stored as a secret
+   - `FRONTEND_URL`: the Vercel origin, for example
+     `https://YOUR-PROJECT.vercel.app`
 8. Choose an instance with enough memory and disk space for PyTorch and the
    configured model. Model download and first inference may take longer than
    normal HTTP requests.
@@ -52,7 +53,10 @@ logs, or Vercel frontend variables. `HF_TOKEN` belongs only on the backend.
 1. Push the repository to GitHub.
 2. In Railway, create a project from the GitHub repository.
 3. Set the service root directory to `SAT/backend`.
-4. Add `HF_TOKEN` as a Railway service variable.
+4. Add these Railway service variables:
+   - `HF_TOKEN`: the real Hugging Face token
+   - `FRONTEND_URL`: the Vercel origin, for example
+     `https://YOUR-PROJECT.vercel.app`
 5. Use this start command if Railway does not detect it automatically:
 
    ```text
@@ -75,8 +79,8 @@ Use either Render or Railway for the backend; both are not required.
    - Install command: `npm install`
 4. Add `VITE_API_URL` with the public Render or Railway backend URL.
 5. Deploy the frontend.
-6. Add the final Vercel origin, such as `https://YOUR-PROJECT.vercel.app`, to
-   the backend CORS allowlist and redeploy the backend.
+6. Confirm `FRONTEND_URL` on Render or Railway matches the final Vercel origin,
+   then redeploy the backend if the value changed.
 
 Vite variables beginning with `VITE_` are bundled into browser code. Never
 store `HF_TOKEN` or any other secret in a Vite environment variable.
@@ -96,8 +100,9 @@ store `HF_TOKEN` or any other secret in a Vite environment variable.
 
 ### CORS error
 
-The exact Vercel origin is missing from `allow_origins` in
-`SAT/backend/main.py`. Add the `https://` origin without a trailing slash.
+`FRONTEND_URL` is missing or does not match the exact Vercel origin. Update it
+in Render or Railway and redeploy the backend. For multiple deployed frontend
+origins, separate the values with commas.
 
 ### Frontend calls localhost
 
