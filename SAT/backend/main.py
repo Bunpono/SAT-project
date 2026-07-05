@@ -5,7 +5,6 @@ from app.schemas import AnalyzeRequest
 from app.model import load_model, predict_s_expression
 from app.parser import s_expression_to_tree
 from fastapi.middleware.cors import CORSMiddleware
-from app.parser import s_expression_to_tree
 
 production_origins = [
     origin.strip().rstrip("/")
