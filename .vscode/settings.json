@@ -1,3 +1,13 @@
 {
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    "chat.tools.terminal.autoApprove": {
+        "/^cd SAT/backend; python -m pip install -r requirements\\.txt$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^cd SAT/backend; uvicorn main:app --reload --host 127\\.0\\.0\\.1 --port 8000$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
 }
