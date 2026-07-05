@@ -118,7 +118,9 @@ Example response shape:
 Use the committed `.env.example` files as templates. Real `.env` files are
 ignored by Git.
 
-- Backend: `HF_TOKEN` authorizes model downloads from Hugging Face.
+- Backend: `HF_TOKEN` authorizes model downloads from Hugging Face, and
+  `FRONTEND_URL` adds the deployed frontend origin to the CORS allowlist.
+  Multiple production origins can be separated with commas.
 - Frontend: `VITE_API_URL` selects the FastAPI base URL and defaults to
   `http://127.0.0.1:8000` when it is not set. The current project has no mock
   implementation, so analysis requests use the real FastAPI backend.
@@ -127,8 +129,8 @@ ignored by Git.
 
 The frontend can be deployed from `SAT/frontend` on Vercel. The backend can be
 deployed from `SAT/backend` on Render or Railway. Production deployment also
-requires a public backend URL, an allowed frontend CORS origin, a protected
-`HF_TOKEN`, and enough memory to load the model.
+requires `VITE_API_URL` on Vercel, `FRONTEND_URL` and a protected `HF_TOKEN` on
+the backend service, and enough memory to load the model.
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for the complete deployment checklist.
 
