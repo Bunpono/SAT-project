@@ -1,10 +1,13 @@
 import { useState } from "react"
-import { analyzeSentence } from "../services/api"
+import { analyzeSentence, submitErrorReport } from "../services/api"
 
-export default function InputPanel({ onAnalyzeComplete }) {
+export default function InputPanel({ analysis, onAnalyzeComplete }) {
   const [sentence, setSentence] = useState("She is talking about her dog.")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
+  const [showReportForm, setShowReportForm] = useState(false)
+  const [reportDescription, setReportDescription] = useState("")
+  const [reportStatus, setReportStatus] = useState("")
 
   const handleAnalyze = async () => {
     if (isAnalyzing) return
@@ -29,6 +32,22 @@ export default function InputPanel({ onAnalyzeComplete }) {
     setSentence("")
     setErrorMessage("")
     onAnalyzeComplete(null)
+  }
+
+  const handleReport = async () => {
+    if (!reportDescription.trim()) {
+      setReportStatus("Please describe the problem first.")
+      return
+    }
+
+    setReportStatus("Sending...")
+    try {
+      await submitErrorReport(sentence, reportDescription.trim(), analysis)
+      setReportDescription("")
+      setReportStatus("Report sent successfully.")
+    } catch (error) {
+      setReportStatus(error.message)
+    }
   }
 
   return (
@@ -69,10 +88,38 @@ export default function InputPanel({ onAnalyzeComplete }) {
           Clear
         </button>
 
-        <button className="rounded-lg border border-orange-200 px-5 py-2.5 text-sm font-medium text-orange-500 transition hover:bg-orange-50 active:scale-95 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/40">
+        <button
+          type="button"
+          onClick={() => { setShowReportForm((value) => !value); setReportStatus("") }}
+          className="rounded-lg border border-orange-200 px-5 py-2.5 text-sm font-medium text-orange-500 transition hover:bg-orange-50 active:scale-95 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/40"
+        >
           Report Error
         </button>
       </div>
+
+      {showReportForm && (
+        <div className="mt-4 rounded-xl border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950/30">
+          <label className="block text-sm font-medium text-orange-900 dark:text-orange-200">
+            Describe what looks incorrect
+            <textarea
+              value={reportDescription}
+              onChange={(event) => { setReportDescription(event.target.value); setReportStatus("") }}
+              className="mt-2 h-24 w-full resize-none rounded-lg border border-orange-200 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-orange-400 dark:border-orange-900 dark:bg-slate-900 dark:text-slate-100"
+            />
+          </label>
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleReport}
+              disabled={reportStatus === "Sending..."}
+              className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+            >
+              Send Report
+            </button>
+            {reportStatus && <p className="text-sm text-orange-800 dark:text-orange-200">{reportStatus}</p>}
+          </div>
+        </div>
+      )}
 
       {errorMessage && (
         <div

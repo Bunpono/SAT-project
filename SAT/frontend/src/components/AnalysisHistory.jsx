@@ -23,11 +23,11 @@ export default function AnalysisHistory({ history, onView, onDelete, onClearAll 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
-            Saved locally
+            Saved to your account
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-gray-950 dark:text-white">Analysis History</h2>
           <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-            Previous results saved in this browser, with the newest result first.
+            Previous results from your account, with the newest result first.
           </p>
         </div>
 

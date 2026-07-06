@@ -25,11 +25,11 @@ function MoonIcon() {
   )
 }
 
-export default function Header({ theme, onToggleTheme }) {
+export default function Header({ theme, onToggleTheme, user, onLogout }) {
   const isDark = theme === "dark"
 
   return (
-    <header className="flex items-start justify-between gap-6">
+    <header className="flex flex-col items-start justify-between gap-6 sm:flex-row">
       <div className="flex items-center gap-4">
         <img
           src="/sat-logo.png"
@@ -37,7 +37,7 @@ export default function Header({ theme, onToggleTheme }) {
           className="h-12 w-auto shrink-0 object-contain sm:h-16"
         />
         <div>
-          <h1 className="text-4xl font-semibold text-gray-950 dark:text-white">
+          <h1 className="text-3xl font-semibold text-gray-950 sm:text-4xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
           <p className="mt-1 text-lg font-normal text-gray-500 dark:text-slate-400">
@@ -46,15 +46,28 @@ export default function Header({ theme, onToggleTheme }) {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onToggleTheme}
-        aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-        title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
-      >
-        {isDark ? <MoonIcon /> : <SunIcon />}
-      </button>
+      <div className="flex shrink-0 items-center gap-2">
+        <div className="hidden text-right sm:block">
+          <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{user.name}</p>
+          <p className="text-xs capitalize text-gray-500 dark:text-slate-400">{user.role}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onLogout}
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+        >
+          Sign out
+        </button>
+        <button
+          type="button"
+          onClick={onToggleTheme}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+        >
+          {isDark ? <MoonIcon /> : <SunIcon />}
+        </button>
+      </div>
     </header>
   )
 }
