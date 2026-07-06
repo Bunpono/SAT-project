@@ -57,7 +57,7 @@ export default function Home() {
             type="button"
             onClick={() => setActiveView("analysis")}
             aria-pressed={activeView === "analysis"}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
               activeView === "analysis"
                 ? "bg-slate-950 text-white dark:bg-blue-600"
                 : "text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -69,7 +69,7 @@ export default function Home() {
             type="button"
             onClick={() => setActiveView("history")}
             aria-pressed={activeView === "history"}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
               activeView === "history"
                 ? "bg-slate-950 text-white dark:bg-blue-600"
                 : "text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -81,7 +81,7 @@ export default function Home() {
             type="button"
             onClick={() => setActiveView("guide")}
             aria-pressed={activeView === "guide"}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
               activeView === "guide"
                 ? "bg-slate-950 text-white dark:bg-blue-600"
                 : "text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800"

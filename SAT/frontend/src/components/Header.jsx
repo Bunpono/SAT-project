@@ -30,13 +30,20 @@ export default function Header({ theme, onToggleTheme }) {
 
   return (
     <header className="flex items-start justify-between gap-6">
-      <div>
-        <h1 className="text-4xl font-bold text-gray-950 dark:text-white">
-          Syntactic Analysis Tool
-        </h1>
-        <p className="mt-1 text-lg text-gray-500 dark:text-slate-400">
-          Advanced English Sentence Parser with Interactive Visualization
-        </p>
+      <div className="flex items-center gap-4">
+        <img
+          src="/sat-logo.png"
+          alt="Syntactic Analysis Tool logo"
+          className="h-12 w-auto shrink-0 object-contain sm:h-16"
+        />
+        <div>
+          <h1 className="text-4xl font-semibold text-gray-950 dark:text-white">
+            Syntactic Analysis Tool
+          </h1>
+          <p className="mt-1 text-lg font-normal text-gray-500 dark:text-slate-400">
+            Advanced English Sentence Parser with Interactive Visualization
+          </p>
+        </div>
       </div>
 
       <button

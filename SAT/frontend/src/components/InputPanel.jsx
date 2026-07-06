@@ -59,17 +59,17 @@ export default function InputPanel({ onAnalyzeComplete }) {
           onClick={handleAnalyze}
           disabled={isAnalyzing}
           aria-busy={isAnalyzing}
-          className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500">
+          className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500">
           {isAnalyzing ? "Analyzing..." : "Analyze Syntax"}
         </button>
 
         <button
           onClick={handleClear}
-          className="rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 active:scale-95 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+          className="rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 active:scale-95 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
           Clear
         </button>
 
-        <button className="rounded-lg border border-orange-200 px-5 py-2.5 text-sm font-semibold text-orange-500 transition hover:bg-orange-50 active:scale-95 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/40">
+        <button className="rounded-lg border border-orange-200 px-5 py-2.5 text-sm font-medium text-orange-500 transition hover:bg-orange-50 active:scale-95 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/40">
           Report Error
         </button>
       </div>

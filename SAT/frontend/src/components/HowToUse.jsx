@@ -33,7 +33,7 @@ export default function HowToUse() {
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
           User Guide
         </p>
-        <h2 className="mt-2 text-2xl font-bold text-gray-950 dark:text-white">
+        <h2 className="mt-2 text-2xl font-semibold text-gray-950 dark:text-white">
           How to use the Syntactic Analysis Tool
         </h2>
         <p className="mt-2 text-gray-500 dark:text-slate-400">
@@ -48,7 +48,7 @@ export default function HowToUse() {
             key={step.title}
             className="flex gap-4 rounded-xl border border-gray-200 bg-gray-50 p-5 dark:border-slate-700 dark:bg-slate-800/60"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-sm font-bold text-white">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white">
               {index + 1}
             </span>
             <div>

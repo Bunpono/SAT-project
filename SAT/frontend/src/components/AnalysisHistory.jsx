@@ -25,7 +25,7 @@ export default function AnalysisHistory({ history, onView, onDelete, onClearAll 
           <p className="text-sm font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
             Saved locally
           </p>
-          <h2 className="mt-2 text-2xl font-bold text-gray-950 dark:text-white">Analysis History</h2>
+          <h2 className="mt-2 text-2xl font-semibold text-gray-950 dark:text-white">Analysis History</h2>
           <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
             Previous results saved in this browser, with the newest result first.
           </p>
@@ -35,7 +35,7 @@ export default function AnalysisHistory({ history, onView, onDelete, onClearAll 
           <button
             type="button"
             onClick={handleClearAll}
-            className="self-start rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/40"
+            className="self-start rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/40"
           >
             Clear All
           </button>
@@ -70,14 +70,14 @@ export default function AnalysisHistory({ history, onView, onDelete, onClearAll 
                 <button
                   type="button"
                   onClick={() => onView(entry)}
-                  className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500"
+                  className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500"
                 >
                   View
                 </button>
                 <button
                   type="button"
                   onClick={() => onDelete(entry.id)}
-                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-red-900 dark:hover:bg-red-950/40 dark:hover:text-red-300"
+                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-red-900 dark:hover:bg-red-950/40 dark:hover:text-red-300"
                 >
                   Delete
                 </button>

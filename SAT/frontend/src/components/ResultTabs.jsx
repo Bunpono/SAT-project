@@ -157,10 +157,10 @@ export default function ResultTabs({ analysis }) {
               }`}
             >
               <span className={`mb-3 block h-2.5 w-2.5 rounded-full ${tab.dotClass}`} />
-              <span className="block font-semibold">{tab.title}</span>
+              <span className="block font-medium">{tab.title}</span>
               <span className="mt-1 block text-sm opacity-70">{tab.description}</span>
               {isActive && (
-                <span className="mt-3 inline-block text-xs font-semibold uppercase tracking-wide opacity-80">
+                <span className="mt-3 inline-block text-xs font-medium uppercase tracking-wide opacity-80">
                   Selected
                 </span>
               )}
