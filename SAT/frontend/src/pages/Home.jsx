@@ -11,11 +11,13 @@ import {
   deleteAnalysisHistory,
   getAnalysisHistory
 } from "../utils/analysisHistory"
+import { useTheme } from "../hooks/useTheme"
 
 export default function Home() {
   const [analysis, setAnalysis] = useState(null)
   const [activeView, setActiveView] = useState("analysis")
   const [history, setHistory] = useState(() => getAnalysisHistory())
+  const { theme, toggleTheme } = useTheme()
 
   const handleAnalysisComplete = (result) => {
     setAnalysis(result)
@@ -43,13 +45,13 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 px-4 py-6 sm:px-6 lg:px-10">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 px-4 py-6 text-slate-900 transition-colors duration-200 sm:px-6 lg:px-10 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100">
       <div className="mx-auto w-full max-w-7xl">
-        <Header />
+        <Header theme={theme} onToggleTheme={toggleTheme} />
 
         <nav
           aria-label="Main navigation"
-          className="mt-8 inline-flex rounded-xl bg-white p-1 shadow-sm"
+          className="mt-8 inline-flex rounded-xl bg-white p-1 shadow-sm dark:bg-slate-900"
         >
           <button
             type="button"
@@ -57,8 +59,8 @@ export default function Home() {
             aria-pressed={activeView === "analysis"}
             className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeView === "analysis"
-                ? "bg-slate-950 text-white"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "bg-slate-950 text-white dark:bg-blue-600"
+                : "text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800"
             }`}
           >
             Syntax Analysis
@@ -69,8 +71,8 @@ export default function Home() {
             aria-pressed={activeView === "history"}
             className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeView === "history"
-                ? "bg-slate-950 text-white"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "bg-slate-950 text-white dark:bg-blue-600"
+                : "text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800"
             }`}
           >
             Analysis History
@@ -81,8 +83,8 @@ export default function Home() {
             aria-pressed={activeView === "guide"}
             className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
               activeView === "guide"
-                ? "bg-slate-950 text-white"
-                : "text-gray-600 hover:bg-gray-100"
+                ? "bg-slate-950 text-white dark:bg-blue-600"
+                : "text-gray-600 hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-800"
             }`}
           >
             How to Use

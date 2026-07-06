@@ -7,6 +7,22 @@
     <title>frontend</title>
   </head>
   <body>
+    <script>
+      try {
+        const savedTheme = localStorage.getItem("sat-theme")
+        const theme =
+          savedTheme === "light" || savedTheme === "dark"
+            ? savedTheme
+            : matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light"
+
+        document.documentElement.classList.toggle("dark", theme === "dark")
+        document.documentElement.style.colorScheme = theme
+      } catch {
+        document.documentElement.classList.remove("dark")
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

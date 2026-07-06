@@ -1,9 +1,10 @@
 import { hierarchy, tree } from "d3-hierarchy"
+import { prepareTreeForDisplay } from "../utils/treeRules"
 
 export default function StaticTree({ data, selectedWords = [], onSelectWords }) {
   if (!data) return null
 
-  const preparedTree = addBranch(extractVgpBadges(normalizeTree(data)))
+  const preparedTree = prepareTreeForDisplay(data)
 
   const NODE_W = 96
   const NODE_H = 48
@@ -212,101 +213,6 @@ function getNodeStyle(node, depth) {
       </g>
     </svg>
   )
-}
-
-function normalizeTree(tree) {
-  if (!tree) return null
-
-  if (tree.name === "ROOT") {
-    const children = tree.children || []
-    const vpIndex = children.findIndex((child) => child.name === "VP")
-
-    const beforeVP = vpIndex >= 0 ? children.slice(0, vpIndex) : children
-    const afterVP = vpIndex >= 0 ? children.slice(vpIndex) : []
-
-    const subject =
-      beforeVP.length === 1 && beforeVP[0].name === "EN"
-        ? {
-            ...beforeVP[0],
-            name: "NP",
-            children: beforeVP[0].children || [],
-          }
-        : beforeVP.length > 0
-          ? {
-              name: "NP",
-              children: beforeVP.map((child) =>
-                child.name === "EN"
-                  ? {
-                      ...child,
-                      name: "NP",
-                      children: child.children || [],
-                    }
-                  : {
-                      ...child,
-                      children: child.children || [],
-                    }
-              ),
-            }
-          : null
-
-    return {
-      name: "S",
-      children: [
-        ...(subject ? [subject] : []),
-        ...afterVP.map(normalizeTree),
-      ],
-    }
-  }
-
-  if (tree.name === "EN") {
-    return {
-      ...tree,
-      name: "NP",
-      children: (tree.children || []).map(normalizeTree),
-    }
-  }
-
-  return {
-    ...tree,
-    children: tree.children ? tree.children.map(normalizeTree) : undefined,
-  }
-}
-
-function extractVgpBadges(node) {
-  if (!node) return null
-
-  const children = node.children || []
-  const badgeChild = children.find((child) =>
-    ["[trans]", "[intrans]", "[linking]"].includes(child.name)
-  )
-
-  const filteredChildren = children.filter(
-    (child) => !["[trans]", "[intrans]", "[linking]"].includes(child.name)
-  )
-
-  return {
-    ...node,
-    badge: node.name === "Vgp" && badgeChild ? badgeChild.name : node.badge,
-    children: filteredChildren.length
-      ? filteredChildren.map(extractVgpBadges)
-      : undefined,
-  }
-}
-
-function addBranch(node, branch = null) {
-  if (!node) return null
-
-  let nextBranch = branch
-  if (node.name === "NP") nextBranch = "np"
-  if (node.name === "VP") nextBranch = "vp"
-
-  return {
-    ...node,
-    branch: nextBranch,
-    children: node.children
-      ? node.children.map((child) => addBranch(child, nextBranch))
-      : undefined,
-  }
 }
 
 function isGrammarLabel(name) {
