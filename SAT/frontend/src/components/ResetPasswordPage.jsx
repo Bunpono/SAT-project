@@ -80,23 +80,23 @@ export default function ResetPasswordPage({ theme, onToggleTheme }) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#F5F7FC] to-[#EEF3FF] px-4 py-8 text-[#111827] transition-colors duration-300 dark:from-[#050816] dark:to-[#0B1120] dark:text-white">
+    <main className="flex min-h-screen min-w-0 flex-col items-center justify-center overflow-x-hidden bg-gradient-to-br from-[#F5F7FC] to-[#EEF3FF] px-4 py-5 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-8 dark:from-[#050816] dark:to-[#0B1120] dark:text-white">
       <button
         type="button"
         onClick={onToggleTheme}
-        className="absolute right-6 top-6 rounded-xl border border-[#E5E7EB] bg-transparent px-4 py-2 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-white active:scale-[0.98] dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#111827]"
+        className="mb-6 self-end rounded-xl border border-[#E5E7EB] bg-transparent px-4 py-2 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-white active:scale-[0.98] dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#111827]"
       >
         {theme === "dark" ? "Light mode" : "Dark mode"}
       </button>
 
-      <section className="w-full max-w-md rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-[0_24px_70px_rgba(17,24,39,0.1)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
+      <section className="w-full max-w-md rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_24px_70px_rgba(17,24,39,0.1)] transition-all duration-300 sm:p-7 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
         <div className="flex flex-col items-center text-center">
           <img
             src="/sat-logo.png"
             alt="Syntactic Analysis Tool logo"
-            className="h-16 w-16 shrink-0 object-contain brightness-0 transition-all duration-300 sm:h-[72px] sm:w-[72px] dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
+            className="h-14 w-14 shrink-0 object-contain brightness-0 transition-all duration-300 sm:h-[72px] sm:w-[72px] dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
           />
-          <h1 className="mt-4 text-2xl font-bold leading-tight text-[#111827] transition-colors duration-300 dark:text-white">
+          <h1 className="mt-4 break-words text-2xl font-bold leading-tight text-[#111827] transition-colors duration-300 dark:text-white">
             Syntactic Analysis Tool
           </h1>
           <p className="mt-1 text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">

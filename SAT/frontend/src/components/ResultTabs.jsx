@@ -132,7 +132,7 @@ export default function ResultTabs({ analysis }) {
   }
 
   return (
-    <section className="rounded-2xl border border-white/70 bg-white p-7 shadow-[0_18px_50px_rgba(17,24,39,0.07)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+    <section className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.07)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-7 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <div>
         <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">
           Analysis Results
@@ -152,20 +152,20 @@ export default function ResultTabs({ analysis }) {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               aria-pressed={isActive}
-              className={`relative rounded-2xl border p-4 text-left transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#111827]/10 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-white/15 dark:focus-visible:ring-offset-[#111827] ${
+              className={`relative min-w-0 rounded-2xl border p-4 text-left transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#111827]/10 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-white/15 dark:focus-visible:ring-offset-[#111827] ${
                 isActive ? tab.activeClass : idleCardClass
               }`}
             >
               <span className={`mb-3 block h-2.5 w-2.5 rounded-full ${tab.dotClass}`} />
-              <span className="block font-medium">{tab.title}</span>
-              <span className="mt-1 block text-sm opacity-70">{tab.description}</span>
+              <span className="block break-words font-medium">{tab.title}</span>
+              <span className="mt-1 block break-words text-sm opacity-70">{tab.description}</span>
             </button>
           )
         })}
       </div>
 
       <div
-        className={`mt-4 rounded-2xl border p-5 transition-all duration-300 ${activeTabConfig.panelClass}`}
+        className={`mt-4 min-w-0 rounded-2xl border p-4 transition-all duration-300 sm:p-5 ${activeTabConfig.panelClass}`}
         aria-live="polite"
       >
         <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -179,12 +179,12 @@ export default function ResultTabs({ analysis }) {
         {renderActiveResult()}
       </div>
 
-      <div className="mt-4 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
+      <div className="mt-4 min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
         <span className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white">
           Model Output
         </span>
 
-        <pre className="mt-4 overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white p-4 text-sm text-[#374151] transition-colors duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+        <pre className="mt-4 max-w-full overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white p-4 text-sm text-[#374151] transition-colors duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
           {analysis?.s_expression || "No analysis yet."}
         </pre>
       </div>

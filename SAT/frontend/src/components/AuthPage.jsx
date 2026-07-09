@@ -111,31 +111,31 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-gradient-to-br from-[#F5F7FC] via-[#F2F5FF] to-[#DBEAFE] px-4 py-10 text-[#111827] transition-colors duration-300 dark:from-[#050816] dark:via-[#0B1120] dark:to-[#111827] dark:text-white">
+    <main className="flex min-h-screen min-w-0 flex-col items-center overflow-x-hidden bg-gradient-to-br from-[#F5F7FC] via-[#F2F5FF] to-[#DBEAFE] px-4 py-5 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-8 dark:from-[#050816] dark:via-[#0B1120] dark:to-[#111827] dark:text-white">
       <button
         type="button"
         onClick={onToggleTheme}
-        className="absolute right-6 top-6 rounded-xl border border-[#E5E7EB] bg-transparent px-4 py-2 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-white active:scale-[0.98] dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#111827]"
+        className="self-end rounded-xl border border-[#E5E7EB] bg-transparent px-4 py-2 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-white active:scale-[0.98] dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#111827]"
       >
         {theme === "dark" ? "Light mode" : "Dark mode"}
       </button>
 
-      <div className="flex w-full max-w-[560px] flex-1 flex-col items-center justify-center">
-        <div className="mb-9 flex flex-col items-center text-center">
+      <div className="flex w-full max-w-[560px] min-w-0 flex-1 flex-col items-center justify-center py-6">
+        <div className="mb-7 flex min-w-0 flex-col items-center text-center sm:mb-9">
           <img
             src="/sat-logo.png"
             alt="Syntactic Analysis Tool logo"
-            className="h-16 w-24 shrink-0 object-contain brightness-0 drop-shadow-[0_10px_16px_rgba(17,24,39,0.18)] transition-all duration-300 sm:h-[72px] sm:w-28 dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
+            className="h-14 w-20 shrink-0 object-contain brightness-0 drop-shadow-[0_10px_16px_rgba(17,24,39,0.18)] transition-all duration-300 sm:h-[72px] sm:w-28 dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
           />
-          <h1 className="mt-7 text-3xl font-bold leading-tight text-[#111827] transition-colors duration-300 sm:text-4xl dark:text-white">
+          <h1 className="mt-5 break-words text-2xl font-bold leading-tight text-[#111827] transition-colors duration-300 sm:mt-7 sm:text-4xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
-          <p className="mt-3 text-lg font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+          <p className="mt-3 text-sm font-medium text-[#6B7280] transition-colors duration-300 sm:text-lg dark:text-[#D1D5DB]">
             Advanced English Sentence Parser with Interactive Visualization
           </p>
         </div>
 
-        <section className="w-full rounded-2xl border border-white/70 bg-white p-7 shadow-[0_24px_70px_rgba(17,24,39,0.08)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
+        <section className="w-full min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_24px_70px_rgba(17,24,39,0.08)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-7 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
           <div>
             <h2 className="text-xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
               Welcome
@@ -151,7 +151,7 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
               key={item}
               type="button"
               onClick={() => { setMode(item); setError("") }}
-              className={`flex items-center justify-center gap-2 rounded-[14px] px-4 py-2.5 text-sm font-bold capitalize transition-all duration-300 ${
+              className={`flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-[14px] px-3 py-2.5 text-sm font-bold capitalize transition-all duration-300 sm:px-4 ${
                 mode === item
                   ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                   : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"

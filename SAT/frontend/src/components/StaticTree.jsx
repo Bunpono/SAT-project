@@ -94,10 +94,11 @@ function getNodeStyle(node, depth) {
 
   return (
     <svg
-      width="100%"
+      width={svgWidth}
       height={svgHeight}
       viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-      preserveAspectRatio="xMidYMin meet"
+      preserveAspectRatio="xMinYMin meet"
+      className="block max-w-none"
     >
       <g transform={`translate(${PADDING_X}, ${PADDING_Y})`}>
         {links.map((link, index) => {

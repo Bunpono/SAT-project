@@ -3,8 +3,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html {
     background: #F5F7FC;
+    overflow-x: hidden;
     transition: background-color 300ms ease, color 300ms ease;
   }
 
@@ -13,12 +20,19 @@
   }
 
   body {
+    min-width: 0;
+    overflow-x: hidden;
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     background: #F5F7FC;
     color: #111827;
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
     transition: background-color 300ms ease, color 300ms ease;
+  }
+
+  #root {
+    min-width: 0;
+    overflow-x: hidden;
   }
 
   button,

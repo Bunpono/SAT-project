@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import Header from "../components/Header"
 import InputPanel from "../components/InputPanel"
 import ResultTabs from "../components/ResultTabs"
+import AnalysisSummary from "../components/AnalysisSummary"
 import TreePanel from "../components/TreePanel"
 import HowToUse from "../components/HowToUse"
 import AnalysisHistory from "../components/AnalysisHistory"
@@ -87,6 +88,8 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
   const [analysis, setAnalysis] = useState(null)
   const [activeView, setActiveView] = useState("analysis")
   const [history, setHistory] = useState(() => getAnalysisHistory())
+  const [inputSentence, setInputSentence] = useState("She is talking about her dog.")
+  const [inputVersion, setInputVersion] = useState(0)
 
   const loadAccountHistory = async () => {
     try {
@@ -126,6 +129,13 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
     setActiveView("analysis")
   }
 
+  const handleAnalyzeAgain = (entry) => {
+    setInputSentence(entry.sentence)
+    setInputVersion((current) => current + 1)
+    setAnalysis(null)
+    setActiveView("analysis")
+  }
+
   const handleDeleteHistory = async (id) => {
     try {
       await deleteMyHistory(id)
@@ -145,24 +155,29 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F7FC] via-[#F2F5FF] to-[#DBEAFE] px-4 py-10 text-[#111827] transition-colors duration-300 sm:px-8 lg:px-16 dark:from-[#050816] dark:via-[#0B1120] dark:to-[#111827] dark:text-white">
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-[1680px] flex-col">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-[#F5F7FC] via-[#F2F5FF] to-[#DBEAFE] px-4 py-6 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-8 lg:px-10 dark:from-[#050816] dark:via-[#0B1120] dark:to-[#111827] dark:text-white">
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-[1680px] min-w-0 flex-col">
         <Header
           theme={theme}
           onToggleTheme={onToggleTheme}
           user={user}
           onLogout={onLogout}
+          onOpenAdmin={() => setActiveView("admin")}
         />
 
         <nav
           aria-label="Main navigation"
-          className="mt-10 inline-grid w-full max-w-[840px] grid-cols-3 gap-x-2 rounded-2xl bg-[#E8E8ED] p-2 transition-all duration-300 dark:bg-[#151B2D]"
+          className={`mt-8 grid w-full min-w-0 gap-2 rounded-2xl bg-[#E8E8ED] p-2 transition-all duration-300 dark:bg-[#151B2D] ${
+            user.role === "admin"
+              ? "grid-cols-1 sm:grid-cols-2 lg:max-w-[1120px] lg:grid-cols-4"
+              : "grid-cols-1 sm:grid-cols-3 lg:max-w-[840px]"
+          }`}
         >
           <button
             type="button"
             onClick={() => setActiveView("analysis")}
             aria-pressed={activeView === "analysis"}
-            className={`flex min-h-12 items-center justify-center gap-2.5 rounded-[15px] px-7 py-3 text-base font-bold transition-all duration-300 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
               activeView === "analysis"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -175,7 +190,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             type="button"
             onClick={() => setActiveView("history")}
             aria-pressed={activeView === "history"}
-            className={`flex min-h-12 items-center justify-center gap-2.5 rounded-[15px] px-7 py-3 text-base font-bold transition-all duration-300 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
               activeView === "history"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -188,7 +203,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             type="button"
             onClick={() => setActiveView("guide")}
             aria-pressed={activeView === "guide"}
-            className={`flex min-h-12 items-center justify-center gap-2.5 rounded-[15px] px-7 py-3 text-base font-bold transition-all duration-300 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
               activeView === "guide"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -202,7 +217,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
               type="button"
               onClick={() => setActiveView("admin")}
               aria-pressed={activeView === "admin"}
-              className={`flex min-h-12 items-center justify-center gap-2.5 rounded-[15px] px-7 py-3 text-base font-bold transition-all duration-300 ${
+              className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
                 activeView === "admin"
                   ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                   : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -214,13 +229,15 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
           )}
         </nav>
 
-        <main className="flex-1">
+        <main className="min-w-0 flex-1">
           {activeView === "analysis" && (
             <>
             <div className="mt-6">
               <InputPanel
+                key={inputVersion}
                 analysis={analysis}
                 onAnalyzeComplete={handleAnalysisComplete}
+                initialSentence={inputSentence}
               />
             </div>
 
@@ -228,6 +245,10 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
               <>
                 <div className="mt-6">
                   <ResultTabs analysis={analysis} />
+                </div>
+
+                <div className="mt-6">
+                  <AnalysisSummary analysis={analysis} />
                 </div>
 
                 <div className="mt-6">
@@ -245,6 +266,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
                 onView={handleViewHistory}
                 onDelete={handleDeleteHistory}
                 onClearAll={handleClearHistory}
+                onAnalyzeAgain={handleAnalyzeAgain}
               />
             </div>
           )}

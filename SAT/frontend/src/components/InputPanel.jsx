@@ -2,7 +2,12 @@ import { useEffect, useMemo, useState } from "react"
 import { analyzeSentence, submitErrorReport } from "../services/api"
 import { validateSentenceInput } from "../utils/sentenceValidation"
 
-const EXAMPLE_SENTENCE = "The boy is reading a book."
+const DEFAULT_SENTENCE = "She is talking about her dog."
+const EXAMPLE_SENTENCES = {
+  simple: "The boy is reading a book.",
+  compound: "I like tea and she likes coffee.",
+  complex: "The woman who wears a red skirt looks graceful."
+}
 const MAX_SENTENCE_LENGTH = 300
 const LOADING_STEPS = [
   "Parsing sentence...",
@@ -51,8 +56,12 @@ function AlertIcon() {
   )
 }
 
-export default function InputPanel({ analysis, onAnalyzeComplete }) {
-  const [sentence, setSentence] = useState("She is talking about her dog.")
+export default function InputPanel({
+  analysis,
+  onAnalyzeComplete,
+  initialSentence = DEFAULT_SENTENCE
+}) {
+  const [sentence, setSentence] = useState(initialSentence)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [loadingStep, setLoadingStep] = useState(LOADING_STEPS[0])
   const [errorMessage, setErrorMessage] = useState("")
@@ -112,8 +121,11 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
     onAnalyzeComplete(null)
   }
 
-  const handleUseExample = () => {
-    setSentence(EXAMPLE_SENTENCE)
+  const handleExampleSelect = (event) => {
+    const nextSentence = EXAMPLE_SENTENCES[event.target.value]
+    if (!nextSentence) return
+
+    setSentence(nextSentence)
     setErrorMessage("")
   }
 
@@ -140,7 +152,7 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
   }
 
   return (
-    <section className="rounded-2xl border border-white/70 bg-white p-7 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+    <section className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-7 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <h2 className="text-xl font-medium text-[#111827] transition-colors duration-300 dark:text-white">Input Sentence</h2>
 
       <label className="mt-5 block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
@@ -160,7 +172,7 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
           }
         }}
         placeholder="Type a sentence to analyze..."
-        className="mt-2 h-40 w-full resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-5 leading-7 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:bg-white focus:ring-4 focus:ring-[#111827]/10 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
+        className="mt-2 h-40 w-full min-w-0 resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-4 leading-7 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:bg-white focus:ring-4 focus:ring-[#111827]/10 sm:p-5 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
       />
 
       <div className="mt-2 flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
@@ -176,24 +188,28 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
       </div>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
-        <div className="rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]">
+        <div className="min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]">
           <h3 className="text-sm font-bold text-[#111827] transition-colors duration-300 dark:text-white">
             Supported Input
           </h3>
           <div className="mt-3 grid gap-2 text-sm font-medium text-[#374151] transition-colors duration-300 sm:grid-cols-3 dark:text-[#D1D5DB]">
-            <p>✓ English language</p>
-            <p>✓ Declarative sentences only</p>
-            <p>✓ Simple, Compound and Complex</p>
+            <p>English language</p>
+            <p>Declarative sentences only</p>
+            <p>Simple, Compound and Complex</p>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleUseExample}
-          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]"
+        <select
+          value=""
+          onChange={handleExampleSelect}
+          aria-label="Choose an example sentence"
+          className="min-h-12 w-full min-w-0 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm font-bold text-[#111827] outline-none transition-all duration-300 hover:bg-[#F7F8FC] focus:ring-4 focus:ring-[#111827]/10 lg:w-auto dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D] dark:focus:ring-white/15"
         >
-          Example
-        </button>
+          <option value="">Example sentences</option>
+          <option value="simple">Simple: The boy is reading a book.</option>
+          <option value="compound">Compound: I like tea and she likes coffee.</option>
+          <option value="complex">Complex: The woman who wears a red skirt looks graceful.</option>
+        </select>
       </div>
 
       {(guidanceMessage || validation.warnings.length > 0 || validation.suggestion) && (
@@ -233,20 +249,20 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
         </div>
       )}
 
-      <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mt-5 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 flex-col flex-wrap gap-3 sm:flex-row sm:items-center">
           <button
             onClick={handleAnalyze}
             disabled={!canAnalyze}
             aria-busy={isAnalyzing}
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#050816] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(17,24,39,0.16)] transition-all duration-300 hover:bg-[#111827] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_12px_28px_rgba(255,255,255,0.1)] dark:hover:bg-[#D1D5DB]">
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#050816] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(17,24,39,0.16)] transition-all duration-300 hover:bg-[#111827] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 sm:w-auto dark:bg-white dark:text-[#111827] dark:shadow-[0_12px_28px_rgba(255,255,255,0.1)] dark:hover:bg-[#D1D5DB]">
             <PlayIcon />
             {isAnalyzing ? loadingStep : "Analyze Syntax"}
           </button>
 
           <button
             onClick={handleClear}
-            className="flex items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]">
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]">
             <TrashIcon />
             Clear
           </button>
@@ -254,18 +270,18 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
           <button
             type="button"
             onClick={() => { setShowReportForm((value) => !value); setReportStatus("") }}
-            className="flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-white px-5 py-3 text-sm font-bold text-orange-600 transition-all duration-300 hover:bg-orange-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-orange-800 dark:bg-[#111827] dark:text-orange-300 dark:hover:bg-orange-950/40"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-orange-200 bg-white px-5 py-3 text-sm font-bold text-orange-600 transition-all duration-300 hover:bg-orange-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-orange-800 dark:bg-[#111827] dark:text-orange-300 dark:hover:bg-orange-950/40"
           >
             <AlertIcon />
             Report Error
           </button>
         </div>
 
-        <label className="flex items-center gap-3 text-sm font-bold text-[#111827] transition-colors duration-300 dark:text-white">
+        <label className="flex w-full min-w-0 flex-col gap-2 text-sm font-bold text-[#111827] transition-colors duration-300 sm:flex-row sm:items-center lg:w-auto dark:text-white">
           Visualization:
           <select
             defaultValue="tree"
-            className="min-w-52 rounded-xl border border-transparent bg-[#F3F3F5] px-4 py-3 font-medium text-[#111827] outline-none transition-all duration-300 focus:ring-4 focus:ring-[#111827]/10 dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:focus:ring-white/15"
+            className="min-h-12 w-full min-w-0 rounded-xl border border-transparent bg-[#F3F3F5] px-4 py-3 font-medium text-[#111827] outline-none transition-all duration-300 focus:ring-4 focus:ring-[#111827]/10 sm:min-w-52 dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:focus:ring-white/15"
           >
             <option value="tree">Tree Diagram</option>
           </select>

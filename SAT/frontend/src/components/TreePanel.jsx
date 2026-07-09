@@ -18,8 +18,8 @@ export default function TreePanel({ analysis }) {
     : []
 
   return (
-    <section className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
-      <div className="rounded-2xl border border-white/70 bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+    <section className="grid min-w-0 grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+      <div className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-6 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
         <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Production Rules</h2>
 
         <div className="mt-5 max-h-[520px] space-y-3 overflow-y-auto pr-1">
@@ -37,7 +37,7 @@ export default function TreePanel({ analysis }) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/70 bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+      <div className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-6 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
         <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Tree Diagram</h2>
 
         {analysis?.tree && (
@@ -61,7 +61,7 @@ export default function TreePanel({ analysis }) {
           </div>
         )}
 
-        <div className="mt-5 w-full overflow-x-auto overflow-y-hidden rounded-2xl border border-[#E5E7EB] bg-white transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
+        <div className="mt-5 w-full min-w-0 overflow-x-auto overflow-y-hidden rounded-2xl border border-[#E5E7EB] bg-white transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
           {analysis?.tree ? (
             <StaticTree
               data={analysis.tree}
