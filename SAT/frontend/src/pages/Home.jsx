@@ -78,7 +78,7 @@ function AdminIcon() {
 
 function Footer() {
   return (
-    <footer className="py-10 text-center text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
+    <footer className="py-10 text-center text-base font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
       Powered by WJ & AJ Syntactic Algorithm
     </footer>
   )
@@ -196,7 +196,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
           aria-label="Main navigation"
           className={`mt-8 grid w-full min-w-0 gap-2 rounded-2xl bg-[#E8E8ED] p-2 transition-all duration-300 dark:bg-[#151B2D] ${
             user.role === "admin"
-              ? "grid-cols-1 sm:grid-cols-2 lg:max-w-[1120px] lg:grid-cols-4"
+              ? "grid-cols-1 sm:grid-cols-2 lg:max-w-[1240px] lg:grid-cols-4"
               : "grid-cols-1 sm:grid-cols-3 lg:max-w-[840px]"
           }`}
         >
@@ -204,7 +204,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             type="button"
             onClick={() => navigateToView("analysis")}
             aria-pressed={activeView === "analysis"}
-            className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
+            className={`flex min-h-14 min-w-0 items-center justify-center gap-3 whitespace-normal rounded-[15px] px-4 py-3.5 text-base font-bold leading-snug transition-all duration-300 sm:text-lg lg:px-7 ${
               activeView === "analysis"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -217,7 +217,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             type="button"
             onClick={() => navigateToView("history")}
             aria-pressed={activeView === "history"}
-            className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
+            className={`flex min-h-14 min-w-0 items-center justify-center gap-3 whitespace-normal rounded-[15px] px-4 py-3.5 text-base font-bold leading-snug transition-all duration-300 sm:text-lg lg:px-7 ${
               activeView === "history"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -230,7 +230,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             type="button"
             onClick={() => navigateToView("guide")}
             aria-pressed={activeView === "guide"}
-            className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
+            className={`flex min-h-14 min-w-0 items-center justify-center gap-3 whitespace-normal rounded-[15px] px-4 py-3.5 text-base font-bold leading-snug transition-all duration-300 sm:text-lg lg:px-7 ${
               activeView === "guide"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -244,7 +244,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
               type="button"
               onClick={() => navigateToView("admin")}
               aria-pressed={activeView === "admin"}
-              className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
+              className={`flex min-h-14 min-w-0 items-center justify-center gap-3 whitespace-normal rounded-[15px] px-4 py-3.5 text-base font-bold leading-snug transition-all duration-300 sm:text-lg lg:px-7 ${
                 activeView === "admin"
                   ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                   : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"

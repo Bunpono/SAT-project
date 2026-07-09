@@ -47,10 +47,10 @@ export default function AnalysisSummary({ analysis }) {
             key={label}
             className="min-w-0 rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-3 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]"
           >
-            <p className="text-xs font-bold uppercase text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
+            <p className="text-sm font-bold uppercase text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
               {label}
             </p>
-            <p className="mt-1 break-words text-sm font-bold text-[#111827] transition-colors duration-300 sm:text-base dark:text-white">
+            <p className="mt-1 break-words text-base font-bold text-[#111827] transition-colors duration-300 sm:text-lg dark:text-white">
               {value}
             </p>
           </div>

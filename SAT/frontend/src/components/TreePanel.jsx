@@ -25,12 +25,12 @@ export default function TreePanel({ analysis }) {
         <div className="mt-5 max-h-[520px] space-y-3 overflow-y-auto pr-1">
           {productionRules.length > 0 ? (
             productionRules.map((rule) => (
-              <div key={rule} className="rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-2 text-sm text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+              <div key={rule} className="rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-2 text-base text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
                 {rule}
               </div>
             ))
           ) : (
-            <p className="text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
+            <p className="text-base text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
               Production rules will appear with the syntax tree.
             </p>
           )}
@@ -48,7 +48,7 @@ export default function TreePanel({ analysis }) {
               return (
                 <span
                   key={`${word}-${index}`}
-                  className={`rounded-lg px-3 py-1 text-sm transition-all duration-300 ${
+                  className={`rounded-lg px-3 py-1 text-base transition-all duration-300 ${
                     active
                       ? "bg-yellow-300 font-semibold text-slate-950 scale-105"
                       : "bg-white text-[#374151] shadow-sm dark:bg-[#0B1120] dark:text-[#D1D5DB]"
@@ -75,7 +75,7 @@ export default function TreePanel({ analysis }) {
           )}
         </div>
 
-        <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-3 text-sm text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+        <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-3 text-base text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
           Tip: Click any terminal node to highlight the corresponding word.
         </div>
       </div>

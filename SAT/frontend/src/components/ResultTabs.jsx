@@ -63,7 +63,7 @@ export default function ResultTabs({ analysis }) {
           {treeAnalysis.posTags.map(({ word, tag }, index) => (
             <span
               key={`${word}-${tag}-${index}`}
-              className="rounded-xl border border-blue-200 bg-white/90 px-3 py-2 text-sm text-[#374151] shadow-sm transition-all duration-300 dark:border-blue-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
+              className="rounded-xl border border-blue-200 bg-white/90 px-3 py-2 text-base text-[#374151] shadow-sm transition-all duration-300 dark:border-blue-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
             >
               <span className="font-semibold text-[#111827] dark:text-white">{word}</span>
               <span className="ml-2 font-medium text-blue-600 dark:text-blue-300">{tag}</span>
@@ -71,7 +71,7 @@ export default function ResultTabs({ analysis }) {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+        <p className="text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
           No POS tags were found in this tree.
         </p>
       )
@@ -83,7 +83,7 @@ export default function ResultTabs({ analysis }) {
           {treeAnalysis.phrases.map(({ type, text }, index) => (
             <li
               key={`${type}-${text}-${index}`}
-              className="rounded-xl border border-emerald-200 bg-white/90 px-4 py-3 text-sm text-[#374151] shadow-sm transition-all duration-300 dark:border-emerald-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
+              className="rounded-xl border border-emerald-200 bg-white/90 px-4 py-3 text-base text-[#374151] shadow-sm transition-all duration-300 dark:border-emerald-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
             >
               <span className="mr-3 inline-block rounded-md bg-emerald-600 px-2 py-1 font-semibold text-white dark:bg-emerald-500">
                 {type}
@@ -93,7 +93,7 @@ export default function ResultTabs({ analysis }) {
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+        <p className="text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
           No phrase nodes were found in this tree.
         </p>
       )
@@ -105,7 +105,7 @@ export default function ResultTabs({ analysis }) {
           {treeAnalysis.clauses.map(({ type, text }, index) => (
             <li
               key={`${type}-${text}-${index}`}
-              className="rounded-xl border border-purple-200 bg-white/90 px-4 py-3 text-sm text-[#374151] shadow-sm transition-all duration-300 dark:border-purple-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
+              className="rounded-xl border border-purple-200 bg-white/90 px-4 py-3 text-base text-[#374151] shadow-sm transition-all duration-300 dark:border-purple-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
             >
               <span className="font-semibold text-purple-800 dark:text-purple-300">{type}:</span>{" "}
               {text}
@@ -113,7 +113,7 @@ export default function ResultTabs({ analysis }) {
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+        <p className="text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
           No S clause nodes were found in this tree.
         </p>
       )
@@ -124,7 +124,7 @@ export default function ResultTabs({ analysis }) {
         <p className="font-semibold text-orange-900 dark:text-orange-200">
           {treeAnalysis.sentenceType}
         </p>
-        <p className="mt-1 text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+        <p className="mt-1 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
           {treeAnalysis.sentenceTypeReason}
         </p>
       </div>
@@ -137,7 +137,7 @@ export default function ResultTabs({ analysis }) {
         <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">
           Analysis Results
         </h2>
-        <p className="mt-1 text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+        <p className="mt-1 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
           Select a category to inspect the result extracted from the syntax tree.
         </p>
       </div>
@@ -158,7 +158,7 @@ export default function ResultTabs({ analysis }) {
             >
               <span className={`mb-3 block h-2.5 w-2.5 rounded-full ${tab.dotClass}`} />
               <span className="block break-words font-medium">{tab.title}</span>
-              <span className="mt-1 block break-words text-sm opacity-70">{tab.description}</span>
+              <span className="mt-1 block break-words text-base opacity-75">{tab.description}</span>
             </button>
           )
         })}
@@ -169,10 +169,10 @@ export default function ResultTabs({ analysis }) {
         aria-live="polite"
       >
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <span className={`rounded-md px-3 py-1 text-sm font-semibold ${activeTabConfig.badgeClass}`}>
+          <span className={`rounded-md px-3 py-1 text-base font-semibold ${activeTabConfig.badgeClass}`}>
             {activeTabConfig.title}
           </span>
-          <span className="text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+          <span className="text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
             {activeTabConfig.description}
           </span>
         </div>
@@ -180,11 +180,11 @@ export default function ResultTabs({ analysis }) {
       </div>
 
       <div className="mt-4 min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
-        <span className="rounded-md bg-blue-500 px-3 py-1 text-sm text-white">
+        <span className="rounded-md bg-blue-500 px-3 py-1 text-base text-white">
           Model Output
         </span>
 
-        <pre className="mt-4 max-w-full overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white p-4 text-sm text-[#374151] transition-colors duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+        <pre className="mt-4 max-w-full overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white p-4 text-base text-[#374151] transition-colors duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
           {analysis?.s_expression || "No analysis yet."}
         </pre>
       </div>

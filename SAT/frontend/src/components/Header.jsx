@@ -90,7 +90,7 @@ export default function Header({
           <h1 className="break-words text-2xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-3xl lg:text-4xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
-          <p className="mt-1 max-w-2xl text-sm font-medium leading-6 text-[#6B7280] transition-colors duration-300 sm:text-base lg:text-lg dark:text-[#D1D5DB]">
+          <p className="mt-1 max-w-2xl text-base font-medium leading-6 text-[#6B7280] transition-colors duration-300 lg:text-lg dark:text-[#D1D5DB]">
             Advanced English Sentence Parser with Interactive Visualization
           </p>
         </div>
@@ -110,7 +110,7 @@ export default function Header({
           type="button"
           onClick={() => setIsAccountOpen((value) => !value)}
           aria-expanded={isAccountOpen}
-          className="flex h-11 min-w-0 max-w-[calc(100vw-6rem)] items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 text-sm font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
+          className="flex h-12 min-w-0 max-w-[calc(100vw-6rem)] items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 text-base font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
         >
           <UserIcon />
           <span className="truncate">{user.name}</span>
@@ -121,7 +121,7 @@ export default function Header({
             <div className="border-b border-[#E5E7EB] px-4 py-4 text-base font-bold text-[#111827] dark:border-[#263042] dark:text-white">
               My Account
             </div>
-            <div className="flex items-center gap-3 border-b border-[#E5E7EB] px-4 py-4 text-sm text-[#6B7280] dark:border-[#263042] dark:text-[#9CA3AF]">
+            <div className="flex items-center gap-3 border-b border-[#E5E7EB] px-4 py-4 text-base text-[#6B7280] dark:border-[#263042] dark:text-[#9CA3AF]">
               <UserIcon />
               <span className="truncate">{user.email || user.role}</span>
             </div>
@@ -132,7 +132,7 @@ export default function Header({
                   setIsAccountOpen(false)
                   onOpenAdmin?.()
                 }}
-                className="flex w-full items-center gap-3 border-b border-[#E5E7EB] px-4 py-4 text-left text-sm font-medium text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:text-white dark:hover:bg-[#151B2D]"
+                className="flex w-full items-center gap-3 border-b border-[#E5E7EB] px-4 py-4 text-left text-base font-medium text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:text-white dark:hover:bg-[#151B2D]"
               >
                 <DashboardIcon />
                 Admin Dashboard
@@ -141,7 +141,7 @@ export default function Header({
             <button
               type="button"
               onClick={onLogout}
-              className="flex w-full items-center gap-3 px-4 py-4 text-left text-sm font-medium text-red-600 transition-all duration-300 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30"
+              className="flex w-full items-center gap-3 px-4 py-4 text-left text-base font-medium text-red-600 transition-all duration-300 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30"
             >
               <LogoutIcon />
               Logout

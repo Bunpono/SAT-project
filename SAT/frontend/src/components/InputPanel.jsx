@@ -155,7 +155,7 @@ export default function InputPanel({
     <section className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-7 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <h2 className="text-xl font-medium text-[#111827] transition-colors duration-300 dark:text-white">Input Sentence</h2>
 
-      <label className="mt-5 block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
+      <label className="mt-5 block text-base font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
         Enter or Paste English Sentence Here
       </label>
 
@@ -175,7 +175,7 @@ export default function InputPanel({
         className="mt-2 h-40 w-full min-w-0 resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-4 leading-7 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:bg-white focus:ring-4 focus:ring-[#111827]/10 sm:p-5 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
       />
 
-      <div className="mt-2 flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-2 flex flex-col gap-2 text-base sm:flex-row sm:items-center sm:justify-between">
         <p className={`font-medium transition-colors duration-300 ${
           sentence.length > MAX_SENTENCE_LENGTH ? "text-red-600 dark:text-red-300" : "text-[#6B7280] dark:text-[#9CA3AF]"
         }`}>
@@ -189,10 +189,10 @@ export default function InputPanel({
 
       <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
         <div className="min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]">
-          <h3 className="text-sm font-bold text-[#111827] transition-colors duration-300 dark:text-white">
+          <h3 className="text-base font-bold text-[#111827] transition-colors duration-300 dark:text-white">
             Supported Input
           </h3>
-          <div className="mt-3 grid gap-2 text-sm font-medium text-[#374151] transition-colors duration-300 sm:grid-cols-3 dark:text-[#D1D5DB]">
+          <div className="mt-3 grid gap-2 text-base font-medium text-[#374151] transition-colors duration-300 sm:grid-cols-3 dark:text-[#D1D5DB]">
             <p>English language</p>
             <p>Declarative sentences only</p>
             <p>Simple, Compound and Complex</p>
@@ -203,7 +203,7 @@ export default function InputPanel({
           value=""
           onChange={handleExampleSelect}
           aria-label="Choose an example sentence"
-          className="min-h-12 w-full min-w-0 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm font-bold text-[#111827] outline-none transition-all duration-300 hover:bg-[#F7F8FC] focus:ring-4 focus:ring-[#111827]/10 lg:w-auto dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D] dark:focus:ring-white/15"
+          className="min-h-12 w-full min-w-0 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base font-bold text-[#111827] outline-none transition-all duration-300 hover:bg-[#F7F8FC] focus:ring-4 focus:ring-[#111827]/10 lg:w-auto dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D] dark:focus:ring-white/15"
         >
           <option value="">Example sentences</option>
           <option value="simple">Simple: The boy is reading a book.</option>
@@ -215,7 +215,7 @@ export default function InputPanel({
       {(guidanceMessage || validation.warnings.length > 0 || validation.suggestion) && (
         <div className="mt-4 space-y-3" aria-live="polite">
           {guidanceMessage && (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 transition-all duration-300 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-base font-medium text-red-700 transition-all duration-300 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
               {guidanceMessage}
             </div>
           )}
@@ -223,14 +223,14 @@ export default function InputPanel({
           {validation.warnings.map((warning) => (
             <div
               key={warning}
-              className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 transition-all duration-300 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200"
+              className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-base font-medium text-amber-800 transition-all duration-300 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200"
             >
               {warning}
             </div>
           ))}
 
           {validation.suggestion && (
-            <div className="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm transition-all duration-300 sm:flex-row sm:items-center sm:justify-between dark:border-[#263042] dark:bg-[#0B1120]">
+            <div className="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base transition-all duration-300 sm:flex-row sm:items-center sm:justify-between dark:border-[#263042] dark:bg-[#0B1120]">
               <p className="font-medium text-[#374151] dark:text-[#D1D5DB]">
                 Did you mean:{" "}
                 <span className="font-bold text-[#111827] dark:text-white">
@@ -240,7 +240,7 @@ export default function InputPanel({
               <button
                 type="button"
                 onClick={handleUseSuggestion}
-                className="rounded-lg bg-[#111827] px-4 py-2 text-sm font-bold text-white transition-all duration-300 hover:bg-[#374151] active:scale-[0.98] dark:bg-white dark:text-[#111827] dark:hover:bg-[#D1D5DB]"
+                className="rounded-lg bg-[#111827] px-4 py-2 text-base font-bold text-white transition-all duration-300 hover:bg-[#374151] active:scale-[0.98] dark:bg-white dark:text-[#111827] dark:hover:bg-[#D1D5DB]"
               >
                 Use suggestion
               </button>
@@ -255,14 +255,14 @@ export default function InputPanel({
             onClick={handleAnalyze}
             disabled={!canAnalyze}
             aria-busy={isAnalyzing}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#050816] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(17,24,39,0.16)] transition-all duration-300 hover:bg-[#111827] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 sm:w-auto dark:bg-white dark:text-[#111827] dark:shadow-[0_12px_28px_rgba(255,255,255,0.1)] dark:hover:bg-[#D1D5DB]">
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#050816] px-5 py-3 text-base font-bold text-white shadow-[0_12px_28px_rgba(17,24,39,0.16)] transition-all duration-300 hover:bg-[#111827] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 sm:w-auto dark:bg-white dark:text-[#111827] dark:shadow-[0_12px_28px_rgba(255,255,255,0.1)] dark:hover:bg-[#D1D5DB]">
             <PlayIcon />
             {isAnalyzing ? loadingStep : "Analyze Syntax"}
           </button>
 
           <button
             onClick={handleClear}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]">
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]">
             <TrashIcon />
             Clear
           </button>
@@ -270,14 +270,14 @@ export default function InputPanel({
           <button
             type="button"
             onClick={() => { setShowReportForm((value) => !value); setReportStatus("") }}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-orange-200 bg-white px-5 py-3 text-sm font-bold text-orange-600 transition-all duration-300 hover:bg-orange-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-orange-800 dark:bg-[#111827] dark:text-orange-300 dark:hover:bg-orange-950/40"
+            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-orange-200 bg-white px-5 py-3 text-base font-bold text-orange-600 transition-all duration-300 hover:bg-orange-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-orange-800 dark:bg-[#111827] dark:text-orange-300 dark:hover:bg-orange-950/40"
           >
             <AlertIcon />
             Report Error
           </button>
         </div>
 
-        <label className="flex w-full min-w-0 flex-col gap-2 text-sm font-bold text-[#111827] transition-colors duration-300 sm:flex-row sm:items-center lg:w-auto dark:text-white">
+        <label className="flex w-full min-w-0 flex-col gap-2 text-base font-bold text-[#111827] transition-colors duration-300 sm:flex-row sm:items-center lg:w-auto dark:text-white">
           Visualization:
           <select
             defaultValue="tree"
@@ -290,7 +290,7 @@ export default function InputPanel({
 
       {showReportForm && (
         <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 p-4 shadow-sm transition-all duration-300 dark:border-orange-900 dark:bg-orange-950/30">
-          <label className="block text-sm font-semibold text-orange-900 dark:text-orange-200">
+          <label className="block text-base font-semibold text-orange-900 dark:text-orange-200">
             Describe what looks incorrect
             <textarea
               value={reportDescription}
@@ -304,11 +304,11 @@ export default function InputPanel({
               type="button"
               onClick={handleReport}
               disabled={reportStatus === "Sending..."}
-              className="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-orange-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl bg-orange-500 px-4 py-2 text-base font-semibold text-white transition-all duration-300 hover:bg-orange-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Send Report
             </button>
-            {reportStatus && <p className="text-sm text-orange-800 dark:text-orange-200">{reportStatus}</p>}
+            {reportStatus && <p className="text-base text-orange-800 dark:text-orange-200">{reportStatus}</p>}
           </div>
         </div>
       )}
@@ -316,7 +316,7 @@ export default function InputPanel({
       {errorMessage && (
         <div
           role="alert"
-          className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 transition-all duration-300 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
+          className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-base text-red-700 transition-all duration-300 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
         >
           {errorMessage}
         </div>

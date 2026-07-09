@@ -147,7 +147,7 @@ export default function AnalysisHistory({
             <span className="text-[#6B7280] dark:text-[#9CA3AF]"><DocumentIcon /></span>
           </div>
           <p className="mt-8 text-3xl font-medium text-[#111827] sm:mt-12 sm:text-4xl dark:text-white">{history.length}</p>
-          <p className="mt-2 text-sm text-[#6B7280] dark:text-[#9CA3AF]">Sentences analyzed</p>
+          <p className="mt-2 text-base text-[#6B7280] dark:text-[#9CA3AF]">Sentences analyzed</p>
         </div>
 
         <div className="rounded-2xl border border-white/70 bg-white p-5 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-8 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5">
@@ -158,7 +158,7 @@ export default function AnalysisHistory({
           <p className="mt-8 text-3xl font-medium text-[#111827] sm:mt-12 sm:text-4xl dark:text-white">
             {latest ? formatShortDate(latest.created_at) : "-"}
           </p>
-          <p className="mt-2 text-sm text-[#6B7280] dark:text-[#9CA3AF]">
+          <p className="mt-2 text-base text-[#6B7280] dark:text-[#9CA3AF]">
             {latest ? formatDate(latest.created_at) : "No analyses yet"}
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function AnalysisHistory({
           <p className="mt-8 text-3xl font-medium text-[#111827] sm:mt-12 sm:text-4xl dark:text-white">
             {formatBytes(getStorageSize(history))}
           </p>
-          <p className="mt-2 text-sm text-[#6B7280] dark:text-[#9CA3AF]">In local storage</p>
+          <p className="mt-2 text-base text-[#6B7280] dark:text-[#9CA3AF]">In local storage</p>
         </div>
       </section>
 
@@ -185,14 +185,14 @@ export default function AnalysisHistory({
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search sentence history..."
-              className="min-h-11 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 text-sm font-medium text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:bg-white focus:ring-4 focus:ring-[#111827]/10 sm:w-80 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
+              className="min-h-12 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 text-base font-medium text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:bg-white focus:ring-4 focus:ring-[#111827]/10 sm:w-80 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
             />
 
             {history.length > 0 && (
               <button
                 type="button"
                 onClick={handleClearAll}
-                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-all duration-300 hover:bg-rose-700 active:scale-[0.98] sm:w-auto"
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-2.5 text-base font-bold text-white shadow-sm transition-all duration-300 hover:bg-rose-700 active:scale-[0.98] sm:w-auto"
               >
                 <TrashIcon />
                 Clear All
@@ -219,32 +219,32 @@ export default function AnalysisHistory({
                     className="rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]"
                   >
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
+                      <span className="text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
                         Date
                       </span>
-                      <p className="text-sm font-semibold text-[#111827] dark:text-white">
+                      <p className="text-base font-semibold text-[#111827] dark:text-white">
                         {formatDate(entry.created_at)}
                       </p>
                     </div>
 
                     <div className="mt-4">
-                      <span className="text-xs font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
+                      <span className="text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
                         Sentence
                       </span>
-                      <p className="mt-1 break-words text-sm leading-6 text-[#374151] dark:text-[#D1D5DB]">
+                      <p className="mt-1 break-words text-base leading-7 text-[#374151] dark:text-[#D1D5DB]">
                         {entry.sentence}
                       </p>
                     </div>
 
                     <div className="mt-4">
-                      <span className="text-xs font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
+                      <span className="text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
                         Constituents
                       </span>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {getConstituents(entry).map((item) => (
                           <span
                             key={`card-${entry.id}-${item}`}
-                            className="rounded-lg bg-[#E8E8ED] px-3 py-1 text-xs font-bold text-[#111827] dark:bg-[#0B1120] dark:text-[#D1D5DB]"
+                            className="rounded-lg bg-[#E8E8ED] px-3 py-1 text-sm font-bold text-[#111827] dark:bg-[#0B1120] dark:text-[#D1D5DB]"
                           >
                             {item}
                           </span>
@@ -256,7 +256,7 @@ export default function AnalysisHistory({
                       <button
                         type="button"
                         onClick={() => onAnalyzeAgain(entry)}
-                        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#0B1120]"
+                        className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#0B1120]"
                       >
                         <PlayIcon />
                         Analyze Again
@@ -264,7 +264,7 @@ export default function AnalysisHistory({
                       <button
                         type="button"
                         onClick={() => onView(entry)}
-                        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#0B1120]"
+                        className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#0B1120]"
                       >
                         <EyeIcon />
                         View
@@ -272,7 +272,7 @@ export default function AnalysisHistory({
                       <button
                         type="button"
                         onClick={() => onDelete(entry.id)}
-                        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-3 py-2 text-sm font-bold text-red-600 transition-all duration-300 hover:bg-red-50 dark:border-red-900 dark:bg-[#111827] dark:text-red-300 dark:hover:bg-red-950/40"
+                        className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-3 py-2 text-base font-bold text-red-600 transition-all duration-300 hover:bg-red-50 dark:border-red-900 dark:bg-[#111827] dark:text-red-300 dark:hover:bg-red-950/40"
                       >
                         <TrashIcon />
                         Delete
@@ -283,7 +283,7 @@ export default function AnalysisHistory({
               </div>
 
               <div className="hidden overflow-x-auto rounded-xl border border-[#E5E7EB] dark:border-[#263042] lg:block">
-                <table className="w-full min-w-[940px] text-left text-sm">
+                <table className="w-full min-w-[940px] text-left text-base">
                   <thead className="border-b border-[#E5E7EB] text-[#111827] dark:border-[#263042] dark:text-white">
                     <tr>
                       <th className="px-4 py-4 font-bold">Date & Time</th>
@@ -300,7 +300,7 @@ export default function AnalysisHistory({
                         <td className="px-4 py-4">
                           <div className="flex flex-wrap gap-2">
                             {getConstituents(entry).map((item) => (
-                              <span key={`${entry.id}-${item}`} className="rounded-lg bg-[#E8E8ED] px-3 py-1 text-xs font-bold text-[#111827] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+                              <span key={`${entry.id}-${item}`} className="rounded-lg bg-[#E8E8ED] px-3 py-1 text-sm font-bold text-[#111827] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
                                 {item}
                               </span>
                             ))}

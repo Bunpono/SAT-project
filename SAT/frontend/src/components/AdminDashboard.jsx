@@ -42,7 +42,7 @@ function getResultPreview(entry) {
 function SummaryCard({ label, value }) {
   return (
     <div className="rounded-2xl border border-white/70 bg-white p-5 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5">
-      <p className="text-sm font-bold uppercase text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
+      <p className="text-base font-bold uppercase text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
         {label}
       </p>
       <p className="mt-4 text-3xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
@@ -54,7 +54,7 @@ function SummaryCard({ label, value }) {
 
 function EmptyState({ children }) {
   return (
-    <p className="rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] px-5 py-6 text-center text-sm text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#9CA3AF]">
+    <p className="rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] px-5 py-6 text-center text-base text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#9CA3AF]">
       {children}
     </p>
   )
@@ -144,13 +144,13 @@ export default function AdminDashboard() {
   return (
     <section className="min-w-0 space-y-6">
       <div className="min-w-0 rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 sm:p-8 dark:border-[#263042] dark:bg-[#111827]">
-        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
+        <p className="text-base font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
           Admin
         </p>
         <h2 className="mt-2 text-2xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
           Admin Dashboard
         </h2>
-        <p className="mt-1 text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+        <p className="mt-1 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
           Review users, saved analyses, and syntax error reports.
         </p>
       </div>
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`min-h-12 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base ${
+            className={`min-h-14 rounded-[15px] px-4 py-3 text-base font-bold transition-all duration-300 sm:text-lg ${
               activeTab === tab.id
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
       </div>
 
       {errorMessage && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 transition-all duration-300 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-base text-red-700 transition-all duration-300 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
           {errorMessage}
         </div>
       )}
@@ -196,7 +196,7 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[720px] text-left text-sm">
+              <table className="w-full min-w-[720px] text-left text-base">
                 <thead className="border-b border-[#E5E7EB] text-[#6B7280] dark:border-[#263042] dark:text-[#9CA3AF]">
                   <tr>
                     <th className="px-3 py-3">Name</th>
@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                       <td className="break-words px-3 py-3 font-semibold text-[#111827] dark:text-white">{getUserName(item)}</td>
                       <td className="break-all px-3 py-3 text-[#374151] dark:text-[#D1D5DB]">{getUserEmail(item)}</td>
                       <td className="px-3 py-3">
-                        <span className="rounded-lg bg-[#E8E8ED] px-3 py-1 text-xs font-bold text-[#111827] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+                        <span className="rounded-lg bg-[#E8E8ED] px-3 py-1 text-sm font-bold text-[#111827] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
                           {item.role || "user"}
                         </span>
                       </td>
@@ -236,7 +236,7 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[940px] text-left text-sm">
+              <table className="w-full min-w-[940px] text-left text-base">
                 <thead className="border-b border-[#E5E7EB] text-[#6B7280] dark:border-[#263042] dark:text-[#9CA3AF]">
                   <tr>
                     <th className="px-3 py-3">Date</th>
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
                       <td className="whitespace-nowrap px-3 py-3 text-[#6B7280] dark:text-[#9CA3AF]">{formatDate(entry.created_at)}</td>
                       <td className="px-3 py-3">
                         <p className="font-semibold text-[#111827] dark:text-white">{getUserName(entry.user)}</p>
-                        <p className="break-all text-xs text-[#6B7280] dark:text-[#9CA3AF]">{getUserEmail(entry.user)}</p>
+                        <p className="break-all text-sm text-[#6B7280] dark:text-[#9CA3AF]">{getUserEmail(entry.user)}</p>
                       </td>
                       <td className="max-w-xl break-words px-3 py-3 text-[#374151] dark:text-[#D1D5DB]">{entry.sentence}</td>
                       <td className="px-3 py-3 text-[#374151] dark:text-[#D1D5DB]">{entry.sentence_type || "Unknown"}</td>
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => setSelectedResult(getResultPreview(entry))}
-                          className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
+                          className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
                         >
                           View Result
                         </button>
@@ -292,7 +292,7 @@ export default function AdminDashboard() {
                 >
                   <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
                     <div className="min-w-0">
-                      <p className="text-xs font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
+                      <p className="text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
                         {formatDate(report.created_at)}
                       </p>
                       <p className="mt-1 font-semibold text-[#111827] dark:text-white">
@@ -301,21 +301,21 @@ export default function AdminDashboard() {
                           {getUserEmail(report.user)}
                         </span>
                       </p>
-                      <p className="mt-3 text-xs font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
+                      <p className="mt-3 text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
                         Sentence
                       </p>
                       <p className="mt-1 break-words">{report.sentence}</p>
-                      <p className="mt-3 text-xs font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
+                      <p className="mt-3 text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
                         Description
                       </p>
                       <p className="mt-1 break-words">{report.description}</p>
                     </div>
 
                     <div className="min-w-0 lg:w-64">
-                      <p className="text-xs font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
+                      <p className="text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
                         Status
                       </p>
-                      <p className="mt-1 rounded-lg bg-white px-3 py-2 text-sm font-bold capitalize text-[#111827] dark:bg-[#0B1120] dark:text-white">
+                      <p className="mt-1 rounded-lg bg-white px-3 py-2 text-base font-bold capitalize text-[#111827] dark:bg-[#0B1120] dark:text-white">
                         {report.status || "open"}
                       </p>
                       <div className="mt-3 grid gap-2">
@@ -325,7 +325,7 @@ export default function AdminDashboard() {
                             type="button"
                             onClick={() => handleUpdateStatus(report.id, nextStatus)}
                             disabled={updatingReportId === report.id || report.status === nextStatus}
-                            className="min-h-10 rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-sm font-bold capitalize text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#0B1120]"
+                            className="min-h-11 rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-base font-bold capitalize text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#0B1120]"
                           >
                             {updatingReportId === report.id ? "Updating..." : nextStatus}
                           </button>
@@ -350,12 +350,12 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={() => setSelectedResult(null)}
-                className="rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:text-white dark:hover:bg-[#151B2D]"
+                className="rounded-xl border border-[#E5E7EB] px-3 py-2 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:text-white dark:hover:bg-[#151B2D]"
               >
                 Close
               </button>
             </div>
-            <pre className="mt-4 max-h-[70vh] overflow-auto rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 text-xs text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120] dark:text-[#D1D5DB]">
+            <pre className="mt-4 max-h-[70vh] overflow-auto rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 text-sm text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120] dark:text-[#D1D5DB]">
               {JSON.stringify(selectedResult, null, 2)}
             </pre>
           </section>
@@ -364,4 +364,3 @@ export default function AdminDashboard() {
     </section>
   )
 }
-
