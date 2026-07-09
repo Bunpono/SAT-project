@@ -8,7 +8,7 @@ const tabs = [
     description: "Part of Speech Tags",
     dotClass: "bg-blue-500",
     activeClass:
-      "border-[#111827] bg-[#111827] text-white shadow-[0_16px_34px_rgba(17,24,39,0.18)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",
+      "border-[#050816] bg-[#050816] text-white shadow-[0_18px_36px_rgba(5,8,22,0.22)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",
     panelClass:
       "border-blue-200 bg-blue-50/70 dark:border-blue-900 dark:bg-blue-950/25",
     badgeClass: "bg-blue-600 text-white dark:bg-blue-500"
@@ -19,7 +19,7 @@ const tabs = [
     description: "Noun / Verb Phrases",
     dotClass: "bg-emerald-500",
     activeClass:
-      "border-[#111827] bg-[#111827] text-white shadow-[0_16px_34px_rgba(17,24,39,0.18)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",
+      "border-[#050816] bg-[#050816] text-white shadow-[0_18px_36px_rgba(5,8,22,0.22)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",
     panelClass:
       "border-emerald-200 bg-emerald-50/70 dark:border-emerald-900 dark:bg-emerald-950/25",
     badgeClass: "bg-emerald-600 text-white dark:bg-emerald-500"
@@ -30,7 +30,7 @@ const tabs = [
     description: "Main & Sub Clauses",
     dotClass: "bg-purple-500",
     activeClass:
-      "border-[#111827] bg-[#111827] text-white shadow-[0_16px_34px_rgba(17,24,39,0.18)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",
+      "border-[#050816] bg-[#050816] text-white shadow-[0_18px_36px_rgba(5,8,22,0.22)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",
     panelClass:
       "border-purple-200 bg-purple-50/70 dark:border-purple-900 dark:bg-purple-950/25",
     badgeClass: "bg-purple-600 text-white dark:bg-purple-500"
@@ -41,7 +41,7 @@ const tabs = [
     description: "Simple / Compound / Complex",
     dotClass: "bg-orange-500",
     activeClass:
-      "border-[#111827] bg-[#111827] text-white shadow-[0_16px_34px_rgba(17,24,39,0.18)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",
+      "border-[#050816] bg-[#050816] text-white shadow-[0_18px_36px_rgba(5,8,22,0.22)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",
     panelClass:
       "border-orange-200 bg-orange-50/70 dark:border-orange-900 dark:bg-orange-950/25",
     badgeClass: "bg-orange-600 text-white dark:bg-orange-500"
@@ -49,7 +49,7 @@ const tabs = [
 ]
 
 const idleCardClass =
-  "border-[#E5E7EB] bg-[#F7F8FC] text-[#374151] hover:border-[#111827]/30 hover:bg-white hover:text-[#111827] dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB]/50 dark:hover:bg-[#111827] dark:hover:text-white"
+  "border-[#E5E7EB] bg-white text-[#374151] shadow-sm hover:border-[#111827]/25 hover:bg-[#F7F8FC] hover:text-[#111827] dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB]/50 dark:hover:bg-[#111827] dark:hover:text-white"
 
 export default function ResultTabs({ analysis }) {
   const [activeTab, setActiveTab] = useState("pos")
@@ -132,7 +132,7 @@ export default function ResultTabs({ analysis }) {
   }
 
   return (
-    <section className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+    <section className="rounded-2xl border border-white/70 bg-white p-7 shadow-[0_18px_50px_rgba(17,24,39,0.07)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <div>
         <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">
           Analysis Results
@@ -152,18 +152,13 @@ export default function ResultTabs({ analysis }) {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               aria-pressed={isActive}
-              className={`relative rounded-2xl border p-4 text-left transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#111827]/10 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-white/15 dark:focus-visible:ring-offset-[#111827] ${
+              className={`relative rounded-2xl border p-4 text-left transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#111827]/10 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-white/15 dark:focus-visible:ring-offset-[#111827] ${
                 isActive ? tab.activeClass : idleCardClass
               }`}
             >
               <span className={`mb-3 block h-2.5 w-2.5 rounded-full ${tab.dotClass}`} />
               <span className="block font-medium">{tab.title}</span>
               <span className="mt-1 block text-sm opacity-70">{tab.description}</span>
-              {isActive && (
-                <span className="mt-3 inline-block text-xs font-medium uppercase tracking-wide opacity-80">
-                  Selected
-                </span>
-              )}
             </button>
           )
         })}

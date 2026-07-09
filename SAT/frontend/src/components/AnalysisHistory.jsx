@@ -9,6 +9,17 @@ function formatDate(createdAt) {
   }).format(date)
 }
 
+function formatShortDate(createdAt) {
+  const date = new Date(createdAt)
+
+  if (Number.isNaN(date.getTime())) return "-"
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric"
+  }).format(date)
+}
+
 function formatBytes(value) {
   if (!value) return "0.0 KB"
   const kb = value / 1024
@@ -99,7 +110,7 @@ export default function AnalysisHistory({ history, onView, onDelete, onClearAll 
   return (
     <div className="space-y-8">
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-8 shadow-sm transition-all duration-300 dark:border-[#263042] dark:bg-[#111827]">
+        <div className="rounded-2xl border border-white/70 bg-white p-8 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5">
           <div className="flex items-start justify-between gap-4">
             <p className="text-lg font-medium text-[#111827] dark:text-white">Total Analyses</p>
             <span className="text-[#6B7280] dark:text-[#9CA3AF]"><DocumentIcon /></span>
@@ -108,20 +119,20 @@ export default function AnalysisHistory({ history, onView, onDelete, onClearAll 
           <p className="mt-2 text-sm text-[#6B7280] dark:text-[#9CA3AF]">Sentences analyzed</p>
         </div>
 
-        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-8 shadow-sm transition-all duration-300 dark:border-[#263042] dark:bg-[#111827]">
+        <div className="rounded-2xl border border-white/70 bg-white p-8 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5">
           <div className="flex items-start justify-between gap-4">
             <p className="text-lg font-medium text-[#111827] dark:text-white">Last Analysis</p>
             <span className="text-[#6B7280] dark:text-[#9CA3AF]"><CalendarIcon /></span>
           </div>
           <p className="mt-12 text-4xl font-medium text-[#111827] dark:text-white">
-            {latest ? latest.sentence.slice(0, 1) : "-"}
+            {latest ? formatShortDate(latest.created_at) : "-"}
           </p>
           <p className="mt-2 text-sm text-[#6B7280] dark:text-[#9CA3AF]">
             {latest ? formatDate(latest.created_at) : "No analyses yet"}
           </p>
         </div>
 
-        <div className="rounded-2xl border border-[#E5E7EB] bg-white p-8 shadow-sm transition-all duration-300 dark:border-[#263042] dark:bg-[#111827]">
+        <div className="rounded-2xl border border-white/70 bg-white p-8 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5">
           <div className="flex items-start justify-between gap-4">
             <p className="text-lg font-medium text-[#111827] dark:text-white">Storage Used</p>
             <span className="text-[#6B7280] dark:text-[#9CA3AF]"><DocumentIcon /></span>
@@ -133,7 +144,7 @@ export default function AnalysisHistory({ history, onView, onDelete, onClearAll 
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[#E5E7EB] bg-white p-8 shadow-sm transition-all duration-300 dark:border-[#263042] dark:bg-[#111827]">
+      <section className="rounded-2xl border border-white/70 bg-white p-8 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-2xl font-medium text-[#111827] transition-colors duration-300 dark:text-white">Analysis History</h2>
 
@@ -166,7 +177,7 @@ export default function AnalysisHistory({ history, onView, onDelete, onClearAll 
               </thead>
               <tbody>
                 {history.map((entry) => (
-                  <tr key={entry.id} className="border-b border-[#E5E7EB] last:border-b-0 dark:border-[#263042]">
+                  <tr key={entry.id} className="border-b border-[#E5E7EB] transition-colors duration-300 last:border-b-0 hover:bg-[#F7F8FC] dark:border-[#263042] dark:hover:bg-[#151B2D]/70">
                     <td className="whitespace-nowrap px-4 py-4 text-[#374151] dark:text-[#D1D5DB]">{formatDate(entry.created_at)}</td>
                     <td className="max-w-xl px-4 py-4 text-[#374151] dark:text-[#D1D5DB]">{entry.sentence}</td>
                     <td className="px-4 py-4">

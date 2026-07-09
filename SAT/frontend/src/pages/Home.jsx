@@ -13,24 +13,29 @@ import {
 } from "../utils/analysisHistory"
 import { clearMyHistory, deleteMyHistory, getMyHistory } from "../services/api"
 
-function BrainIcon() {
+function SyntaxIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
       <path
-        d="M8.5 4.5A3.5 3.5 0 0 0 5 8v8a3.5 3.5 0 0 0 5.9 2.55A3.5 3.5 0 0 0 17 16V8a3.5 3.5 0 0 0-6.1-2.35A3.5 3.5 0 0 0 8.5 4.5Z"
+        d="M12 4v5m0 0-5 4m5-4 5 4"
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.8"
       />
-      <path d="M9 9h3m-3 4h4m-2-7v12" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+      <path
+        d="M9.5 4h5M5.5 13h3M15.5 13h3M4.5 17.5h5M14.5 17.5h5"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.8"
+      />
     </svg>
   )
 }
 
 function HistoryIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
       <path
         d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5M12 7v5l3 2"
         stroke="currentColor"
@@ -44,7 +49,7 @@ function HistoryIcon() {
 
 function BookIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
       <path
         d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12H7.5A2.5 2.5 0 0 1 5 16.5v-12Zm0 12A2.5 2.5 0 0 1 7.5 14H18"
         stroke="currentColor"
@@ -58,7 +63,7 @@ function BookIcon() {
 
 function AdminIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
       <path
         d="M12 3 5 6v5c0 4.4 2.8 8.3 7 9.7 4.2-1.4 7-5.3 7-9.7V6l-7-3Zm0 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-3.5 4a3.8 3.8 0 0 1 7 0"
         stroke="currentColor"
@@ -151,26 +156,26 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
 
         <nav
           aria-label="Main navigation"
-          className="mt-10 inline-grid w-full max-w-[524px] grid-cols-2 gap-y-1 rounded-2xl bg-[#E8E8ED] p-1 transition-all duration-300 dark:bg-[#151B2D]"
+          className="mt-10 inline-grid w-full max-w-[840px] grid-cols-3 gap-x-2 rounded-2xl bg-[#E8E8ED] p-2 transition-all duration-300 dark:bg-[#151B2D]"
         >
           <button
             type="button"
             onClick={() => setActiveView("analysis")}
             aria-pressed={activeView === "analysis"}
-            className={`flex min-h-8 items-center justify-center gap-2 rounded-[13px] px-4 py-2 text-sm font-bold transition-all duration-300 ${
+            className={`flex min-h-12 items-center justify-center gap-2.5 rounded-[15px] px-7 py-3 text-base font-bold transition-all duration-300 ${
               activeView === "analysis"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
             }`}
           >
-            <BrainIcon />
+            <SyntaxIcon />
             Syntax Analysis
           </button>
           <button
             type="button"
             onClick={() => setActiveView("history")}
             aria-pressed={activeView === "history"}
-            className={`flex min-h-8 items-center justify-center gap-2 rounded-[13px] px-4 py-2 text-sm font-bold transition-all duration-300 ${
+            className={`flex min-h-12 items-center justify-center gap-2.5 rounded-[15px] px-7 py-3 text-base font-bold transition-all duration-300 ${
               activeView === "history"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -183,7 +188,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             type="button"
             onClick={() => setActiveView("guide")}
             aria-pressed={activeView === "guide"}
-            className={`flex min-h-8 items-center justify-center gap-2 rounded-[13px] px-4 py-2 text-sm font-bold transition-all duration-300 ${
+            className={`flex min-h-12 items-center justify-center gap-2.5 rounded-[15px] px-7 py-3 text-base font-bold transition-all duration-300 ${
               activeView === "guide"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -197,7 +202,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
               type="button"
               onClick={() => setActiveView("admin")}
               aria-pressed={activeView === "admin"}
-              className={`flex min-h-8 items-center justify-center gap-2 rounded-[13px] px-4 py-2 text-sm font-bold transition-all duration-300 ${
+              className={`flex min-h-12 items-center justify-center gap-2.5 rounded-[15px] px-7 py-3 text-base font-bold transition-all duration-300 ${
                 activeView === "admin"
                   ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                   : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"

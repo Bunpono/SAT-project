@@ -92,7 +92,7 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
   }
 
   return (
-    <section className="rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-sm transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+    <section className="rounded-2xl border border-white/70 bg-white p-7 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <h2 className="text-xl font-medium text-[#111827] transition-colors duration-300 dark:text-white">Input Sentence</h2>
 
       <label className="mt-5 block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
@@ -112,7 +112,7 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
         }
         }}
         placeholder="Type a sentence to analyze..."
-        className="mt-2 h-40 w-full resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-5 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:ring-4 focus:ring-[#111827]/10 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:ring-white/15"
+        className="mt-2 h-40 w-full resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-5 leading-7 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:bg-white focus:ring-4 focus:ring-[#111827]/10 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
       />
 
       <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -147,7 +147,7 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
           Visualization:
           <select
             defaultValue="tree"
-            className="min-w-52 rounded-xl border border-transparent bg-[#F3F3F5] px-4 py-3 font-medium text-[#111827] outline-none transition-all duration-300 dark:bg-[#151B2D] dark:text-[#D1D5DB]"
+            className="min-w-52 rounded-xl border border-transparent bg-[#F3F3F5] px-4 py-3 font-medium text-[#111827] outline-none transition-all duration-300 focus:ring-4 focus:ring-[#111827]/10 dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:focus:ring-white/15"
           >
             <option value="tree">Tree Diagram</option>
           </select>

@@ -19,7 +19,7 @@ export default function TreePanel({ analysis }) {
 
   return (
     <section className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
-      <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+      <div className="rounded-2xl border border-white/70 bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
         <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Production Rules</h2>
 
         <div className="mt-5 max-h-[520px] space-y-3 overflow-y-auto pr-1">
@@ -37,7 +37,7 @@ export default function TreePanel({ analysis }) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+      <div className="rounded-2xl border border-white/70 bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
         <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Tree Diagram</h2>
 
         {analysis?.tree && (
@@ -76,7 +76,7 @@ export default function TreePanel({ analysis }) {
         </div>
 
         <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-3 text-sm text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
-          💡 Tip: Click on any terminal node to highlight the corresponding word.
+          Tip: Click any terminal node to highlight the corresponding word.
         </div>
       </div>
     </section>

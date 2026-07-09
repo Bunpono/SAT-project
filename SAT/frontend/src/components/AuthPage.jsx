@@ -121,13 +121,13 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
       </button>
 
       <div className="flex w-full max-w-[560px] flex-1 flex-col items-center justify-center">
-        <div className="mb-10 flex flex-col items-center text-center">
+        <div className="mb-9 flex flex-col items-center text-center">
           <img
             src="/sat-logo.png"
             alt="Syntactic Analysis Tool logo"
             className="h-16 w-24 shrink-0 object-contain brightness-0 drop-shadow-[0_10px_16px_rgba(17,24,39,0.18)] transition-all duration-300 sm:h-[72px] sm:w-28 dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
           />
-          <h1 className="mt-8 text-3xl font-bold leading-tight text-[#111827] transition-colors duration-300 sm:text-4xl dark:text-white">
+          <h1 className="mt-7 text-3xl font-bold leading-tight text-[#111827] transition-colors duration-300 sm:text-4xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
           <p className="mt-3 text-lg font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
@@ -135,7 +135,7 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
           </p>
         </div>
 
-        <section className="w-full rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-[0_24px_70px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
+        <section className="w-full rounded-2xl border border-white/70 bg-white p-7 shadow-[0_24px_70px_rgba(17,24,39,0.08)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
           <div>
             <h2 className="text-xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
               Welcome
@@ -202,7 +202,7 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
               minLength={isRegister ? 8 : 1}
               maxLength={72}
               autoComplete={isRegister ? "new-password" : "current-password"}
-              placeholder="••••••••"
+              placeholder="Password"
               className="mt-2 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-3 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827] focus:ring-4 focus:ring-[#111827]/10 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white dark:focus:ring-white/15"
             />
           </label>

@@ -16,7 +16,16 @@
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     background: #F5F7FC;
     color: #111827;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
     transition: background-color 300ms ease, color 300ms ease;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
   }
 
   .dark body {
