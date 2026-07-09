@@ -1,5 +1,14 @@
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { analyzeSentence, submitErrorReport } from "../services/api"
+import { validateSentenceInput } from "../utils/sentenceValidation"
+
+const EXAMPLE_SENTENCE = "The boy is reading a book."
+const MAX_SENTENCE_LENGTH = 300
+const LOADING_STEPS = [
+  "Parsing sentence...",
+  "Generating syntax tree...",
+  "Preparing visualization..."
+]
 
 function PlayIcon() {
   return (
@@ -45,24 +54,52 @@ function AlertIcon() {
 export default function InputPanel({ analysis, onAnalyzeComplete }) {
   const [sentence, setSentence] = useState("She is talking about her dog.")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [loadingStep, setLoadingStep] = useState(LOADING_STEPS[0])
   const [errorMessage, setErrorMessage] = useState("")
   const [showReportForm, setShowReportForm] = useState(false)
   const [reportDescription, setReportDescription] = useState("")
   const [reportStatus, setReportStatus] = useState("")
+  const validation = useMemo(() => validateSentenceInput(sentence), [sentence])
+  const guidanceMessage = !validation.isEmpty ? validation.errors[0] : ""
+  const canAnalyze = validation.canAnalyze && !isAnalyzing
+
+  useEffect(() => {
+    if (!isAnalyzing) {
+      return undefined
+    }
+
+    let stepIndex = 0
+    const timer = window.setInterval(() => {
+      stepIndex = (stepIndex + 1) % LOADING_STEPS.length
+      setLoadingStep(LOADING_STEPS[stepIndex])
+    }, 850)
+
+    return () => window.clearInterval(timer)
+  }, [isAnalyzing])
 
   const handleAnalyze = async () => {
     if (isAnalyzing) return
 
+    if (!validation.canAnalyze) {
+      setErrorMessage(
+        validation.errors[0] ||
+          "Please enter a supported English declarative sentence before analyzing."
+      )
+      return
+    }
+
     setIsAnalyzing(true)
+    setLoadingStep(LOADING_STEPS[0])
     setErrorMessage("")
 
     try {
-      const result = await analyzeSentence(sentence)
+      const result = await analyzeSentence(validation.normalizedInput)
       onAnalyzeComplete(result)
     } catch (error) {
       console.error("Unable to analyze the sentence:", error)
       setErrorMessage(
-        "The analysis service is temporarily unavailable. Please try again later."
+        error.message ||
+          "The analysis service is temporarily unavailable. Please try again later."
       )
     } finally {
       setIsAnalyzing(false)
@@ -73,6 +110,17 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
     setSentence("")
     setErrorMessage("")
     onAnalyzeComplete(null)
+  }
+
+  const handleUseExample = () => {
+    setSentence(EXAMPLE_SENTENCE)
+    setErrorMessage("")
+  }
+
+  const handleUseSuggestion = () => {
+    if (!validation.suggestion) return
+    setSentence(validation.suggestion)
+    setErrorMessage("")
   }
 
   const handleReport = async () => {
@@ -106,24 +154,94 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
           setErrorMessage("")
         }}
         onKeyDown={(e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault()
-          handleAnalyze()
-        }
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault()
+            handleAnalyze()
+          }
         }}
         placeholder="Type a sentence to analyze..."
         className="mt-2 h-40 w-full resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-5 leading-7 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:bg-white focus:ring-4 focus:ring-[#111827]/10 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
       />
 
+      <div className="mt-2 flex flex-col gap-2 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <p className={`font-medium transition-colors duration-300 ${
+          sentence.length > MAX_SENTENCE_LENGTH ? "text-red-600 dark:text-red-300" : "text-[#6B7280] dark:text-[#9CA3AF]"
+        }`}>
+          {sentence.length} / {MAX_SENTENCE_LENGTH}
+        </p>
+        <p className="font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
+          Detected sentence type:{" "}
+          <span className="text-[#111827] dark:text-white">{validation.sentenceType}</span>
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
+        <div className="rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]">
+          <h3 className="text-sm font-bold text-[#111827] transition-colors duration-300 dark:text-white">
+            Supported Input
+          </h3>
+          <div className="mt-3 grid gap-2 text-sm font-medium text-[#374151] transition-colors duration-300 sm:grid-cols-3 dark:text-[#D1D5DB]">
+            <p>✓ English language</p>
+            <p>✓ Declarative sentences only</p>
+            <p>✓ Simple, Compound and Complex</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleUseExample}
+          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]"
+        >
+          Example
+        </button>
+      </div>
+
+      {(guidanceMessage || validation.warnings.length > 0 || validation.suggestion) && (
+        <div className="mt-4 space-y-3" aria-live="polite">
+          {guidanceMessage && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 transition-all duration-300 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+              {guidanceMessage}
+            </div>
+          )}
+
+          {validation.warnings.map((warning) => (
+            <div
+              key={warning}
+              className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 transition-all duration-300 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200"
+            >
+              {warning}
+            </div>
+          ))}
+
+          {validation.suggestion && (
+            <div className="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm transition-all duration-300 sm:flex-row sm:items-center sm:justify-between dark:border-[#263042] dark:bg-[#0B1120]">
+              <p className="font-medium text-[#374151] dark:text-[#D1D5DB]">
+                Did you mean:{" "}
+                <span className="font-bold text-[#111827] dark:text-white">
+                  "{validation.suggestion}"
+                </span>
+              </p>
+              <button
+                type="button"
+                onClick={handleUseSuggestion}
+                className="rounded-lg bg-[#111827] px-4 py-2 text-sm font-bold text-white transition-all duration-300 hover:bg-[#374151] active:scale-[0.98] dark:bg-white dark:text-[#111827] dark:hover:bg-[#D1D5DB]"
+              >
+                Use suggestion
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <button
             onClick={handleAnalyze}
-            disabled={isAnalyzing}
+            disabled={!canAnalyze}
             aria-busy={isAnalyzing}
             className="flex items-center justify-center gap-2 rounded-xl bg-[#050816] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(17,24,39,0.16)] transition-all duration-300 hover:bg-[#111827] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_12px_28px_rgba(255,255,255,0.1)] dark:hover:bg-[#D1D5DB]">
             <PlayIcon />
-            {isAnalyzing ? "Analyzing..." : "Analyze Syntax"}
+            {isAnalyzing ? loadingStep : "Analyze Syntax"}
           </button>
 
           <button
