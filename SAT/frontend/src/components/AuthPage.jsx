@@ -1,11 +1,17 @@
 import { useState } from "react"
 import { loginAccount, registerAccount } from "../services/api"
+import { isSupabaseConfigured, supabase } from "../services/supabaseClient"
 
 export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
   const [mode, setMode] = useState("login")
   const [form, setForm] = useState({ name: "", email: "", password: "" })
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResetOpen, setIsResetOpen] = useState(false)
+  const [resetEmail, setResetEmail] = useState("")
+  const [resetError, setResetError] = useState("")
+  const [resetSuccess, setResetSuccess] = useState("")
+  const [isResetSubmitting, setIsResetSubmitting] = useState(false)
   const isRegister = mode === "register"
 
   const updateField = (event) => {
@@ -31,6 +37,51 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
     }
   }
 
+  const openResetDialog = () => {
+    setResetEmail(form.email)
+    setResetError("")
+    setResetSuccess("")
+    setIsResetOpen(true)
+  }
+
+  const closeResetDialog = () => {
+    if (isResetSubmitting) return
+    setIsResetOpen(false)
+    setResetError("")
+    setResetSuccess("")
+  }
+
+  const handlePasswordReset = async (event) => {
+    event.preventDefault()
+    if (isResetSubmitting) return
+
+    if (!isSupabaseConfigured || !supabase) {
+      setResetError("Password reset is not configured yet.")
+      return
+    }
+
+    setIsResetSubmitting(true)
+    setResetError("")
+    setResetSuccess("")
+
+    try {
+      const { error: resetPasswordError } = await supabase.auth.resetPasswordForEmail(
+        resetEmail,
+        {
+          redirectTo: `${window.location.origin}/reset-password`
+        }
+      )
+
+      if (resetPasswordError) throw resetPasswordError
+
+      setResetSuccess("Password reset link has been sent to your email.")
+    } catch (submitError) {
+      setResetError(submitError.message)
+    } finally {
+      setIsResetSubmitting(false)
+    }
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#F5F7FC] to-[#EEF3FF] px-4 py-8 text-[#111827] transition-colors duration-300 dark:from-[#050816] dark:to-[#0B1120] dark:text-white">
       <button
@@ -42,20 +93,18 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
       </button>
 
       <section className="w-full max-w-md rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-[0_24px_70px_rgba(17,24,39,0.1)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col items-center text-center">
           <img
             src="/sat-logo.png"
             alt="Syntactic Analysis Tool logo"
             className="h-16 w-16 shrink-0 object-contain brightness-0 transition-all duration-300 sm:h-[72px] sm:w-[72px] dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
           />
-          <div>
-            <h1 className="text-2xl font-bold leading-tight text-[#111827] transition-colors duration-300 dark:text-white">
-              Syntactic Analysis Tool
-            </h1>
-            <p className="text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
-              {isRegister ? "Create your account" : "Sign in to continue"}
-            </p>
-          </div>
+          <h1 className="mt-4 text-2xl font-bold leading-tight text-[#111827] transition-colors duration-300 dark:text-white">
+            Syntactic Analysis Tool
+          </h1>
+          <p className="mt-1 text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+            {isRegister ? "Create your account" : "Sign in to continue"}
+          </p>
         </div>
 
         <div className="mt-6 grid grid-cols-2 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-1.5 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
@@ -116,6 +165,18 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
             />
           </label>
 
+          {!isRegister && (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={openResetDialog}
+                className="text-sm font-semibold text-[#374151] transition-colors duration-300 hover:text-[#111827] dark:text-[#D1D5DB] dark:hover:text-white"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
+
           {error && <p role="alert" className="text-sm text-red-600 dark:text-red-300">{error}</p>}
 
           <button
@@ -127,6 +188,68 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
           </button>
         </form>
       </section>
+
+      {isResetOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#050816]/60 px-4 backdrop-blur-sm transition-all duration-300"
+          role="presentation"
+        >
+          <section
+            aria-labelledby="reset-password-title"
+            className="w-full max-w-md rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_24px_70px_rgba(17,24,39,0.18)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_24px_70px_rgba(0,0,0,0.42)]"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 id="reset-password-title" className="text-xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
+                  Reset Password
+                </h2>
+                <p className="mt-1 text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+                  Enter your email address and we will send you a password reset link.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeResetDialog}
+                className="rounded-xl border border-[#E5E7EB] px-3 py-1.5 text-sm font-semibold text-[#374151] transition-all duration-300 hover:border-[#111827] hover:bg-[#F7F8FC] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#151B2D]"
+                disabled={isResetSubmitting}
+              >
+                Close
+              </button>
+            </div>
+
+            <form onSubmit={handlePasswordReset} className="mt-5 space-y-4">
+              <label className="block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
+                Email
+                <input
+                  type="email"
+                  value={resetEmail}
+                  onChange={(event) => {
+                    setResetEmail(event.target.value)
+                    setResetError("")
+                    setResetSuccess("")
+                  }}
+                  required
+                  autoComplete="email"
+                  className="mt-2 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-3 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827] focus:ring-4 focus:ring-[#111827]/10 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white dark:focus:ring-white/15"
+                />
+              </label>
+
+              {resetError && <p role="alert" className="text-sm text-red-600 dark:text-red-300">{resetError}</p>}
+              {resetSuccess && <p role="status" className="text-sm text-emerald-600 dark:text-emerald-300">{resetSuccess}</p>}
+
+              <button
+                type="submit"
+                disabled={isResetSubmitting}
+                className="w-full rounded-xl bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(17,24,39,0.18)] transition-all duration-300 hover:bg-[#374151] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_14px_30px_rgba(255,255,255,0.12)] dark:hover:bg-[#D1D5DB]"
+              >
+                {isResetSubmitting ? "Sending..." : "Send Reset Link"}
+              </button>
+            </form>
+          </section>
+        </div>
+      )}
     </main>
   )
 }

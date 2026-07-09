@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react"
 import AuthPage from "./components/AuthPage"
+import ResetPasswordPage from "./components/ResetPasswordPage"
 import Home from "./pages/Home"
 import { getCurrentUser } from "./services/api"
 import { clearAuthToken, getAuthToken, setAuthToken } from "./utils/authStorage"
 import { useTheme } from "./hooks/useTheme"
 
 export default function App() {
+  const isResetPasswordRoute =
+    typeof window !== "undefined" && window.location.pathname === "/reset-password"
   const [user, setUser] = useState(null)
-  const [isLoading, setIsLoading] = useState(Boolean(getAuthToken()))
+  const [isLoading, setIsLoading] = useState(
+    !isResetPasswordRoute && Boolean(getAuthToken())
+  )
   const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
+    if (isResetPasswordRoute) return
+
     const token = getAuthToken()
     if (!token) return
 
@@ -18,7 +25,7 @@ export default function App() {
       .then(setUser)
       .catch(() => clearAuthToken())
       .finally(() => setIsLoading(false))
-  }, [])
+  }, [isResetPasswordRoute])
 
   useEffect(() => {
     const handleExpired = () => { setUser(null); setIsLoading(false) }
@@ -42,6 +49,10 @@ export default function App() {
         Loading...
       </div>
     )
+  }
+
+  if (isResetPasswordRoute) {
+    return <ResetPasswordPage theme={theme} onToggleTheme={toggleTheme} />
   }
 
   if (!user) {

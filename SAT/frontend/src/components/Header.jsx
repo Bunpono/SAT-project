@@ -30,14 +30,14 @@ export default function Header({ theme, onToggleTheme, user, onLogout }) {
 
   return (
     <header className="flex flex-col items-start justify-between gap-6 transition-colors duration-300 sm:flex-row sm:items-center">
-      <div className="flex items-center gap-5">
+      <div className="flex flex-col items-center text-center">
         <img
           src="/sat-logo.png"
           alt="Syntactic Analysis Tool logo"
           className="h-14 w-14 shrink-0 object-contain brightness-0 transition-all duration-300 sm:h-[72px] sm:w-[72px] dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
         />
         <div>
-          <h1 className="text-3xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-4xl dark:text-white">
+          <h1 className="mt-4 text-3xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-4xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
           <p className="mt-1 max-w-2xl text-base font-medium leading-7 text-[#6B7280] transition-colors duration-300 sm:text-lg dark:text-[#D1D5DB]">
