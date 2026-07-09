@@ -1,6 +1,47 @@
 import { useState } from "react"
 import { analyzeSentence, submitErrorReport } from "../services/api"
 
+function PlayIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+      <path
+        d="m8 5 11 7-11 7V5Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+      <path
+        d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function AlertIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+      <path
+        d="M12 9v4m0 4h.01M10.3 4.6 2.7 18a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 4.6a2 2 0 0 0-3.4 0Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
 export default function InputPanel({ analysis, onAnalyzeComplete }) {
   const [sentence, setSentence] = useState("She is talking about her dog.")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -51,8 +92,8 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
   }
 
   return (
-    <section className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
-      <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Input Sentence</h2>
+    <section className="rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-sm transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+      <h2 className="text-xl font-medium text-[#111827] transition-colors duration-300 dark:text-white">Input Sentence</h2>
 
       <label className="mt-5 block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
         Enter or Paste English Sentence Here
@@ -71,31 +112,46 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
         }
         }}
         placeholder="Type a sentence to analyze..."
-        className="mt-2 h-32 w-full resize-none rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827] focus:ring-4 focus:ring-[#111827]/10 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white dark:focus:ring-white/15"
+        className="mt-2 h-40 w-full resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-5 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:ring-4 focus:ring-[#111827]/10 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:ring-white/15"
       />
 
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <button
-          onClick={handleAnalyze}
-          disabled={isAnalyzing}
-          aria-busy={isAnalyzing}
-          className="rounded-xl bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(17,24,39,0.16)] transition-all duration-300 hover:bg-[#374151] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_12px_28px_rgba(255,255,255,0.1)] dark:hover:bg-[#D1D5DB]">
-          {isAnalyzing ? "Analyzing..." : "Analyze Syntax"}
-        </button>
+      <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button
+            onClick={handleAnalyze}
+            disabled={isAnalyzing}
+            aria-busy={isAnalyzing}
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#050816] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(17,24,39,0.16)] transition-all duration-300 hover:bg-[#111827] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_12px_28px_rgba(255,255,255,0.1)] dark:hover:bg-[#D1D5DB]">
+            <PlayIcon />
+            {isAnalyzing ? "Analyzing..." : "Analyze Syntax"}
+          </button>
 
-        <button
-          onClick={handleClear}
-          className="rounded-xl border border-[#E5E7EB] px-5 py-2.5 text-sm font-semibold text-[#374151] transition-all duration-300 hover:border-[#111827] hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#151B2D]">
-          Clear
-        </button>
+          <button
+            onClick={handleClear}
+            className="flex items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-sm font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]">
+            <TrashIcon />
+            Clear
+          </button>
 
-        <button
-          type="button"
-          onClick={() => { setShowReportForm((value) => !value); setReportStatus("") }}
-          className="rounded-xl border border-orange-200 px-5 py-2.5 text-sm font-semibold text-orange-600 transition-all duration-300 hover:bg-orange-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/40"
-        >
-          Report Error
-        </button>
+          <button
+            type="button"
+            onClick={() => { setShowReportForm((value) => !value); setReportStatus("") }}
+            className="flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-white px-5 py-3 text-sm font-bold text-orange-600 transition-all duration-300 hover:bg-orange-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-orange-800 dark:bg-[#111827] dark:text-orange-300 dark:hover:bg-orange-950/40"
+          >
+            <AlertIcon />
+            Report Error
+          </button>
+        </div>
+
+        <label className="flex items-center gap-3 text-sm font-bold text-[#111827] transition-colors duration-300 dark:text-white">
+          Visualization:
+          <select
+            defaultValue="tree"
+            className="min-w-52 rounded-xl border border-transparent bg-[#F3F3F5] px-4 py-3 font-medium text-[#111827] outline-none transition-all duration-300 dark:bg-[#151B2D] dark:text-[#D1D5DB]"
+          >
+            <option value="tree">Tree Diagram</option>
+          </select>
+        </label>
       </div>
 
       {showReportForm && (

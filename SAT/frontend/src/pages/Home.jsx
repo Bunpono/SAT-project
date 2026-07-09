@@ -13,6 +13,71 @@ import {
 } from "../utils/analysisHistory"
 import { clearMyHistory, deleteMyHistory, getMyHistory } from "../services/api"
 
+function BrainIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+      <path
+        d="M8.5 4.5A3.5 3.5 0 0 0 5 8v8a3.5 3.5 0 0 0 5.9 2.55A3.5 3.5 0 0 0 17 16V8a3.5 3.5 0 0 0-6.1-2.35A3.5 3.5 0 0 0 8.5 4.5Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <path d="M9 9h3m-3 4h4m-2-7v12" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+    </svg>
+  )
+}
+
+function HistoryIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+      <path
+        d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5M12 7v5l3 2"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function BookIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+      <path
+        d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12H7.5A2.5 2.5 0 0 1 5 16.5v-12Zm0 12A2.5 2.5 0 0 1 7.5 14H18"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function AdminIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+      <path
+        d="M12 3 5 6v5c0 4.4 2.8 8.3 7 9.7 4.2-1.4 7-5.3 7-9.7V6l-7-3Zm0 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-3.5 4a3.8 3.8 0 0 1 7 0"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function Footer() {
+  return (
+    <footer className="py-10 text-center text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
+      Powered by WJ & AJ Syntactic Algorithm
+    </footer>
+  )
+}
+
 export default function Home({ user, onLogout, theme, onToggleTheme }) {
   const [analysis, setAnalysis] = useState(null)
   const [activeView, setActiveView] = useState("analysis")
@@ -75,8 +140,8 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F5F7FC] to-[#EEF3FF] px-4 py-7 text-[#111827] transition-colors duration-300 sm:px-6 lg:px-10 dark:from-[#050816] dark:to-[#0B1120] dark:text-white">
-      <div className="mx-auto w-full max-w-7xl">
+    <div className="min-h-screen bg-gradient-to-br from-[#F5F7FC] via-[#F2F5FF] to-[#DBEAFE] px-4 py-10 text-[#111827] transition-colors duration-300 sm:px-8 lg:px-16 dark:from-[#050816] dark:via-[#0B1120] dark:to-[#111827] dark:text-white">
+      <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-[1680px] flex-col">
         <Header
           theme={theme}
           onToggleTheme={onToggleTheme}
@@ -86,42 +151,45 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
 
         <nav
           aria-label="Main navigation"
-          className="mt-8 inline-flex flex-wrap rounded-2xl border border-[#E5E7EB] bg-white/80 p-1.5 shadow-[0_16px_40px_rgba(17,24,39,0.08)] backdrop-blur transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]/85 dark:shadow-[0_18px_50px_rgba(0,0,0,0.3)]"
+          className="mt-10 inline-grid w-full max-w-[524px] grid-cols-2 gap-y-1 rounded-2xl bg-[#E8E8ED] p-1 transition-all duration-300 dark:bg-[#151B2D]"
         >
           <button
             type="button"
             onClick={() => setActiveView("analysis")}
             aria-pressed={activeView === "analysis"}
-            className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
+            className={`flex min-h-8 items-center justify-center gap-2 rounded-[13px] px-4 py-2 text-sm font-bold transition-all duration-300 ${
               activeView === "analysis"
-                ? "bg-[#111827] text-white shadow-sm dark:bg-white dark:text-[#111827]"
-                : "text-[#6B7280] hover:bg-[#F7F8FC] hover:text-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D] dark:hover:text-white"
+                ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
+                : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
             }`}
           >
+            <BrainIcon />
             Syntax Analysis
           </button>
           <button
             type="button"
             onClick={() => setActiveView("history")}
             aria-pressed={activeView === "history"}
-            className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
+            className={`flex min-h-8 items-center justify-center gap-2 rounded-[13px] px-4 py-2 text-sm font-bold transition-all duration-300 ${
               activeView === "history"
-                ? "bg-[#111827] text-white shadow-sm dark:bg-white dark:text-[#111827]"
-                : "text-[#6B7280] hover:bg-[#F7F8FC] hover:text-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D] dark:hover:text-white"
+                ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
+                : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
             }`}
           >
+            <HistoryIcon />
             Analysis History
           </button>
           <button
             type="button"
             onClick={() => setActiveView("guide")}
             aria-pressed={activeView === "guide"}
-            className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
+            className={`flex min-h-8 items-center justify-center gap-2 rounded-[13px] px-4 py-2 text-sm font-bold transition-all duration-300 ${
               activeView === "guide"
-                ? "bg-[#111827] text-white shadow-sm dark:bg-white dark:text-[#111827]"
-                : "text-[#6B7280] hover:bg-[#F7F8FC] hover:text-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D] dark:hover:text-white"
+                ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
+                : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
             }`}
           >
+            <BookIcon />
             How to Use
           </button>
           {user.role === "admin" && (
@@ -129,19 +197,21 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
               type="button"
               onClick={() => setActiveView("admin")}
               aria-pressed={activeView === "admin"}
-              className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
+              className={`flex min-h-8 items-center justify-center gap-2 rounded-[13px] px-4 py-2 text-sm font-bold transition-all duration-300 ${
                 activeView === "admin"
-                  ? "bg-[#111827] text-white shadow-sm dark:bg-white dark:text-[#111827]"
-                  : "text-[#6B7280] hover:bg-[#F7F8FC] hover:text-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D] dark:hover:text-white"
+                  ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
+                  : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
               }`}
             >
+              <AdminIcon />
               Admin Dashboard
             </button>
           )}
         </nav>
 
-        {activeView === "analysis" && (
-          <>
+        <main className="flex-1">
+          {activeView === "analysis" && (
+            <>
             <div className="mt-6">
               <InputPanel
                 analysis={analysis}
@@ -160,31 +230,34 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
                 </div>
               </>
             )}
-          </>
-        )}
+            </>
+          )}
 
-        {activeView === "history" && (
-          <div className="mt-6">
-            <AnalysisHistory
-              history={history}
-              onView={handleViewHistory}
-              onDelete={handleDeleteHistory}
-              onClearAll={handleClearHistory}
-            />
-          </div>
-        )}
+          {activeView === "history" && (
+            <div className="mt-10">
+              <AnalysisHistory
+                history={history}
+                onView={handleViewHistory}
+                onDelete={handleDeleteHistory}
+                onClearAll={handleClearHistory}
+              />
+            </div>
+          )}
 
-        {activeView === "guide" && (
-          <div className="mt-6">
-            <HowToUse />
-          </div>
-        )}
+          {activeView === "guide" && (
+            <div className="mt-10">
+              <HowToUse />
+            </div>
+          )}
 
-        {activeView === "admin" && user.role === "admin" && (
-          <div className="mt-6">
-            <AdminDashboard />
-          </div>
-        )}
+          {activeView === "admin" && user.role === "admin" && (
+            <div className="mt-10">
+              <AdminDashboard />
+            </div>
+          )}
+        </main>
+
+        <Footer />
       </div>
     </div>
   )

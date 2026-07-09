@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 function SunIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
@@ -25,39 +27,57 @@ function MoonIcon() {
   )
 }
 
+function UserIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+      <path
+        d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
+function LogoutIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+      <path
+        d="M14 8V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2M9 12h12m0 0-3-3m3 3-3 3"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  )
+}
+
 export default function Header({ theme, onToggleTheme, user, onLogout }) {
   const isDark = theme === "dark"
+  const [isAccountOpen, setIsAccountOpen] = useState(false)
 
   return (
-    <header className="flex flex-col items-start justify-between gap-6 transition-colors duration-300 sm:flex-row sm:items-center">
-      <div className="flex flex-col items-center text-center">
+    <header className="flex flex-col gap-6 transition-colors duration-300 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex items-center gap-5">
         <img
           src="/sat-logo.png"
           alt="Syntactic Analysis Tool logo"
-          className="h-14 w-14 shrink-0 object-contain brightness-0 transition-all duration-300 sm:h-[72px] sm:w-[72px] dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
+          className="h-14 w-20 shrink-0 object-contain brightness-0 drop-shadow-[0_10px_16px_rgba(17,24,39,0.18)] transition-all duration-300 sm:h-[72px] sm:w-28 dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
         />
         <div>
-          <h1 className="mt-4 text-3xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-4xl dark:text-white">
+          <h1 className="text-3xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-4xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
-          <p className="mt-1 max-w-2xl text-base font-medium leading-7 text-[#6B7280] transition-colors duration-300 sm:text-lg dark:text-[#D1D5DB]">
+          <p className="mt-1 max-w-2xl text-base font-medium leading-6 text-[#6B7280] transition-colors duration-300 sm:text-lg dark:text-[#D1D5DB]">
             Advanced English Sentence Parser with Interactive Visualization
           </p>
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-3">
-        <div className="hidden text-right sm:block">
-          <p className="text-sm font-semibold text-[#111827] transition-colors duration-300 dark:text-white">{user.name}</p>
-          <p className="text-xs capitalize text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">{user.role}</p>
-        </div>
-        <button
-          type="button"
-          onClick={onLogout}
-          className="rounded-xl border border-[#E5E7EB] bg-transparent px-3 py-2.5 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#111827]"
-        >
-          Sign out
-        </button>
+      <div className="relative flex shrink-0 items-center gap-3 self-end sm:self-start">
         <button
           type="button"
           onClick={onToggleTheme}
@@ -67,6 +87,35 @@ export default function Header({ theme, onToggleTheme, user, onLogout }) {
         >
           {isDark ? <MoonIcon /> : <SunIcon />}
         </button>
+        <button
+          type="button"
+          onClick={() => setIsAccountOpen((value) => !value)}
+          aria-expanded={isAccountOpen}
+          className="flex h-11 items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 text-sm font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
+        >
+          <UserIcon />
+          {user.name}
+        </button>
+
+        {isAccountOpen && (
+          <div className="absolute right-0 top-14 z-30 w-80 overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-[0_16px_40px_rgba(17,24,39,0.16)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827]">
+            <div className="border-b border-[#E5E7EB] px-4 py-4 text-base font-bold text-[#111827] dark:border-[#263042] dark:text-white">
+              My Account
+            </div>
+            <div className="flex items-center gap-3 border-b border-[#E5E7EB] px-4 py-4 text-sm text-[#6B7280] dark:border-[#263042] dark:text-[#9CA3AF]">
+              <UserIcon />
+              <span className="truncate">{user.email || user.role}</span>
+            </div>
+            <button
+              type="button"
+              onClick={onLogout}
+              className="flex w-full items-center gap-3 px-4 py-4 text-left text-sm font-medium text-red-600 transition-all duration-300 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/30"
+            >
+              <LogoutIcon />
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </header>
   )
