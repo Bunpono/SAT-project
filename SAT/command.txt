@@ -1,12 +1,14 @@
-python -m uvicorn main:app --reload // run app backend
-
-venv\Scripts\activate //เพื่อเข้า (venv) ตย.(venv) D:\SAT-project\SAT\backend>
+ขั้นตอนที่ 1 เข้า (venv)
+ตย.(venv) D:\SAT-project\SAT\backend>
 =>>>> cd SAT\backend จากนั้น พิม venv\Scripts\activate
 pip install -r requirements.txt 
 
+ขั้นตอนที่ 2 run app backend
+python -m uvicorn main:app --reload // 
+
 http://127.0.0.1:8000/docs // ทดสอบโมเดล Swagger UI (python -m uvicorn main:app --reload)
 
-
+ขั้นตอนที่ 3 run web frontend
 SAT-project\SAT>
     จากนั้นพิมพ์ npm create vite@latest frontend -- --template reactv
 SAT-project\SAT\frontend>npm run dev 
