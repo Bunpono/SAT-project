@@ -102,6 +102,17 @@ export function getAdminHistory() {
   return apiRequest("/admin/history")
 }
 
+export function getAdminUsers() {
+  return apiRequest("/admin/users")
+}
+
 export function getAdminReports() {
   return apiRequest("/admin/reports")
+}
+
+export function updateErrorReportStatus(reportId, status) {
+  return apiRequest(`/admin/reports/${reportId}`, {
+    method: "PATCH",
+    body: { status }
+  })
 }

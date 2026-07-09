@@ -86,7 +86,12 @@ function Footer() {
 
 export default function Home({ user, onLogout, theme, onToggleTheme }) {
   const [analysis, setAnalysis] = useState(null)
-  const [activeView, setActiveView] = useState("analysis")
+  const [activeView, setActiveView] = useState(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#admin") {
+      return "admin"
+    }
+    return "analysis"
+  })
   const [history, setHistory] = useState(() => getAnalysisHistory())
   const [inputSentence, setInputSentence] = useState("She is talking about her dog.")
   const [inputVersion, setInputVersion] = useState(0)
@@ -111,6 +116,28 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
     return () => { active = false }
   }, [])
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (window.location.hash === "#admin") setActiveView("admin")
+    }
+
+    window.addEventListener("hashchange", handleHashChange)
+    return () => window.removeEventListener("hashchange", handleHashChange)
+  }, [])
+
+  const navigateToView = (view) => {
+    setActiveView(view)
+
+    if (view === "admin") {
+      window.history.replaceState(null, "", "#admin")
+      return
+    }
+
+    if (window.location.hash === "#admin") {
+      window.history.replaceState(null, "", window.location.pathname)
+    }
+  }
+
   const handleAnalysisComplete = (result) => {
     setAnalysis(result)
 
@@ -126,14 +153,14 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
       s_expression: entry.s_expression,
       tree: entry.tree
     })
-    setActiveView("analysis")
+    navigateToView("analysis")
   }
 
   const handleAnalyzeAgain = (entry) => {
     setInputSentence(entry.sentence)
     setInputVersion((current) => current + 1)
     setAnalysis(null)
-    setActiveView("analysis")
+    navigateToView("analysis")
   }
 
   const handleDeleteHistory = async (id) => {
@@ -162,7 +189,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
           onToggleTheme={onToggleTheme}
           user={user}
           onLogout={onLogout}
-          onOpenAdmin={() => setActiveView("admin")}
+          onOpenAdmin={() => navigateToView("admin")}
         />
 
         <nav
@@ -175,7 +202,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
         >
           <button
             type="button"
-            onClick={() => setActiveView("analysis")}
+            onClick={() => navigateToView("analysis")}
             aria-pressed={activeView === "analysis"}
             className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
               activeView === "analysis"
@@ -188,7 +215,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
           </button>
           <button
             type="button"
-            onClick={() => setActiveView("history")}
+            onClick={() => navigateToView("history")}
             aria-pressed={activeView === "history"}
             className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
               activeView === "history"
@@ -201,7 +228,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
           </button>
           <button
             type="button"
-            onClick={() => setActiveView("guide")}
+            onClick={() => navigateToView("guide")}
             aria-pressed={activeView === "guide"}
             className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
               activeView === "guide"
@@ -215,7 +242,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
           {user.role === "admin" && (
             <button
               type="button"
-              onClick={() => setActiveView("admin")}
+              onClick={() => navigateToView("admin")}
               aria-pressed={activeView === "admin"}
               className={`flex min-h-12 min-w-0 items-center justify-center gap-2.5 rounded-[15px] px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base lg:px-7 ${
                 activeView === "admin"
@@ -280,6 +307,12 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
           {activeView === "admin" && user.role === "admin" && (
             <div className="mt-10">
               <AdminDashboard />
+            </div>
+          )}
+
+          {activeView === "admin" && user.role !== "admin" && (
+            <div className="mt-10 rounded-2xl border border-red-200 bg-white p-6 text-red-700 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-red-900 dark:bg-[#111827] dark:text-red-300">
+              Access denied
             </div>
           )}
         </main>

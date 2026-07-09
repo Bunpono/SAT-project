@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -38,3 +39,7 @@ class ErrorReportRequest(BaseModel):
     sentence: str = Field(min_length=1, max_length=5000)
     description: str = Field(min_length=1, max_length=5000)
     analysis_result: dict | None = None
+
+
+class ErrorReportStatusRequest(BaseModel):
+    status: Literal["open", "reviewing", "resolved"]

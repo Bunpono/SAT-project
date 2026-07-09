@@ -37,6 +37,7 @@ class AnalysisHistory(Base):
     sentence: Mapped[str] = mapped_column(Text, nullable=False)
     s_expression: Mapped[str] = mapped_column(Text, nullable=False)
     tree_json: Mapped[dict] = mapped_column(JSON, nullable=False)
+    sentence_type: Mapped[str] = mapped_column(String(40), default="Unknown", nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -46,6 +47,12 @@ class AnalysisHistory(Base):
 
 class ErrorReport(Base):
     __tablename__ = "error_reports"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('open', 'reviewing', 'resolved')",
+            name="valid_error_report_status",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(
@@ -54,6 +61,7 @@ class ErrorReport(Base):
     sentence: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     analysis_result_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="open", nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

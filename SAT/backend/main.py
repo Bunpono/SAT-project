@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import delete, select
+from sqlalchemy import delete, inspect, select, text
 from sqlalchemy.orm import Session, joinedload
 
 load_dotenv()
@@ -23,6 +23,7 @@ from app.schemas import (  # noqa: E402
     AnalyzeRequest,
     AuthResponse,
     ErrorReportRequest,
+    ErrorReportStatusRequest,
     LoginRequest,
     RegisterRequest,
     UserResponse,
@@ -52,6 +53,32 @@ app.add_middleware(
 @app.on_event("startup")
 def create_database_tables():
     Base.metadata.create_all(bind=engine)
+    ensure_database_columns()
+
+
+def ensure_database_columns():
+    inspector = inspect(engine)
+    table_columns = {
+        table_name: {column["name"] for column in inspector.get_columns(table_name)}
+        for table_name in inspector.get_table_names()
+    }
+
+    statements = []
+    if "analysis_history" in table_columns and "sentence_type" not in table_columns["analysis_history"]:
+        statements.append(
+            "ALTER TABLE analysis_history ADD COLUMN sentence_type VARCHAR(40) NOT NULL DEFAULT 'Unknown'"
+        )
+    if "error_reports" in table_columns and "status" not in table_columns["error_reports"]:
+        statements.append(
+            "ALTER TABLE error_reports ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'open'"
+        )
+
+    if not statements:
+        return
+
+    with engine.begin() as connection:
+        for statement in statements:
+            connection.execute(text(statement))
 
 
 def normalize_email(email: str) -> str:
@@ -65,6 +92,39 @@ def validate_email(email: str) -> str:
     return normalized
 
 
+def detect_sentence_type(sentence: str, tree: dict | None = None) -> str:
+    normalized = f" {sentence.lower()} "
+    if tree and isinstance(tree, dict):
+        child_names = [child.get("name") for child in tree.get("children", []) if isinstance(child, dict)]
+        if {"S1", "S2"}.issubset(set(child_names)):
+            return "Compound"
+
+    complex_markers = [
+        " who ",
+        " whom ",
+        " whose ",
+        " which ",
+        " that ",
+        " because ",
+        " although ",
+        " when ",
+        " while ",
+        " if ",
+        " since ",
+        " before ",
+        " after ",
+        " unless ",
+    ]
+    if any(marker in normalized for marker in complex_markers):
+        return "Complex"
+
+    compound_markers = [" and ", " but ", " or ", " nor ", " for ", " yet ", " so ", ";"]
+    if any(marker in normalized for marker in compound_markers):
+        return "Compound"
+
+    return "Simple"
+
+
 def serialize_analysis(item: AnalysisHistory, include_user: bool = False) -> dict:
     result = {
         "id": item.id,
@@ -72,6 +132,11 @@ def serialize_analysis(item: AnalysisHistory, include_user: bool = False) -> dic
         "sentence": item.sentence,
         "s_expression": item.s_expression,
         "tree": item.tree_json,
+        "result": {
+            "s_expression": item.s_expression,
+            "tree": item.tree_json,
+        },
+        "sentence_type": item.sentence_type,
         "created_at": item.created_at,
     }
     if include_user:
@@ -86,6 +151,8 @@ def serialize_report(item: ErrorReport) -> dict:
         "sentence": item.sentence,
         "description": item.description,
         "analysis_result": item.analysis_result_json,
+        "result": item.analysis_result_json,
+        "status": item.status,
         "created_at": item.created_at,
         "user": UserResponse.model_validate(item.user),
     }
@@ -165,6 +232,7 @@ def analyze(
         sentence=sentence,
         s_expression=s_expression,
         tree_json=tree,
+        sentence_type=detect_sentence_type(sentence, tree),
     )
     db.add(history_item)
     db.commit()
@@ -251,6 +319,15 @@ def get_all_history(
     return [serialize_analysis(item, include_user=True) for item in items]
 
 
+@app.get("/admin/users")
+def get_all_users(
+    _admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    users = db.scalars(select(User).order_by(User.created_at.desc())).all()
+    return [UserResponse.model_validate(user) for user in users]
+
+
 @app.get("/admin/reports")
 def get_all_reports(
     _admin: User = Depends(require_admin),
@@ -262,3 +339,20 @@ def get_all_reports(
         .order_by(ErrorReport.created_at.desc())
     ).all()
     return [serialize_report(item) for item in items]
+
+
+@app.patch("/admin/reports/{report_id}")
+def update_error_report_status(
+    report_id: int,
+    data: ErrorReportStatusRequest,
+    _admin: User = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    report = db.get(ErrorReport, report_id)
+    if not report:
+        raise HTTPException(status_code=404, detail="Error report was not found.")
+
+    report.status = data.status
+    db.commit()
+    db.refresh(report)
+    return serialize_report(report)
