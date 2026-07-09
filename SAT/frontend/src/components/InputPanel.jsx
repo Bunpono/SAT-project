@@ -51,10 +51,10 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
   }
 
   return (
-    <section className="rounded-2xl bg-white p-6 shadow-sm dark:bg-slate-900">
-      <h2 className="text-lg font-semibold text-gray-800 dark:text-slate-100">Input Sentence</h2>
+    <section className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+      <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Input Sentence</h2>
 
-      <label className="mt-5 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+      <label className="mt-5 block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
         Enter or Paste English Sentence Here
       </label>
 
@@ -70,7 +70,8 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
           handleAnalyze()
         }
         }}
-        className="mt-2 h-32 w-full resize-none rounded-xl bg-gray-100 p-4 text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-blue-500"
+        placeholder="Type a sentence to analyze..."
+        className="mt-2 h-32 w-full resize-none rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827] focus:ring-4 focus:ring-[#111827]/10 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white dark:focus:ring-white/15"
       />
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -78,33 +79,34 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
           onClick={handleAnalyze}
           disabled={isAnalyzing}
           aria-busy={isAnalyzing}
-          className="rounded-lg bg-slate-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500">
+          className="rounded-xl bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(17,24,39,0.16)] transition-all duration-300 hover:bg-[#374151] active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_12px_28px_rgba(255,255,255,0.1)] dark:hover:bg-[#D1D5DB]">
           {isAnalyzing ? "Analyzing..." : "Analyze Syntax"}
         </button>
 
         <button
           onClick={handleClear}
-          className="rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100 active:scale-95 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">
+          className="rounded-xl border border-[#E5E7EB] px-5 py-2.5 text-sm font-semibold text-[#374151] transition-all duration-300 hover:border-[#111827] hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#151B2D]">
           Clear
         </button>
 
         <button
           type="button"
           onClick={() => { setShowReportForm((value) => !value); setReportStatus("") }}
-          className="rounded-lg border border-orange-200 px-5 py-2.5 text-sm font-medium text-orange-500 transition hover:bg-orange-50 active:scale-95 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/40"
+          className="rounded-xl border border-orange-200 px-5 py-2.5 text-sm font-semibold text-orange-600 transition-all duration-300 hover:bg-orange-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-orange-800 dark:text-orange-300 dark:hover:bg-orange-950/40"
         >
           Report Error
         </button>
       </div>
 
       {showReportForm && (
-        <div className="mt-4 rounded-xl border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950/30">
-          <label className="block text-sm font-medium text-orange-900 dark:text-orange-200">
+        <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 p-4 shadow-sm transition-all duration-300 dark:border-orange-900 dark:bg-orange-950/30">
+          <label className="block text-sm font-semibold text-orange-900 dark:text-orange-200">
             Describe what looks incorrect
             <textarea
               value={reportDescription}
               onChange={(event) => { setReportDescription(event.target.value); setReportStatus("") }}
-              className="mt-2 h-24 w-full resize-none rounded-lg border border-orange-200 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-orange-400 dark:border-orange-900 dark:bg-slate-900 dark:text-slate-100"
+              placeholder="Tell us what should be corrected..."
+              className="mt-2 h-24 w-full resize-none rounded-xl border border-orange-200 bg-white p-3 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15 dark:border-orange-900 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF]"
             />
           </label>
           <div className="mt-3 flex items-center gap-3">
@@ -112,7 +114,7 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
               type="button"
               onClick={handleReport}
               disabled={reportStatus === "Sending..."}
-              className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+              className="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:bg-orange-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Send Report
             </button>
@@ -124,7 +126,7 @@ export default function InputPanel({ analysis, onAnalyzeComplete }) {
       {errorMessage && (
         <div
           role="alert"
-          className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
+          className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 transition-all duration-300 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
         >
           {errorMessage}
         </div>

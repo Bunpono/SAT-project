@@ -29,32 +29,32 @@ export default function Header({ theme, onToggleTheme, user, onLogout }) {
   const isDark = theme === "dark"
 
   return (
-    <header className="flex flex-col items-start justify-between gap-6 sm:flex-row">
-      <div className="flex items-center gap-4">
+    <header className="flex flex-col items-start justify-between gap-6 transition-colors duration-300 sm:flex-row sm:items-center">
+      <div className="flex items-center gap-5">
         <img
           src="/sat-logo.png"
           alt="Syntactic Analysis Tool logo"
-          className="h-12 w-auto shrink-0 object-contain sm:h-16"
+          className="h-14 w-14 shrink-0 object-contain brightness-0 transition-all duration-300 sm:h-[72px] sm:w-[72px] dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
         />
         <div>
-          <h1 className="text-3xl font-semibold text-gray-950 sm:text-4xl dark:text-white">
+          <h1 className="text-3xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-4xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
-          <p className="mt-1 text-lg font-normal text-gray-500 dark:text-slate-400">
+          <p className="mt-1 max-w-2xl text-base font-medium leading-7 text-[#6B7280] transition-colors duration-300 sm:text-lg dark:text-[#D1D5DB]">
             Advanced English Sentence Parser with Interactive Visualization
           </p>
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 items-center gap-3">
         <div className="hidden text-right sm:block">
-          <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{user.name}</p>
-          <p className="text-xs capitalize text-gray-500 dark:text-slate-400">{user.role}</p>
+          <p className="text-sm font-semibold text-[#111827] transition-colors duration-300 dark:text-white">{user.name}</p>
+          <p className="text-xs capitalize text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">{user.role}</p>
         </div>
         <button
           type="button"
           onClick={onLogout}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
+          className="rounded-xl border border-[#E5E7EB] bg-transparent px-3 py-2.5 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#111827]"
         >
           Sign out
         </button>
@@ -63,7 +63,7 @@ export default function Header({ theme, onToggleTheme, user, onLogout }) {
           onClick={onToggleTheme}
           aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 dark:focus-visible:ring-offset-slate-950"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-[#F7F8FC] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F7FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:shadow-[0_18px_45px_rgba(0,0,0,0.28)] dark:hover:border-[#D1D5DB] dark:hover:bg-[#151B2D] dark:focus-visible:ring-white/30 dark:focus-visible:ring-offset-[#050816]"
         >
           {isDark ? <MoonIcon /> : <SunIcon />}
         </button>

@@ -28,15 +28,15 @@ const steps = [
 
 export default function HowToUse() {
   return (
-    <section className="rounded-2xl bg-white p-6 shadow-sm sm:p-8 dark:bg-slate-900">
+    <section className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 sm:p-8 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <div className="max-w-3xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
           User Guide
         </p>
-        <h2 className="mt-2 text-2xl font-semibold text-gray-950 dark:text-white">
+        <h2 className="mt-2 text-2xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
           How to use the Syntactic Analysis Tool
         </h2>
-        <p className="mt-2 text-gray-500 dark:text-slate-400">
+        <p className="mt-2 text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
           Follow these steps to turn an English sentence into an interactive
           syntax tree. No technical knowledge is required.
         </p>
@@ -46,14 +46,14 @@ export default function HowToUse() {
         {steps.map((step, index) => (
           <li
             key={step.title}
-            className="flex gap-4 rounded-xl border border-gray-200 bg-gray-50 p-5 dark:border-slate-700 dark:bg-slate-800/60"
+            className="flex gap-4 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-5 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#111827] text-sm font-semibold text-white transition-colors duration-300 dark:bg-white dark:text-[#111827]">
               {index + 1}
             </span>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-slate-100">{step.title}</h3>
-              <p className="mt-1 text-sm leading-6 text-gray-600 dark:text-slate-300">
+              <h3 className="font-semibold text-[#111827] transition-colors duration-300 dark:text-white">{step.title}</h3>
+              <p className="mt-1 text-sm leading-6 text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
                 {step.description}
               </p>
             </div>
@@ -61,8 +61,8 @@ export default function HowToUse() {
         ))}
       </ol>
 
-      <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-gray-600 dark:border-blue-900 dark:bg-blue-950/40 dark:text-slate-300">
-        <span className="font-semibold text-gray-900 dark:text-slate-100">Tip:</span> Start with a
+      <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+        <span className="font-semibold text-[#111827] dark:text-white">Tip:</span> Start with a
         short, complete sentence such as “I love a dog.” for the clearest
         result.
       </div>

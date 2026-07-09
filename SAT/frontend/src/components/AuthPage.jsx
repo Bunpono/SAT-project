@@ -32,38 +32,42 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-blue-100 px-4 py-8 text-slate-900 dark:from-slate-950 dark:to-slate-900 dark:text-slate-100">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#F5F7FC] to-[#EEF3FF] px-4 py-8 text-[#111827] transition-colors duration-300 dark:from-[#050816] dark:to-[#0B1120] dark:text-white">
       <button
         type="button"
         onClick={onToggleTheme}
-        className="absolute right-6 top-6 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium shadow-sm dark:border-slate-700 dark:bg-slate-900"
+        className="absolute right-6 top-6 rounded-xl border border-[#E5E7EB] bg-transparent px-4 py-2 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-white active:scale-[0.98] dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#111827]"
       >
         {theme === "dark" ? "Light mode" : "Dark mode"}
       </button>
 
-      <section className="w-full max-w-md rounded-2xl bg-white p-7 shadow-sm dark:bg-slate-900">
+      <section className="w-full max-w-md rounded-2xl border border-[#E5E7EB] bg-white p-7 shadow-[0_24px_70px_rgba(17,24,39,0.1)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
         <div className="flex items-center gap-4">
-          <img src="/sat-logo.png" alt="Syntactic Analysis Tool logo" className="h-14 w-auto" />
+          <img
+            src="/sat-logo.png"
+            alt="Syntactic Analysis Tool logo"
+            className="h-16 w-16 shrink-0 object-contain brightness-0 transition-all duration-300 sm:h-[72px] sm:w-[72px] dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
+          />
           <div>
-            <h1 className="text-2xl font-semibold text-gray-950 dark:text-white">
+            <h1 className="text-2xl font-bold leading-tight text-[#111827] transition-colors duration-300 dark:text-white">
               Syntactic Analysis Tool
             </h1>
-            <p className="text-sm text-gray-500 dark:text-slate-400">
+            <p className="text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
               {isRegister ? "Create your account" : "Sign in to continue"}
             </p>
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 rounded-xl bg-gray-100 p-1 dark:bg-slate-800">
+        <div className="mt-6 grid grid-cols-2 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-1.5 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
           {["login", "register"].map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => { setMode(item); setError("") }}
-              className={`rounded-lg px-4 py-2 text-sm font-medium capitalize transition ${
+              className={`rounded-xl px-4 py-2 text-sm font-semibold capitalize transition-all duration-300 ${
                 mode === item
-                  ? "bg-white text-slate-950 shadow-sm dark:bg-blue-600 dark:text-white"
-                  : "text-gray-500 dark:text-slate-300"
+                  ? "bg-white text-[#111827] shadow-sm dark:bg-[#151B2D] dark:text-white"
+                  : "text-[#6B7280] hover:text-[#111827] dark:text-[#9CA3AF] dark:hover:text-white"
               }`}
             >
               {item}
@@ -73,7 +77,7 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {isRegister && (
-            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
+            <label className="block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
               Name
               <input
                 name="name"
@@ -81,11 +85,11 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
                 onChange={updateField}
                 required
                 maxLength={120}
-                className="mt-2 w-full rounded-xl bg-gray-100 px-4 py-3 outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:focus:ring-blue-500"
+                className="mt-2 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-3 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827] focus:ring-4 focus:ring-[#111827]/10 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white dark:focus:ring-white/15"
               />
             </label>
           )}
-          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
+          <label className="block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
             Email
             <input
               type="email"
@@ -94,10 +98,10 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
               onChange={updateField}
               required
               autoComplete="email"
-              className="mt-2 w-full rounded-xl bg-gray-100 px-4 py-3 outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:focus:ring-blue-500"
+              className="mt-2 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-3 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827] focus:ring-4 focus:ring-[#111827]/10 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white dark:focus:ring-white/15"
             />
           </label>
-          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
+          <label className="block text-sm font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
             Password
             <input
               type="password"
@@ -108,7 +112,7 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
               minLength={isRegister ? 8 : 1}
               maxLength={72}
               autoComplete={isRegister ? "new-password" : "current-password"}
-              className="mt-2 w-full rounded-xl bg-gray-100 px-4 py-3 outline-none focus:ring-2 focus:ring-slate-900 dark:bg-slate-800 dark:focus:ring-blue-500"
+              className="mt-2 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-3 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827] focus:ring-4 focus:ring-[#111827]/10 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white dark:focus:ring-white/15"
             />
           </label>
 
@@ -117,7 +121,7 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500"
+            className="w-full rounded-xl bg-[#111827] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(17,24,39,0.18)] transition-all duration-300 hover:bg-[#374151] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_14px_30px_rgba(255,255,255,0.12)] dark:hover:bg-[#D1D5DB]"
           >
             {isSubmitting ? "Please wait..." : isRegister ? "Create account" : "Sign in"}
           </button>

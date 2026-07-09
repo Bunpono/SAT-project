@@ -37,7 +37,11 @@ export default function App() {
   }
 
   if (isLoading) {
-    return <div className="flex min-h-screen items-center justify-center bg-indigo-50 dark:bg-slate-950 dark:text-white">Loading...</div>
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F5F7FC] text-[#111827] transition-colors duration-300 dark:bg-[#050816] dark:text-white">
+        Loading...
+      </div>
+    )
   }
 
   if (!user) {

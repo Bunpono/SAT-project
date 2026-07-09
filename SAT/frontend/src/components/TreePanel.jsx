@@ -19,39 +19,39 @@ export default function TreePanel({ analysis }) {
 
   return (
     <section className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
-      <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-slate-900">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-slate-100">Production Rules</h2>
+      <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+        <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Production Rules</h2>
 
         <div className="mt-5 max-h-[520px] space-y-3 overflow-y-auto pr-1">
           {productionRules.length > 0 ? (
             productionRules.map((rule) => (
-              <div key={rule} className="rounded-md bg-gray-100 px-4 py-2 text-sm dark:bg-slate-800 dark:text-slate-200">
+              <div key={rule} className="rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-2 text-sm text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
                 {rule}
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-400 dark:text-slate-500">
+            <p className="text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
               Production rules will appear with the syntax tree.
             </p>
           )}
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-slate-900">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-slate-100">Tree Diagram</h2>
+      <div className="rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+        <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Tree Diagram</h2>
 
         {analysis?.tree && (
-          <div className="mt-5 flex flex-wrap gap-2 rounded-xl bg-gray-100 p-4 dark:bg-slate-800">
+          <div className="mt-5 flex flex-wrap gap-2 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]">
             {words.map((word, index) => {
               const active = selectedWords.includes(cleanWord(word))
 
               return (
                 <span
                   key={`${word}-${index}`}
-                  className={`rounded-md px-3 py-1 text-sm transition ${
+                  className={`rounded-lg px-3 py-1 text-sm transition-all duration-300 ${
                     active
                       ? "bg-yellow-300 font-semibold text-slate-950 scale-105"
-                      : "bg-white text-slate-700 dark:bg-slate-700 dark:text-slate-100"
+                      : "bg-white text-[#374151] shadow-sm dark:bg-[#0B1120] dark:text-[#D1D5DB]"
                   }`}
                 >
                   {word}
@@ -61,7 +61,7 @@ export default function TreePanel({ analysis }) {
           </div>
         )}
 
-        <div className="mt-5 w-full overflow-x-auto overflow-y-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
+        <div className="mt-5 w-full overflow-x-auto overflow-y-hidden rounded-2xl border border-[#E5E7EB] bg-white transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
           {analysis?.tree ? (
             <StaticTree
               data={analysis.tree}
@@ -69,13 +69,13 @@ export default function TreePanel({ analysis }) {
               onSelectWords={setSelectedWords}
             />
           ) : (
-            <div className="flex h-[430px] items-center justify-center text-gray-400 dark:text-slate-500">
+            <div className="flex h-[430px] items-center justify-center text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
               Tree diagram will appear here.
             </div>
           )}
         </div>
 
-        <div className="mt-4 rounded-lg bg-blue-50 p-3 text-sm text-gray-500 dark:bg-blue-950/40 dark:text-slate-300">
+        <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-3 text-sm text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
           💡 Tip: Click on any terminal node to highlight the corresponding word.
         </div>
       </div>

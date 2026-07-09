@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, Text, func
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, Text, func, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -37,7 +36,7 @@ class AnalysisHistory(Base):
     )
     sentence: Mapped[str] = mapped_column(Text, nullable=False)
     s_expression: Mapped[str] = mapped_column(Text, nullable=False)
-    tree_json: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    tree_json: Mapped[dict] = mapped_column(JSON, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -54,7 +53,7 @@ class ErrorReport(Base):
     )
     sentence: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
-    analysis_result_json: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    analysis_result_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
