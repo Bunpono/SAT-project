@@ -138,6 +138,20 @@ export default function Header({
                 Admin Dashboard
               </button>
             )}
+            {user.role !== "admin" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAccountOpen(false)
+                  window.history.replaceState(null, "", "#admin-login")
+                  onLogout()
+                }}
+                className="flex w-full items-center gap-3 border-b border-[#E5E7EB] px-4 py-4 text-left text-sm font-medium text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:text-white dark:hover:bg-[#151B2D]"
+              >
+                <DashboardIcon />
+                Admin Login
+              </button>
+            )}
             <button
               type="button"
               onClick={onLogout}
