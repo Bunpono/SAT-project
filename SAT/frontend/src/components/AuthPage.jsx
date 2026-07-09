@@ -30,33 +30,13 @@ function RegisterIcon() {
   )
 }
 
-function ShieldIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
-      <path
-        d="M12 3 5 6v5c0 4.4 2.8 8.3 7 9.7 4.2-1.4 7-5.3 7-9.7V6l-7-3Zm0 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  )
-}
-
 const authModes = [
   { id: "login", label: "Login", icon: LoginIcon },
-  { id: "register", label: "Register", icon: RegisterIcon },
-  { id: "admin", label: "Admin", icon: ShieldIcon }
+  { id: "register", label: "Register", icon: RegisterIcon }
 ]
 
 export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
-  const [mode, setMode] = useState(() => {
-    if (typeof window !== "undefined" && window.location.hash === "#admin-login") {
-      return "admin"
-    }
-    return "login"
-  })
+  const [mode, setMode] = useState("login")
   const [form, setForm] = useState({ name: "", email: "", password: "" })
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -66,7 +46,6 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
   const [resetSuccess, setResetSuccess] = useState("")
   const [isResetSubmitting, setIsResetSubmitting] = useState(false)
   const isRegister = mode === "register"
-  const isAdminLogin = mode === "admin"
 
   const updateField = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }))
@@ -83,16 +62,6 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
       const result = isRegister
         ? await registerAccount(form.name, form.email, form.password)
         : await loginAccount(form.email, form.password)
-
-      if (isAdminLogin && result.user.role !== "admin") {
-        setError("This account does not have admin access.")
-        return
-      }
-
-      if (isAdminLogin) {
-        window.history.replaceState(null, "", "#admin")
-      }
-
       onAuthenticated(result)
     } catch (submitError) {
       setError(submitError.message)
@@ -174,16 +143,14 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
         <section className="w-full min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_24px_70px_rgba(17,24,39,0.08)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-7 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
           <div>
             <h2 className="text-xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
-              {isAdminLogin ? "Admin Login" : "Welcome"}
+              Welcome
             </h2>
             <p className="mt-2 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
-              {isAdminLogin
-                ? "Sign in with an administrator account to manage the dashboard"
-                : "Login or create an account to start analyzing sentences"}
+              Login or create an account to start analyzing sentences
             </p>
           </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-1 rounded-2xl bg-[#E8E8ED] p-1.5 transition-all duration-300 sm:grid-cols-3 dark:bg-[#151B2D]">
+        <div className="mt-8 grid grid-cols-2 gap-1 rounded-2xl bg-[#E8E8ED] p-1.5 transition-all duration-300 dark:bg-[#151B2D]">
           {authModes.map((item) => {
             const Icon = item.icon
             return (
@@ -267,14 +234,12 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
             disabled={isSubmitting}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#050816] px-5 py-3.5 text-sm font-bold text-white shadow-[0_14px_30px_rgba(17,24,39,0.18)] transition-all duration-300 hover:bg-[#111827] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_14px_30px_rgba(255,255,255,0.12)] dark:hover:bg-[#D1D5DB]"
           >
-            {isRegister ? <RegisterIcon /> : isAdminLogin ? <ShieldIcon /> : <LoginIcon />}
+            {isRegister ? <RegisterIcon /> : <LoginIcon />}
             {isSubmitting
               ? "Please wait..."
               : isRegister
                 ? "Create account"
-                : isAdminLogin
-                  ? "Sign in as admin"
-                  : "Sign in"}
+                : "Sign in"}
           </button>
         </form>
       </section>

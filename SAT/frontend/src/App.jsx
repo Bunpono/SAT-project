@@ -22,7 +22,12 @@ export default function App() {
     if (!token) return
 
     getCurrentUser()
-      .then(setUser)
+      .then((currentUser) => {
+        if (currentUser.role === "admin" && !window.location.hash) {
+          window.history.replaceState(null, "", "#admin")
+        }
+        setUser(currentUser)
+      })
       .catch(() => clearAuthToken())
       .finally(() => setIsLoading(false))
   }, [isResetPasswordRoute])
@@ -35,6 +40,11 @@ export default function App() {
 
   const handleAuthenticated = ({ access_token, user: authenticatedUser }) => {
     setAuthToken(access_token)
+    if (authenticatedUser.role === "admin") {
+      window.history.replaceState(null, "", "#admin")
+    } else if (window.location.hash === "#admin") {
+      window.history.replaceState(null, "", window.location.pathname)
+    }
     setUser(authenticatedUser)
   }
 
