@@ -6,15 +6,23 @@ const API_URL = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/+$/
 async function apiRequest(path, options = {}) {
   const { body, auth = true, headers = {}, ...requestOptions } = options
   const token = getAuthToken()
-  const response = await fetch(`${API_URL}${path}`, {
-    ...requestOptions,
-    headers: {
-      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
-      ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers
-    },
-    ...(body !== undefined ? { body: JSON.stringify(body) } : {})
-  })
+  let response
+
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...requestOptions,
+      headers: {
+        ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+        ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers
+      },
+      ...(body !== undefined ? { body: JSON.stringify(body) } : {})
+    })
+  } catch {
+    throw new Error(
+      "Cannot connect to the analysis service. Make sure the backend is running and try again."
+    )
+  }
 
   if (response.status === 401 && auth) {
     clearAuthToken()

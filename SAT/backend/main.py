@@ -17,7 +17,12 @@ from app.auth import (  # noqa: E402
 )
 from app.database import Base, engine, get_db  # noqa: E402
 from app.db_models import AnalysisHistory, ErrorReport, User  # noqa: E402
-from app.model import load_model, predict_s_expression  # noqa: E402
+from app.model import (  # noqa: E402
+    ModelLoadError,
+    get_model_status,
+    load_model,
+    predict_s_expression,
+)
 from app.parser import s_expression_to_tree  # noqa: E402
 from app.schemas import (  # noqa: E402
     AnalyzeRequest,
@@ -163,10 +168,18 @@ def root():
     return {"message": "Syntactic Analysis API is running"}
 
 
+@app.get("/health")
+def health():
+    return {"status": "ok", "model": get_model_status()}
+
+
 @app.get("/load-model")
 def load_hf_model(current_user: User = Depends(require_admin)):
-    load_model()
-    return {"status": "model loaded"}
+    try:
+        load_model()
+    except ModelLoadError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return {"status": "model loaded", "model": get_model_status()}
 
 
 @app.post("/auth/register", response_model=AuthResponse, status_code=201)
@@ -224,7 +237,10 @@ def analyze(
     if not sentence:
         raise HTTPException(status_code=422, detail="Sentence is required.")
 
-    s_expression = predict_s_expression(sentence)
+    try:
+        s_expression = predict_s_expression(sentence)
+    except ModelLoadError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     tree = s_expression_to_tree(s_expression)
 
     history_item = AnalysisHistory(

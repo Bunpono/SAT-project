@@ -2,6 +2,7 @@
   "liveServer.settings.port": 5501,
   "files.exclude": {
     "**/.runtime_deps": true,
+    "**/.cache": true,
     "**/__pycache__": true,
     "**/dist": true,
     "**/node_modules": true,
@@ -9,6 +10,7 @@
   },
   "search.exclude": {
     "**/.runtime_deps": true,
+    "**/.cache": true,
     "**/dist": true,
     "**/node_modules": true,
     "**/venv": true
