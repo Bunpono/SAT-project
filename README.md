@@ -33,7 +33,7 @@ SAT/
 |       |-- model.py   Hugging Face model loading and inference
 |       |-- parser.py  S-expression to JSON tree conversion
 |       `-- schemas.py Request validation models
-`-- command.txt        Original local development notes
+`-- supabase/          Database administration schema
 ```
 
 ## Technologies

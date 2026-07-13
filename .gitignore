@@ -7,6 +7,7 @@
 venv/
 .venv/
 env/
+.runtime_deps/
 __pycache__/
 *.py[cod]
 *.pyd
@@ -17,8 +18,10 @@ __pycache__/
 # Node / Vite
 node_modules/
 dist/
+dist-ssr/
 build/
 .vite/
+*.local
 
 # Editors and operating systems
 .idea/

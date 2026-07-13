@@ -1,16 +1,29 @@
-# React + Vite
+# SAT Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The React interface for the Syntactic Analysis Tool. It provides authentication,
+sentence input and validation, syntax-tree visualization, analysis history, and
+the administration dashboard.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+From this directory:
 
-## React Compiler
+```powershell
+npm install
+Copy-Item .env.example .env
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The development site is available at `http://localhost:5173`. The FastAPI
+backend must also be running. Set `VITE_API_URL` in `.env` when the backend is
+not available at `http://127.0.0.1:8000`.
 
-## Expanding the ESLint configuration
+## Useful commands
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `npm run dev` starts the development server.
+- `npm run build` creates a production build.
+- `npm run lint` checks the source code.
+- `npm run preview` serves the production build locally.
+
+See the repository-level `README.md`, `DEPLOYMENT.md`, and
+`docs/TESTING_GUIDE.md` for complete setup and deployment instructions.
