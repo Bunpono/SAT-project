@@ -55,6 +55,10 @@ export default function ResultTabs({ analysis }) {
   const [activeTab, setActiveTab] = useState("pos")
   const [isModelOutputOpen, setIsModelOutputOpen] = useState(false)
   const treeAnalysis = useMemo(() => analyzeTree(analysis?.tree), [analysis?.tree])
+  const wordCount = useMemo(
+    () => String(analysis?.sentence || "").trim().split(/\s+/).filter(Boolean).length,
+    [analysis?.sentence]
+  )
   const activeTabConfig = tabs.find((tab) => tab.id === activeTab) || tabs[0]
 
   const renderActiveResult = () => {
@@ -134,12 +138,17 @@ export default function ResultTabs({ analysis }) {
 
   return (
     <section className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.07)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-7 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
-      <div>
-        <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">
-          Analysis Results
-        </h2>
-        <p className="mt-1 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
-          Select a category to inspect the result extracted from the syntax tree.
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">
+            Analysis Results
+          </h2>
+          <p className="mt-1 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+            Select a category to inspect the result extracted from the syntax tree.
+          </p>
+        </div>
+        <p className="rounded-lg bg-[#F7F8FC] px-3 py-1.5 text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:bg-[#151B2D] dark:text-[#9CA3AF]">
+          Word count: <span className="font-bold text-[#111827] dark:text-white">{wordCount}</span>
         </p>
       </div>
 

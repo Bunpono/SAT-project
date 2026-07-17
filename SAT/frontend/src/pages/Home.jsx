@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import Header from "../components/Header"
 import InputPanel from "../components/InputPanel"
 import ResultTabs from "../components/ResultTabs"
-import AnalysisSummary from "../components/AnalysisSummary"
 import TreePanel from "../components/TreePanel"
 import HowToUse from "../components/HowToUse"
 import AnalysisHistory from "../components/AnalysisHistory"
@@ -283,10 +282,6 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
               <>
                 <div className="mt-5">
                   <ResultTabs analysis={analysis} />
-                </div>
-
-                <div className="mt-5">
-                  <AnalysisSummary analysis={analysis} />
                 </div>
 
                 <div className="mt-5">
