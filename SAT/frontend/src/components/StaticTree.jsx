@@ -6,6 +6,7 @@ export default function StaticTree({ data, selectedWords = [], onSelectWords, sv
   const viewportRef = useRef(null)
   const dragRef = useRef(null)
   const ignoreClickRef = useRef(false)
+  const activeTransformRef = useRef({ x: 24, y: 24, scale: 1 })
   const [viewport, setViewport] = useState({ width: 0, height: 0 })
   const [transform, setTransform] = useState(null)
 
@@ -97,20 +98,6 @@ function getNodeStyle(node, depth) {
   const nodes = treeRoot.descendants()
   const links = treeRoot.links()
 
-  useEffect(() => {
-    const element = viewportRef.current
-    if (!element) return undefined
-
-    const updateViewport = () => {
-      setViewport({ width: element.clientWidth, height: element.clientHeight })
-    }
-
-    updateViewport()
-    const observer = new ResizeObserver(updateViewport)
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [])
-
   const fitPadding = 24
   const fitScale = viewport.width && viewport.height
     ? Math.min(
@@ -126,26 +113,52 @@ function getNodeStyle(node, depth) {
   }
   const activeTransform = transform || initialTransform
 
-  const handleWheel = (event) => {
-    event.preventDefault()
-    const bounds = event.currentTarget.getBoundingClientRect()
-    const pointerX = event.clientX - bounds.left
-    const pointerY = event.clientY - bounds.top
-    const zoomFactor = event.deltaY < 0 ? 1.12 : 0.89
+  useEffect(() => {
+    activeTransformRef.current = activeTransform
+  }, [activeTransform])
 
-    setTransform((current) => {
-      const active = current || initialTransform
-      const nextScale = Math.min(2.5, Math.max(0.35, active.scale * zoomFactor))
-      const worldX = (pointerX - active.x) / active.scale
-      const worldY = (pointerY - active.y) / active.scale
+  useEffect(() => {
+    const element = viewportRef.current
+    if (!element) return undefined
 
-      return {
-        x: pointerX - worldX * nextScale,
-        y: pointerY - worldY * nextScale,
-        scale: nextScale
-      }
-    })
-  }
+    const updateViewport = () => {
+      setViewport({ width: element.clientWidth, height: element.clientHeight })
+    }
+
+    const handleWheel = (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+
+      const bounds = element.getBoundingClientRect()
+      const pointerX = event.clientX - bounds.left
+      const pointerY = event.clientY - bounds.top
+      const zoomFactor = event.deltaY < 0 ? 1.12 : 0.89
+      const fallbackTransform = activeTransformRef.current
+
+      setTransform((current) => {
+        const active = current || fallbackTransform
+        const nextScale = Math.min(2.5, Math.max(0.35, active.scale * zoomFactor))
+        const worldX = (pointerX - active.x) / active.scale
+        const worldY = (pointerY - active.y) / active.scale
+
+        return {
+          x: pointerX - worldX * nextScale,
+          y: pointerY - worldY * nextScale,
+          scale: nextScale
+        }
+      })
+    }
+
+    updateViewport()
+    const observer = new ResizeObserver(updateViewport)
+    observer.observe(element)
+    element.addEventListener("wheel", handleWheel, { passive: false })
+
+    return () => {
+      observer.disconnect()
+      element.removeEventListener("wheel", handleWheel)
+    }
+  }, [])
 
   const handlePointerDown = (event) => {
     if (event.button !== 0) return
@@ -189,8 +202,7 @@ function getNodeStyle(node, depth) {
   return (
     <div
       ref={viewportRef}
-      className="h-[440px] w-full touch-none cursor-grab select-none sm:h-[520px] active:cursor-grabbing"
-      onWheel={handleWheel}
+      className="h-[440px] w-full touch-none overscroll-contain cursor-grab select-none sm:h-[520px] active:cursor-grabbing"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}

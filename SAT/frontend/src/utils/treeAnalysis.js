@@ -3,6 +3,20 @@ import { prepareTreeForDisplay } from "./treeRules"
 const PHRASE_LABELS = new Set(["NP", "VP", "PP", "ADJP", "ADVP"])
 const NON_POS_LABELS = new Set(["ROOT", "S", "SBAR", ...PHRASE_LABELS])
 const COORDINATOR_LABELS = new Set(["CC", "CONJ", "CONJP", "COORD"])
+const POS_LABELS = {
+  PRO: "Pronoun",
+  DET: "Determiner",
+  N: "Noun",
+  V: "Verb",
+  ADJ: "Adjective",
+  ADV: "Adverb",
+  P: "Preposition",
+  AUX: "Auxiliary verb",
+  MOD: "Modal verb",
+  COORD: "Coordinating conjunction",
+  CONJ: "Coordinating conjunction",
+  CC: "Coordinating conjunction"
+}
 const GRAMMATICAL_FEATURE_LABELS = new Set([
   "TENSE",
   "ASPECT",
@@ -63,6 +77,65 @@ function hasCoordinatedClauses(node) {
   return children.some(hasCoordinatedClauses)
 }
 
+function terminalValues(node) {
+  const children = childrenOf(node)
+  if (children.length === 0) return [String(node?.name || "").trim()]
+  return children.flatMap(terminalValues).filter(Boolean)
+}
+
+function verbTenseFromGroup(node) {
+  const labels = new Set()
+  let tenseValue = ""
+
+  function inspect(current) {
+    const label = normalizeLabel(current?.name)
+    if (label) labels.add(label)
+    if (label === "TENSE") tenseValue = terminalValues(current)[0]?.toLowerCase() || ""
+    childrenOf(current).forEach(inspect)
+  }
+
+  inspect(node)
+
+  const progressive = labels.has("PROG") || labels.has("PROGRESSIVE")
+  const perfect = labels.has("PER") || labels.has("PERF") || labels.has("PERFECT")
+  const isFuture = labels.has("MOD")
+  const base = isFuture ? "future" : tenseValue
+
+  if (base === "pres" || base === "present") {
+    if (perfect && progressive) return "Present Perfect Continuous Tense"
+    if (perfect) return "Present Perfect Tense"
+    if (progressive) return "Present Continuous Tense"
+    return "Present Simple Tense"
+  }
+
+  if (base === "past") {
+    if (perfect && progressive) return "Past Perfect Continuous Tense"
+    if (perfect) return "Past Perfect Tense"
+    if (progressive) return "Past Continuous Tense"
+    return "Past Simple Tense"
+  }
+
+  if (base === "future") {
+    if (perfect && progressive) return "Future Perfect Continuous Tense"
+    if (perfect) return "Future Perfect Tense"
+    if (progressive) return "Future Continuous Tense"
+    return "Future Simple Tense"
+  }
+
+  return "Not specified"
+}
+
+function verbTypeFromGroup(node) {
+  const marker = childrenOf(node)
+    .map((child) => String(child?.name || "").trim().toLowerCase())
+    .find((name) => /^\[(trans|intrans|linking)\]$/.test(name))
+
+  if (marker === "[trans]") return "trans"
+  if (marker === "[intrans]") return "intrans"
+  if (marker === "[linking]") return "linking"
+  return "Not specified"
+}
+
 export function analyzeTree(tree) {
   const posTags = []
   const phrases = []
@@ -103,13 +176,35 @@ export function analyzeTree(tree) {
     if (!node || typeof node !== "object") return
 
     const children = childrenOf(node)
+    const label = normalizeLabel(node.name)
+
+    if (label === "VGP") {
+      const word = terminalText(node)
+      if (word) {
+        posTags.push({
+          word,
+          tag: "Verb",
+          verbDetails: {
+            type: verbTypeFromGroup(node),
+            tense: verbTenseFromGroup(node)
+          }
+        })
+      }
+      return
+    }
 
     if (children.length === 0) {
       const parentLabel = normalizeLabel(parent?.name)
       const word = String(node.name || "").trim()
 
-      if (word && parentLabel && !NON_POS_LABELS.has(parentLabel)) {
-        posTags.push({ word, tag: parentLabel })
+      if (
+        word &&
+        parentLabel &&
+        !NON_POS_LABELS.has(parentLabel) &&
+        !GRAMMATICAL_FEATURE_LABELS.has(parentLabel) &&
+        !/^\[.+\]$/.test(word)
+      ) {
+        posTags.push({ word, tag: POS_LABELS[parentLabel] || parentLabel.toLowerCase() })
       }
 
       return

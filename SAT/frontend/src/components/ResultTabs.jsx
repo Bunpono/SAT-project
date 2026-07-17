@@ -65,13 +65,19 @@ export default function ResultTabs({ analysis }) {
     if (activeTab === "pos") {
       return treeAnalysis.posTags.length > 0 ? (
         <div className="flex flex-wrap gap-3">
-          {treeAnalysis.posTags.map(({ word, tag }, index) => (
+          {treeAnalysis.posTags.map(({ word, tag, verbDetails }, index) => (
             <span
               key={`${word}-${tag}-${index}`}
-              className="inline-flex min-w-20 flex-col items-center rounded-xl border border-blue-200 bg-white/90 px-3 py-3 text-center text-[#374151] shadow-sm transition-all duration-300 dark:border-blue-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
+              className="inline-flex min-w-24 flex-col items-center rounded-xl border border-blue-200 bg-white/90 px-3 py-3 text-center text-[#374151] shadow-sm transition-all duration-300 dark:border-blue-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
             >
               <span className="font-semibold text-[#111827] dark:text-white">{word}</span>
               <span className="mt-1 text-sm font-medium text-blue-600 dark:text-blue-300">{tag}</span>
+              {verbDetails && (
+                <span className="mt-2 w-full border-t border-blue-100 pt-2 text-left text-xs leading-5 text-[#4B5563] dark:border-blue-900/70 dark:text-[#9CA3AF]">
+                  <span className="block"><strong className="font-semibold text-[#374151] dark:text-[#D1D5DB]">Verb type:</strong> {verbDetails.type}</span>
+                  <span className="block"><strong className="font-semibold text-[#374151] dark:text-[#D1D5DB]">Verb tense:</strong> {verbDetails.tense}</span>
+                </span>
+              )}
             </span>
           ))}
         </div>
@@ -147,9 +153,14 @@ export default function ResultTabs({ analysis }) {
             Select a category to inspect the result extracted from the syntax tree.
           </p>
         </div>
-        <p className="rounded-lg bg-[#F7F8FC] px-3 py-1.5 text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:bg-[#151B2D] dark:text-[#9CA3AF]">
-          Word count: <span className="font-bold text-[#111827] dark:text-white">{wordCount}</span>
-        </p>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <p className="rounded-lg bg-orange-50 px-3 py-1.5 text-sm font-medium text-orange-800 transition-colors duration-300 dark:bg-orange-950/30 dark:text-orange-200">
+            Sentence type: <span className="font-bold">{treeAnalysis.sentenceType}</span>
+          </p>
+          <p className="rounded-lg bg-[#F7F8FC] px-3 py-1.5 text-sm font-medium text-[#6B7280] transition-colors duration-300 dark:bg-[#151B2D] dark:text-[#9CA3AF]">
+            Word count: <span className="font-bold text-[#111827] dark:text-white">{wordCount}</span>
+          </p>
+        </div>
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -168,7 +179,9 @@ export default function ResultTabs({ analysis }) {
             >
               <span className={`mb-3 block h-2.5 w-2.5 rounded-full ${tab.dotClass}`} />
               <span className="block break-words font-medium">{tab.title}</span>
-              <span className="mt-1 block break-words text-base opacity-75">{tab.description}</span>
+              <span className="mt-1 block break-words text-base opacity-75">
+                {tab.id === "sentence" ? treeAnalysis.sentenceType : tab.description}
+              </span>
             </button>
           )
         })}
@@ -183,7 +196,7 @@ export default function ResultTabs({ analysis }) {
             {activeTabConfig.title}
           </span>
           <span className="text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
-            {activeTabConfig.description}
+            {activeTab === "sentence" ? treeAnalysis.sentenceType : activeTabConfig.description}
           </span>
         </div>
         {renderActiveResult()}
