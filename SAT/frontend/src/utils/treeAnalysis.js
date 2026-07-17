@@ -68,7 +68,7 @@ export function analyzeTree(tree) {
   const posTags = []
   const phrases = []
   const clauses = []
-  const clauseNodes = []
+  const sentenceClauseNodes = []
   let hasRelativeClause = false
 
   function collectPhrases(node) {
@@ -80,6 +80,26 @@ export function analyzeTree(tree) {
     }
 
     childrenOf(node).forEach(collectPhrases)
+  }
+
+  function collectClauses(node, isNestedInClause = false, entries = []) {
+    if (!node || typeof node !== "object") return entries
+
+    const label = normalizeLabel(node.name)
+    const isClause = label === "S"
+
+    if (isClause) {
+      entries.push({
+        kind: isNestedInClause ? "dependent" : "independent",
+        text: terminalText(node)
+      })
+    }
+
+    childrenOf(node).forEach((child) =>
+      collectClauses(child, isNestedInClause || isClause, entries)
+    )
+
+    return entries
   }
 
   function visit(node, parent = null, sDepth = 0) {
@@ -106,29 +126,46 @@ export function analyzeTree(tree) {
     const nextSDepth = label === "S" ? sDepth + 1 : sDepth
 
     if (label === "S") {
-      const clause = {
-        type: sDepth === 0 ? "Main Clause" : "Embedded Clause",
-        text: terminalText(node)
-      }
-
-      clauses.push(clause)
-      clauseNodes.push({ node, isEmbedded: sDepth > 0 })
+      sentenceClauseNodes.push({ node, isEmbedded: sDepth > 0 })
     }
 
     children.forEach((child) => visit(child, node, nextSDepth))
   }
 
-  collectPhrases(prepareTreeForDisplay(tree))
+  const displayTree = prepareTreeForDisplay(tree)
+  collectPhrases(displayTree)
+
+  const clauseEntries = collectClauses(tree)
+  const normalizedClauseEntries = clauseEntries.length > 0
+    ? clauseEntries
+    : [{ kind: "independent", text: terminalText(displayTree) }]
+  const dependentCount = normalizedClauseEntries.filter((entry) => entry.kind === "dependent").length
+  const independentCount = normalizedClauseEntries.length - dependentCount
+
+  normalizedClauseEntries.forEach((entry, index) => {
+    const isSingleIndependent = independentCount === 1 && dependentCount === 0
+    const number = entry.kind === "independent" && independentCount > 1
+      ? ` ${normalizedClauseEntries.slice(0, index + 1).filter((item) => item.kind === "independent").length}`
+      : ""
+
+    clauses.push({
+      type: isSingleIndependent
+        ? "Single Independent Clause"
+        : `${entry.kind === "independent" ? "Independent" : "Dependent"} Clause${number}`,
+      text: entry.text
+    })
+  })
+
   visit(tree)
 
-  const mainClauseCount = clauseNodes.filter((clause) => !clause.isEmbedded).length
-  const hasEmbeddedClause = clauseNodes.some((clause) => clause.isEmbedded)
+  const mainClauseCount = sentenceClauseNodes.filter((clause) => !clause.isEmbedded).length
+  const hasEmbeddedClause = sentenceClauseNodes.some((clause) => clause.isEmbedded)
   const coordinatedClauses = hasCoordinatedClauses(tree)
 
   let sentenceType = "Simple Sentence"
   let sentenceTypeReason = "The tree contains one main S node."
 
-  if (clauseNodes.length === 0) {
+  if (sentenceClauseNodes.length === 0) {
     sentenceType = "Sentence Type Unavailable"
     sentenceTypeReason = "The returned tree does not contain an S node."
   } else if (hasEmbeddedClause || hasRelativeClause) {
