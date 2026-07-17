@@ -3,7 +3,6 @@ import { prepareTreeForDisplay } from "./treeRules"
 const PHRASE_LABELS = new Set(["NP", "VP", "PP", "ADJP", "ADVP"])
 const NON_POS_LABELS = new Set(["ROOT", "S", "SBAR", ...PHRASE_LABELS])
 const COORDINATOR_LABELS = new Set(["CC", "CONJ", "CONJP", "COORD"])
-const RELATIVE_CLAUSE_LABELS = new Set(["RC", "RRC", "RELCL", "SBAR"])
 const GRAMMATICAL_FEATURE_LABELS = new Set([
   "TENSE",
   "ASPECT",
@@ -68,8 +67,6 @@ export function analyzeTree(tree) {
   const posTags = []
   const phrases = []
   const clauses = []
-  const sentenceClauseNodes = []
-  let hasRelativeClause = false
 
   function collectPhrases(node) {
     if (!node || typeof node !== "object") return
@@ -102,15 +99,10 @@ export function analyzeTree(tree) {
     return entries
   }
 
-  function visit(node, parent = null, sDepth = 0) {
+  function visit(node, parent = null) {
     if (!node || typeof node !== "object") return
 
     const children = childrenOf(node)
-    const label = normalizeLabel(node.name)
-
-    if (RELATIVE_CLAUSE_LABELS.has(label)) {
-      hasRelativeClause = true
-    }
 
     if (children.length === 0) {
       const parentLabel = normalizeLabel(parent?.name)
@@ -123,13 +115,7 @@ export function analyzeTree(tree) {
       return
     }
 
-    const nextSDepth = label === "S" ? sDepth + 1 : sDepth
-
-    if (label === "S") {
-      sentenceClauseNodes.push({ node, isEmbedded: sDepth > 0 })
-    }
-
-    children.forEach((child) => visit(child, node, nextSDepth))
+    children.forEach((child) => visit(child, node))
   }
 
   const displayTree = prepareTreeForDisplay(tree)
@@ -157,25 +143,19 @@ export function analyzeTree(tree) {
   })
 
   visit(tree)
-
-  const mainClauseCount = sentenceClauseNodes.filter((clause) => !clause.isEmbedded).length
-  const hasEmbeddedClause = sentenceClauseNodes.some((clause) => clause.isEmbedded)
   const coordinatedClauses = hasCoordinatedClauses(tree)
 
   let sentenceType = "Simple Sentence"
-  let sentenceTypeReason = "The tree contains one main S node."
+  let sentenceTypeReason = "The tree contains one independent clause."
 
-  if (sentenceClauseNodes.length === 0) {
-    sentenceType = "Sentence Type Unavailable"
-    sentenceTypeReason = "The returned tree does not contain an S node."
-  } else if (hasEmbeddedClause || hasRelativeClause) {
+  if (dependentCount > 0) {
     sentenceType = "Complex Sentence"
     sentenceTypeReason =
-      "The tree contains an embedded S node or a relative-clause structure."
-  } else if (coordinatedClauses || mainClauseCount > 1) {
+      "A dependent S clause is nested inside an independent clause."
+  } else if (independentCount >= 2 && coordinatedClauses) {
     sentenceType = "Compound Sentence"
     sentenceTypeReason =
-      "The tree contains multiple main S nodes joined at the same structural level."
+      "Independent S clauses are coordinated at the same structural level."
   }
 
   return {
