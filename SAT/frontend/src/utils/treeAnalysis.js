@@ -1,7 +1,20 @@
+import { prepareTreeForDisplay } from "./treeRules"
+
 const PHRASE_LABELS = new Set(["NP", "VP", "PP", "ADJP", "ADVP"])
 const NON_POS_LABELS = new Set(["ROOT", "S", "SBAR", ...PHRASE_LABELS])
 const COORDINATOR_LABELS = new Set(["CC", "CONJ", "CONJP", "COORD"])
 const RELATIVE_CLAUSE_LABELS = new Set(["RC", "RRC", "RELCL", "SBAR"])
+const GRAMMATICAL_FEATURE_LABELS = new Set([
+  "TENSE",
+  "ASPECT",
+  "MOOD",
+  "VOICE",
+  "NUMBER",
+  "PERSON",
+  "CASE",
+  "GENDER",
+  "DEGREE"
+])
 
 function childrenOf(node) {
   return Array.isArray(node?.children) ? node.children : []
@@ -14,15 +27,18 @@ function normalizeLabel(name) {
     .split(/[-=]/)[0]
 }
 
-function terminalText(node) {
+function terminalText(node, parentLabel = "") {
   const children = childrenOf(node)
 
   if (children.length === 0) {
-    return String(node?.name || "").trim()
+    const text = String(node?.name || "").trim()
+    return GRAMMATICAL_FEATURE_LABELS.has(parentLabel) || /^\[.+\]$/.test(text)
+      ? ""
+      : text
   }
 
   return children
-    .map(terminalText)
+    .map((child) => terminalText(child, normalizeLabel(node?.name)))
     .filter(Boolean)
     .join(" ")
 }
@@ -55,6 +71,17 @@ export function analyzeTree(tree) {
   const clauseNodes = []
   let hasRelativeClause = false
 
+  function collectPhrases(node) {
+    if (!node || typeof node !== "object") return
+
+    const label = normalizeLabel(node.name)
+    if (PHRASE_LABELS.has(label)) {
+      phrases.push({ type: label, text: terminalText(node) })
+    }
+
+    childrenOf(node).forEach(collectPhrases)
+  }
+
   function visit(node, parent = null, sDepth = 0) {
     if (!node || typeof node !== "object") return
 
@@ -76,10 +103,6 @@ export function analyzeTree(tree) {
       return
     }
 
-    if (PHRASE_LABELS.has(label)) {
-      phrases.push({ type: label, text: terminalText(node) })
-    }
-
     const nextSDepth = label === "S" ? sDepth + 1 : sDepth
 
     if (label === "S") {
@@ -95,6 +118,7 @@ export function analyzeTree(tree) {
     children.forEach((child) => visit(child, node, nextSDepth))
   }
 
+  collectPhrases(prepareTreeForDisplay(tree))
   visit(tree)
 
   const mainClauseCount = clauseNodes.filter((clause) => !clause.isEmbedded).length
