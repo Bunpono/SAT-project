@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { hierarchy, tree } from "d3-hierarchy"
 import { prepareTreeForDisplay } from "../utils/treeRules"
 
-export default function StaticTree({ data, selectedWords = [], onSelectWords }) {
+export default function StaticTree({ data, selectedWords = [], onSelectWords, svgRef }) {
   const viewportRef = useRef(null)
   const dragRef = useRef(null)
   const ignoreClickRef = useRef(false)
@@ -197,6 +197,7 @@ function getNodeStyle(node, depth) {
       onPointerCancel={handlePointerEnd}
     >
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${Math.max(viewport.width, 1)} ${Math.max(viewport.height, 1)}`}
         className="block h-full w-full"
         role="img"
