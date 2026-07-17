@@ -159,6 +159,9 @@ export default function InputPanel({
       <label className="mt-5 block text-base font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
         Enter or Paste English Sentence Here
       </label>
+      <p className="mt-1 text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
+        English only · Declarative sentences · Simple, compound, or complex
+      </p>
 
       <textarea
         value={sentence}
@@ -191,18 +194,7 @@ export default function InputPanel({
         Submitted sentences and analysis results may be stored for system evaluation and administrator review. Sign in to save and view your history.
       </p>
 
-      <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
-        <div className="min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]">
-          <h3 className="text-base font-bold text-[#111827] transition-colors duration-300 dark:text-white">
-            Supported Input
-          </h3>
-          <div className="mt-3 grid gap-2 text-base font-medium text-[#374151] transition-colors duration-300 sm:grid-cols-3 dark:text-[#D1D5DB]">
-            <p>English language</p>
-            <p>Declarative sentences only</p>
-            <p>Simple, Compound and Complex</p>
-          </div>
-        </div>
-
+      <div className="mt-4 flex justify-end">
         <select
           value=""
           onChange={handleExampleSelect}

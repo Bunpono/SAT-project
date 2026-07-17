@@ -41,11 +41,11 @@ function getResultPreview(entry) {
 
 function SummaryCard({ label, value }) {
   return (
-    <div className="rounded-2xl border border-white/70 bg-white p-5 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5">
+    <div className="rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5">
       <p className="text-base font-bold uppercase text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
         {label}
       </p>
-      <p className="mt-4 text-3xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
+      <p className="mt-3 text-2xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
         {value}
       </p>
     </div>
@@ -153,8 +153,8 @@ export default function AdminDashboard() {
   }
 
   return (
-    <section className="min-w-0 space-y-6">
-      <div className="min-w-0 rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 sm:p-8 dark:border-[#263042] dark:bg-[#111827]">
+    <section className="min-w-0 space-y-5">
+      <div className="min-w-0 rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 sm:p-6 dark:border-[#263042] dark:bg-[#111827]">
         <p className="text-base font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
           Admin
         </p>
@@ -179,7 +179,7 @@ export default function AdminDashboard() {
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`min-h-14 rounded-[15px] px-4 py-3 text-base font-bold transition-all duration-300 sm:text-lg ${
+            className={`min-h-12 rounded-[15px] px-3 py-2.5 text-base font-bold transition-all duration-300 ${
               activeTab === tab.id
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"

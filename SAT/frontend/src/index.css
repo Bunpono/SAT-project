@@ -10,6 +10,7 @@
   }
 
   html {
+    font-size: 87.5%;
     background: #F5F7FC;
     overflow-x: hidden;
     transition: background-color 300ms ease, color 300ms ease;

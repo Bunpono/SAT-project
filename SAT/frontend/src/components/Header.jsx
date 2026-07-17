@@ -80,18 +80,18 @@ export default function Header({
   const [isAccountOpen, setIsAccountOpen] = useState(false)
 
   return (
-    <header className="flex min-w-0 flex-col gap-5 transition-colors duration-300 lg:flex-row lg:items-start lg:justify-between">
-      <div className="flex min-w-0 items-center gap-3 sm:gap-5">
+    <header className="flex min-w-0 flex-col gap-4 transition-colors duration-300 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
         <img
           src="/sat-logo.png"
           alt="Syntactic Analysis Tool logo"
-          className="h-11 w-16 shrink-0 object-contain brightness-0 drop-shadow-[0_10px_16px_rgba(17,24,39,0.18)] transition-all duration-300 sm:h-14 sm:w-20 lg:h-[72px] lg:w-28 dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
+          className="h-10 w-14 shrink-0 object-contain brightness-0 drop-shadow-[0_10px_16px_rgba(17,24,39,0.18)] transition-all duration-300 sm:h-12 sm:w-[72px] lg:h-14 lg:w-20 dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
         />
         <div className="min-w-0">
-          <h1 className="break-words text-2xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-3xl lg:text-4xl dark:text-white">
+          <h1 className="break-words text-2xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-3xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
-          <p className="mt-1 max-w-2xl text-base font-medium leading-6 text-[#6B7280] transition-colors duration-300 lg:text-lg dark:text-[#D1D5DB]">
+          <p className="mt-1 max-w-2xl text-base font-medium leading-5 text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
             Advanced English Sentence Parser with Interactive Visualization
           </p>
         </div>

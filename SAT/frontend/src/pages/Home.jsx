@@ -73,7 +73,7 @@ function AdminIcon() {
 
 function Footer() {
   return (
-    <footer className="py-10 text-center text-base font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
+    <footer className="py-7 text-center text-base font-medium text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
       Powered by WJ & AJ Syntactic Algorithm
     </footer>
   )
@@ -189,8 +189,8 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-[#F5F7FC] via-[#F2F5FF] to-[#DBEAFE] px-4 py-6 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-8 lg:px-10 dark:from-[#050816] dark:via-[#0B1120] dark:to-[#111827] dark:text-white">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-[1680px] min-w-0 flex-col">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-[#F5F7FC] via-[#F2F5FF] to-[#DBEAFE] px-4 py-5 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-6 lg:px-8 dark:from-[#050816] dark:via-[#0B1120] dark:to-[#111827] dark:text-white">
+      <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-[1400px] min-w-0 flex-col">
         <Header
           theme={theme}
           onToggleTheme={onToggleTheme}
@@ -202,7 +202,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
 
         <nav
           aria-label="Main navigation"
-          className={`mt-8 grid w-full min-w-0 gap-2 rounded-2xl bg-[#E8E8ED] p-2 transition-all duration-300 dark:bg-[#151B2D] ${
+          className={`mt-6 grid w-full min-w-0 gap-2 rounded-2xl bg-[#E8E8ED] p-2 transition-all duration-300 dark:bg-[#151B2D] ${
             user?.role === "admin"
               ? "grid-cols-1 sm:grid-cols-2 lg:max-w-[1240px] lg:grid-cols-4"
               : user
@@ -214,7 +214,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             type="button"
             onClick={() => navigateToView("analysis")}
             aria-pressed={activeView === "analysis"}
-            className={`flex min-h-14 min-w-0 items-center justify-center gap-3 whitespace-normal rounded-[15px] px-4 py-3.5 text-base font-bold leading-snug transition-all duration-300 sm:text-lg lg:px-7 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 lg:px-5 ${
               activeView === "analysis"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -227,7 +227,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             type="button"
             onClick={() => navigateToView("history")}
             aria-pressed={activeView === "history"}
-            className={`flex min-h-14 min-w-0 items-center justify-center gap-3 whitespace-normal rounded-[15px] px-4 py-3.5 text-base font-bold leading-snug transition-all duration-300 sm:text-lg lg:px-7 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 lg:px-5 ${
               activeView === "history"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -240,7 +240,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             type="button"
             onClick={() => navigateToView("guide")}
             aria-pressed={activeView === "guide"}
-            className={`flex min-h-14 min-w-0 items-center justify-center gap-3 whitespace-normal rounded-[15px] px-4 py-3.5 text-base font-bold leading-snug transition-all duration-300 sm:text-lg lg:px-7 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 lg:px-5 ${
               activeView === "guide"
                 ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -254,7 +254,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
               type="button"
               onClick={() => navigateToView("admin")}
               aria-pressed={activeView === "admin"}
-              className={`flex min-h-14 min-w-0 items-center justify-center gap-3 whitespace-normal rounded-[15px] px-4 py-3.5 text-base font-bold leading-snug transition-all duration-300 sm:text-lg lg:px-7 ${
+              className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 lg:px-5 ${
                 activeView === "admin"
                   ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                   : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -269,7 +269,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
         <main className="min-w-0 flex-1">
           {activeView === "analysis" && (
             <>
-            <div className="mt-6">
+            <div className="mt-5">
               <InputPanel
                 key={inputVersion}
                 analysis={analysis}
@@ -281,15 +281,15 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
 
             {analysis && (
               <>
-                <div className="mt-6">
+                <div className="mt-5">
                   <ResultTabs analysis={analysis} />
                 </div>
 
-                <div className="mt-6">
+                <div className="mt-5">
                   <AnalysisSummary analysis={analysis} />
                 </div>
 
-                <div className="mt-6">
+                <div className="mt-5">
                   <TreePanel analysis={analysis} />
                 </div>
               </>
@@ -298,7 +298,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
           )}
 
           {activeView === "history" && user && (
-            <div className="mt-10">
+            <div className="mt-7">
               <AnalysisHistory
                 history={history}
                 onView={handleViewHistory}
@@ -310,19 +310,19 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
           )}
 
           {activeView === "guide" && (
-            <div className="mt-10">
+            <div className="mt-7">
               <HowToUse />
             </div>
           )}
 
           {activeView === "admin" && user?.role === "admin" && (
-            <div className="mt-10">
+            <div className="mt-7">
               <AdminDashboard />
             </div>
           )}
 
           {activeView === "admin" && user && user.role !== "admin" && (
-            <div className="mt-10 rounded-2xl border border-red-200 bg-white p-6 text-red-700 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-red-900 dark:bg-[#111827] dark:text-red-300">
+            <div className="mt-7 rounded-2xl border border-red-200 bg-white p-5 text-red-700 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-red-900 dark:bg-[#111827] dark:text-red-300">
               Access denied
             </div>
           )}
