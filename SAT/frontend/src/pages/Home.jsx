@@ -188,7 +188,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-[#F5F7FC] via-[#F2F5FF] to-[#DBEAFE] px-4 py-5 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-6 lg:px-8 dark:from-[#050816] dark:via-[#0B1120] dark:to-[#111827] dark:text-white">
+    <div className="app-surface min-h-screen overflow-x-hidden px-4 py-5 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-6 lg:px-8 dark:text-white">
       <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-[1400px] min-w-0 flex-col">
         <Header
           theme={theme}

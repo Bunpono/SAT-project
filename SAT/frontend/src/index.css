@@ -58,3 +58,19 @@
     color: #111827;
   }
 }
+
+@layer components {
+  .app-surface {
+    background-image:
+      radial-gradient(circle at 8% 0%, rgba(255, 255, 255, 0.95), transparent 28%),
+      radial-gradient(circle at 92% 12%, rgba(191, 219, 254, 0.62), transparent 30%),
+      linear-gradient(135deg, #F5F7FC 0%, #F2F5FF 52%, #DBEAFE 100%);
+  }
+
+  .dark .app-surface {
+    background-image:
+      radial-gradient(circle at 8% 0%, rgba(37, 99, 235, 0.18), transparent 30%),
+      radial-gradient(circle at 92% 12%, rgba(79, 70, 229, 0.16), transparent 32%),
+      linear-gradient(135deg, #050816 0%, #0B1120 52%, #111827 100%);
+  }
+}

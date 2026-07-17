@@ -80,7 +80,7 @@ export default function ResetPasswordPage({ theme, onToggleTheme }) {
   }
 
   return (
-    <main className="flex min-h-screen min-w-0 flex-col items-center justify-center overflow-x-hidden bg-gradient-to-br from-[#F5F7FC] to-[#EEF3FF] px-4 py-5 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-8 dark:from-[#050816] dark:to-[#0B1120] dark:text-white">
+    <main className="app-surface flex min-h-screen min-w-0 flex-col items-center justify-center overflow-x-hidden px-4 py-5 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-8 dark:text-white">
       <button
         type="button"
         onClick={onToggleTheme}
