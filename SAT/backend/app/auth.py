@@ -21,6 +21,7 @@ if not JWT_SECRET_KEY:
     raise RuntimeError("JWT_SECRET_KEY environment variable is required")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
 
 def hash_password(password: str) -> str:
@@ -44,9 +45,7 @@ def create_access_token(user: User) -> str:
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-) -> User:
+def _get_user_from_token(token: str, db: Session) -> User:
     credentials_error = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid or expired authentication token.",
@@ -64,6 +63,22 @@ def get_current_user(
         raise credentials_error
 
     return user
+
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+) -> User:
+    return _get_user_from_token(token, db)
+
+
+def get_optional_current_user(
+    token: str | None = Depends(optional_oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> User | None:
+    if token is None:
+        return None
+
+    return _get_user_from_token(token, db)
 
 
 def require_admin(current_user: User = Depends(get_current_user)) -> User:

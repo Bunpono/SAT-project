@@ -31,8 +31,8 @@ class AnalysisHistory(Base):
     __tablename__ = "analysis_history"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
+    user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=True
     )
     sentence: Mapped[str] = mapped_column(Text, nullable=False)
     s_expression: Mapped[str] = mapped_column(Text, nullable=False)
@@ -42,7 +42,7 @@ class AnalysisHistory(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    user: Mapped[User] = relationship(back_populates="analyses")
+    user: Mapped[User | None] = relationship(back_populates="analyses")
 
 
 class ErrorReport(Base):

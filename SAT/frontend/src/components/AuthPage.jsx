@@ -35,7 +35,12 @@ const authModes = [
   { id: "register", label: "Register", icon: RegisterIcon }
 ]
 
-export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
+export default function AuthPage({
+  onAuthenticated,
+  onContinueAsGuest,
+  theme,
+  onToggleTheme
+}) {
   const [mode, setMode] = useState("login")
   const [form, setForm] = useState({ name: "", email: "", password: "" })
   const [error, setError] = useState("")
@@ -146,7 +151,7 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
               Welcome
             </h2>
             <p className="mt-2 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
-              Login or create an account to start analyzing sentences
+              Sign in to save and view your analysis history
             </p>
           </div>
 
@@ -242,6 +247,13 @@ export default function AuthPage({ onAuthenticated, theme, onToggleTheme }) {
                 : "Sign in"}
           </button>
         </form>
+        <button
+          type="button"
+          onClick={onContinueAsGuest}
+          className="mt-4 w-full rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-base font-bold text-[#374151] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.99] dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]"
+        >
+          Continue as guest
+        </button>
       </section>
       </div>
 

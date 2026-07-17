@@ -10,6 +10,7 @@ export default function App() {
   const isResetPasswordRoute =
     typeof window !== "undefined" && window.location.pathname === "/reset-password"
   const [user, setUser] = useState(null)
+  const [isAuthOpen, setIsAuthOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(
     !isResetPasswordRoute && Boolean(getAuthToken())
   )
@@ -40,6 +41,7 @@ export default function App() {
 
   const handleAuthenticated = ({ access_token, user: authenticatedUser }) => {
     setAuthToken(access_token)
+    setIsAuthOpen(false)
     if (authenticatedUser.role === "admin") {
       window.history.replaceState(null, "", "#admin")
     } else if (window.location.hash === "#admin") {
@@ -51,6 +53,9 @@ export default function App() {
   const handleLogout = () => {
     clearAuthToken()
     setUser(null)
+    if (window.location.hash === "#admin") {
+      window.history.replaceState(null, "", window.location.pathname)
+    }
   }
 
   if (isLoading) {
@@ -65,9 +70,25 @@ export default function App() {
     return <ResetPasswordPage theme={theme} onToggleTheme={toggleTheme} />
   }
 
-  if (!user) {
-    return <AuthPage onAuthenticated={handleAuthenticated} theme={theme} onToggleTheme={toggleTheme} />
+  if (isAuthOpen) {
+    return (
+      <AuthPage
+        onAuthenticated={handleAuthenticated}
+        onContinueAsGuest={() => setIsAuthOpen(false)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
+    )
   }
 
-  return <Home user={user} onLogout={handleLogout} theme={theme} onToggleTheme={toggleTheme} />
+  return (
+    <Home
+      key={user?.id || "guest"}
+      user={user}
+      onSignIn={() => setIsAuthOpen(true)}
+      onLogout={handleLogout}
+      theme={theme}
+      onToggleTheme={toggleTheme}
+    />
+  )
 }

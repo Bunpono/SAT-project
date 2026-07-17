@@ -25,11 +25,11 @@ function formatDate(value) {
 }
 
 function getUserName(user) {
-  return user?.name || user?.full_name || user?.email || "Unknown user"
+  return user?.name || user?.full_name || user?.email || "Guest"
 }
 
 function getUserEmail(user) {
-  return user?.email || "Not available"
+  return user?.email || "—"
 }
 
 function getResultPreview(entry) {
@@ -69,6 +69,7 @@ export default function AdminDashboard() {
   const [errorMessage, setErrorMessage] = useState("")
   const [selectedResult, setSelectedResult] = useState(null)
   const [updatingReportId, setUpdatingReportId] = useState(null)
+  const [historyFilter, setHistoryFilter] = useState("all")
 
   useEffect(() => {
     let active = true
@@ -100,6 +101,16 @@ export default function AdminDashboard() {
       openReports: reports.filter((report) => report.status === "open").length
     }
   }, [users, history, reports])
+
+  const filteredHistory = useMemo(() => {
+    if (historyFilter === "guests") {
+      return history.filter((entry) => entry.user_id == null)
+    }
+    if (historyFilter === "registered") {
+      return history.filter((entry) => entry.user_id != null)
+    }
+    return history
+  }, [history, historyFilter])
 
   const handleUpdateStatus = async (reportId, nextStatus) => {
     setUpdatingReportId(reportId)
@@ -230,7 +241,19 @@ export default function AdminDashboard() {
           <h3 className="text-lg font-bold text-[#111827] dark:text-white">
             Analysis History
           </h3>
-          {history.length === 0 ? (
+          <label className="mt-4 flex max-w-sm flex-col gap-2 text-base font-bold text-[#374151] dark:text-[#D1D5DB]">
+            Show
+            <select
+              value={historyFilter}
+              onChange={(event) => setHistoryFilter(event.target.value)}
+              className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 font-medium text-[#111827] outline-none dark:border-[#263042] dark:bg-[#151B2D] dark:text-white"
+            >
+              <option value="all">All</option>
+              <option value="registered">Registered Users</option>
+              <option value="guests">Guests</option>
+            </select>
+          </label>
+          {filteredHistory.length === 0 ? (
             <div className="mt-4">
               <EmptyState>No analyses yet.</EmptyState>
             </div>
@@ -247,7 +270,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {history.map((entry) => (
+                  {filteredHistory.map((entry) => (
                     <tr key={entry.id} className="border-b border-[#E5E7EB] last:border-b-0 dark:border-[#263042]">
                       <td className="whitespace-nowrap px-3 py-3 text-[#6B7280] dark:text-[#9CA3AF]">{formatDate(entry.created_at)}</td>
                       <td className="px-3 py-3">

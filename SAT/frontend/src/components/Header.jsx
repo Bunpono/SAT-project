@@ -72,6 +72,7 @@ export default function Header({
   theme,
   onToggleTheme,
   user,
+  onSignIn,
   onLogout,
   onOpenAdmin
 }) {
@@ -106,17 +107,28 @@ export default function Header({
         >
           {isDark ? <MoonIcon /> : <SunIcon />}
         </button>
-        <button
-          type="button"
-          onClick={() => setIsAccountOpen((value) => !value)}
-          aria-expanded={isAccountOpen}
-          className="flex h-12 min-w-0 max-w-[calc(100vw-6rem)] items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 text-base font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
-        >
-          <UserIcon />
-          <span className="truncate">{user.name}</span>
-        </button>
+        {user ? (
+          <button
+            type="button"
+            onClick={() => setIsAccountOpen((value) => !value)}
+            aria-expanded={isAccountOpen}
+            className="flex h-12 min-w-0 max-w-[calc(100vw-6rem)] items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 text-base font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
+          >
+            <UserIcon />
+            <span className="truncate">{user.name}</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onSignIn}
+            className="flex h-12 items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 text-base font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
+          >
+            <UserIcon />
+            Sign in
+          </button>
+        )}
 
-        {isAccountOpen && (
+        {user && isAccountOpen && (
           <div className="absolute right-0 top-14 z-30 w-[calc(100vw-2rem)] max-w-80 overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-[0_16px_40px_rgba(17,24,39,0.16)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827]">
             <div className="border-b border-[#E5E7EB] px-4 py-4 text-base font-bold text-[#111827] dark:border-[#263042] dark:text-white">
               My Account

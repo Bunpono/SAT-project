@@ -1,4 +1,6 @@
+import logging
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Response, status
@@ -11,6 +13,7 @@ load_dotenv()
 from app.auth import (  # noqa: E402
     create_access_token,
     get_current_user,
+    get_optional_current_user,
     hash_password,
     require_admin,
     verify_password,
@@ -46,6 +49,7 @@ allowed_origins = [
 ]
 
 app = FastAPI(title="Syntactic Analysis API")
+logger = logging.getLogger(__name__)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
@@ -69,6 +73,47 @@ def ensure_database_columns():
     }
 
     statements = []
+    history_columns = {
+        column["name"]: column
+        for column in inspector.get_columns("analysis_history")
+    } if "analysis_history" in table_columns else {}
+
+    user_id_column = history_columns.get("user_id")
+    if user_id_column and not user_id_column.get("nullable", False):
+        if engine.dialect.name == "sqlite":
+            # The table-rebuild migration selects this column, so ensure it
+            # exists first when upgrading an older SQLite database.
+            if "sentence_type" not in table_columns["analysis_history"]:
+                with engine.begin() as connection:
+                    connection.execute(
+                        text(
+                            "ALTER TABLE analysis_history ADD COLUMN "
+                            "sentence_type VARCHAR(40) NOT NULL DEFAULT 'Unknown'"
+                        )
+                    )
+                inspector = inspect(engine)
+                table_columns["analysis_history"] = {
+                    column["name"]
+                    for column in inspector.get_columns("analysis_history")
+                }
+            migration_path = (
+                Path(__file__).resolve().parent
+                / "migrations"
+                / "001_allow_guest_analysis.sql"
+            )
+            raw_connection = engine.raw_connection()
+            try:
+                raw_connection.executescript(migration_path.read_text(encoding="utf-8"))
+            finally:
+                raw_connection.close()
+            inspector = inspect(engine)
+            table_columns["analysis_history"] = {
+                column["name"] for column in inspector.get_columns("analysis_history")
+            }
+        else:
+            statements.append(
+                "ALTER TABLE analysis_history ALTER COLUMN user_id DROP NOT NULL"
+            )
     if "analysis_history" in table_columns and "sentence_type" not in table_columns["analysis_history"]:
         statements.append(
             "ALTER TABLE analysis_history ADD COLUMN sentence_type VARCHAR(40) NOT NULL DEFAULT 'Unknown'"
@@ -145,7 +190,10 @@ def serialize_analysis(item: AnalysisHistory, include_user: bool = False) -> dic
         "created_at": item.created_at,
     }
     if include_user:
-        result["user"] = UserResponse.model_validate(item.user)
+        result["user"] = (
+            UserResponse.model_validate(item.user) if item.user is not None else None
+        )
+        result["user_label"] = item.user.name if item.user is not None else "Guest"
     return result
 
 
@@ -230,12 +278,12 @@ def get_me(current_user: User = Depends(get_current_user)):
 @app.post("/analyze")
 def analyze(
     data: AnalyzeRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User | None = Depends(get_optional_current_user),
     db: Session = Depends(get_db),
 ):
     sentence = data.sentence.strip()
     if not sentence:
-        raise HTTPException(status_code=422, detail="Sentence is required.")
+        raise HTTPException(status_code=400, detail="Sentence is required.")
 
     try:
         s_expression = predict_s_expression(sentence)
@@ -244,15 +292,23 @@ def analyze(
     tree = s_expression_to_tree(s_expression)
 
     history_item = AnalysisHistory(
-        user_id=current_user.id,
+        user_id=current_user.id if current_user is not None else None,
         sentence=sentence,
         s_expression=s_expression,
         tree_json=tree,
         sentence_type=detect_sentence_type(sentence, tree),
     )
-    db.add(history_item)
-    db.commit()
-    db.refresh(history_item)
+    try:
+        db.add(history_item)
+        db.commit()
+        db.refresh(history_item)
+    except Exception as exc:
+        db.rollback()
+        logger.exception("Unable to save analysis history")
+        raise HTTPException(
+            status_code=500,
+            detail="The analysis completed, but its history could not be saved.",
+        ) from exc
 
     return serialize_analysis(history_item)
 

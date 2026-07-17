@@ -59,7 +59,8 @@ function AlertIcon() {
 export default function InputPanel({
   analysis,
   onAnalyzeComplete,
-  initialSentence = DEFAULT_SENTENCE
+  initialSentence = DEFAULT_SENTENCE,
+  canReport = false
 }) {
   const [sentence, setSentence] = useState(initialSentence)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -186,6 +187,9 @@ export default function InputPanel({
           <span className="text-[#111827] dark:text-white">{validation.sentenceType}</span>
         </p>
       </div>
+      <p className="mt-3 text-sm leading-5 text-[#6B7280] dark:text-[#9CA3AF]">
+        Submitted sentences and analysis results may be stored for system evaluation and administrator review. Sign in to save and view your history.
+      </p>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-start">
         <div className="min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]">
@@ -267,14 +271,14 @@ export default function InputPanel({
             Clear
           </button>
 
-          <button
+          {canReport && <button
             type="button"
             onClick={() => { setShowReportForm((value) => !value); setReportStatus("") }}
             className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-orange-200 bg-white px-5 py-3 text-base font-bold text-orange-600 transition-all duration-300 hover:bg-orange-50 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-orange-800 dark:bg-[#111827] dark:text-orange-300 dark:hover:bg-orange-950/40"
           >
             <AlertIcon />
             Report Error
-          </button>
+          </button>}
         </div>
 
         <label className="flex w-full min-w-0 flex-col gap-2 text-base font-bold text-[#111827] transition-colors duration-300 sm:flex-row sm:items-center lg:w-auto dark:text-white">
@@ -288,7 +292,7 @@ export default function InputPanel({
         </label>
       </div>
 
-      {showReportForm && (
+      {canReport && showReportForm && (
         <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 p-4 shadow-sm transition-all duration-300 dark:border-orange-900 dark:bg-orange-950/30">
           <label className="block text-base font-semibold text-orange-900 dark:text-orange-200">
             Describe what looks incorrect

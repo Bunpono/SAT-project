@@ -12,7 +12,7 @@ create table if not exists public.profiles (
 
 create table if not exists public.analysis_history (
   id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users(id) on delete cascade,
+  user_id uuid references auth.users(id) on delete cascade,
   sentence text not null,
   result jsonb not null,
   sentence_type text,
@@ -98,6 +98,13 @@ on public.analysis_history
 for insert
 to authenticated
 with check (user_id = auth.uid());
+
+drop policy if exists "analysis_history_insert_guest" on public.analysis_history;
+create policy "analysis_history_insert_guest"
+on public.analysis_history
+for insert
+to anon
+with check (user_id is null);
 
 drop policy if exists "analysis_history_admin_select_all" on public.analysis_history;
 create policy "analysis_history_admin_select_all"

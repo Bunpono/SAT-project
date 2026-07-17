@@ -7,11 +7,6 @@ import TreePanel from "../components/TreePanel"
 import HowToUse from "../components/HowToUse"
 import AnalysisHistory from "../components/AnalysisHistory"
 import AdminDashboard from "../components/AdminDashboard"
-import {
-  addAnalysisHistory,
-  clearAnalysisHistory,
-  getAnalysisHistory
-} from "../utils/analysisHistory"
 import { clearMyHistory, deleteMyHistory, getMyHistory } from "../services/api"
 
 function SyntaxIcon() {
@@ -84,37 +79,45 @@ function Footer() {
   )
 }
 
-export default function Home({ user, onLogout, theme, onToggleTheme }) {
+export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme }) {
   const [analysis, setAnalysis] = useState(null)
   const [activeView, setActiveView] = useState(() => {
-    if (typeof window !== "undefined" && window.location.hash === "#admin") {
+    if (
+      user?.role === "admin" &&
+      typeof window !== "undefined" &&
+      window.location.hash === "#admin"
+    ) {
       return "admin"
     }
     return "analysis"
   })
-  const [history, setHistory] = useState(() => getAnalysisHistory())
+  const [history, setHistory] = useState([])
   const [inputSentence, setInputSentence] = useState("She is talking about her dog.")
   const [inputVersion, setInputVersion] = useState(0)
+  const userId = user?.id
 
   const loadAccountHistory = async () => {
+    if (!user) return
     try {
       setHistory(await getMyHistory())
     } catch (error) {
-      console.error("Unable to load account history; keeping local history:", error)
+      console.error("Unable to load account history:", error)
     }
   }
 
   useEffect(() => {
+    if (!userId) return undefined
+
     let active = true
     getMyHistory()
       .then((items) => {
         if (active) setHistory(items)
       })
       .catch((error) => {
-        console.error("Unable to load account history; keeping local history:", error)
+        console.error("Unable to load account history:", error)
       })
     return () => { active = false }
-  }, [])
+  }, [userId])
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -126,6 +129,11 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
   }, [])
 
   const navigateToView = (view) => {
+    if (view === "history" && !user) {
+      onSignIn()
+      return
+    }
+    if (view === "admin" && user?.role !== "admin") return
     setActiveView(view)
 
     if (view === "admin") {
@@ -142,8 +150,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
     setAnalysis(result)
 
     if (result) {
-      setHistory(addAnalysisHistory(result))
-      loadAccountHistory()
+      if (user) loadAccountHistory()
     }
   }
 
@@ -175,7 +182,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
   const handleClearHistory = async () => {
     try {
       await clearMyHistory()
-      setHistory(clearAnalysisHistory())
+      setHistory([])
     } catch (error) {
       console.error("Unable to clear account history:", error)
     }
@@ -188,6 +195,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
           theme={theme}
           onToggleTheme={onToggleTheme}
           user={user}
+          onSignIn={onSignIn}
           onLogout={onLogout}
           onOpenAdmin={() => navigateToView("admin")}
         />
@@ -195,9 +203,11 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
         <nav
           aria-label="Main navigation"
           className={`mt-8 grid w-full min-w-0 gap-2 rounded-2xl bg-[#E8E8ED] p-2 transition-all duration-300 dark:bg-[#151B2D] ${
-            user.role === "admin"
+            user?.role === "admin"
               ? "grid-cols-1 sm:grid-cols-2 lg:max-w-[1240px] lg:grid-cols-4"
-              : "grid-cols-1 sm:grid-cols-3 lg:max-w-[840px]"
+              : user
+                ? "grid-cols-1 sm:grid-cols-3 lg:max-w-[840px]"
+                : "grid-cols-1 sm:grid-cols-3 lg:max-w-[840px]"
           }`}
         >
           <button
@@ -239,7 +249,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             <BookIcon />
             How to Use
           </button>
-          {user.role === "admin" && (
+          {user?.role === "admin" && (
             <button
               type="button"
               onClick={() => navigateToView("admin")}
@@ -265,6 +275,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
                 analysis={analysis}
                 onAnalyzeComplete={handleAnalysisComplete}
                 initialSentence={inputSentence}
+                canReport={Boolean(user)}
               />
             </div>
 
@@ -286,7 +297,7 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             </>
           )}
 
-          {activeView === "history" && (
+          {activeView === "history" && user && (
             <div className="mt-10">
               <AnalysisHistory
                 history={history}
@@ -304,13 +315,13 @@ export default function Home({ user, onLogout, theme, onToggleTheme }) {
             </div>
           )}
 
-          {activeView === "admin" && user.role === "admin" && (
+          {activeView === "admin" && user?.role === "admin" && (
             <div className="mt-10">
               <AdminDashboard />
             </div>
           )}
 
-          {activeView === "admin" && user.role !== "admin" && (
+          {activeView === "admin" && user && user.role !== "admin" && (
             <div className="mt-10 rounded-2xl border border-red-200 bg-white p-6 text-red-700 shadow-[0_18px_50px_rgba(17,24,39,0.08)] transition-all duration-300 dark:border-red-900 dark:bg-[#111827] dark:text-red-300">
               Access denied
             </div>
