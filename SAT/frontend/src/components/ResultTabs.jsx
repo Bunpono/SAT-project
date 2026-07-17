@@ -60,14 +60,14 @@ export default function ResultTabs({ analysis }) {
   const renderActiveResult = () => {
     if (activeTab === "pos") {
       return treeAnalysis.posTags.length > 0 ? (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3">
           {treeAnalysis.posTags.map(({ word, tag }, index) => (
             <span
               key={`${word}-${tag}-${index}`}
-              className="rounded-xl border border-blue-200 bg-white/90 px-3 py-2 text-base text-[#374151] shadow-sm transition-all duration-300 dark:border-blue-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
+              className="inline-flex min-w-20 flex-col items-center rounded-xl border border-blue-200 bg-white/90 px-3 py-3 text-center text-[#374151] shadow-sm transition-all duration-300 dark:border-blue-900 dark:bg-[#151B2D]/80 dark:text-[#D1D5DB]"
             >
               <span className="font-semibold text-[#111827] dark:text-white">{word}</span>
-              <span className="ml-2 font-medium text-blue-600 dark:text-blue-300">{tag}</span>
+              <span className="mt-1 text-sm font-medium text-blue-600 dark:text-blue-300">{tag}</span>
             </span>
           ))}
         </div>
