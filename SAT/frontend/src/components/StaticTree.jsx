@@ -1,10 +1,15 @@
+import { useEffect, useRef, useState } from "react"
 import { hierarchy, tree } from "d3-hierarchy"
 import { prepareTreeForDisplay } from "../utils/treeRules"
 
 export default function StaticTree({ data, selectedWords = [], onSelectWords }) {
-  if (!data) return null
+  const viewportRef = useRef(null)
+  const dragRef = useRef(null)
+  const ignoreClickRef = useRef(false)
+  const [viewport, setViewport] = useState({ width: 0, height: 0 })
+  const [transform, setTransform] = useState(null)
 
-  const preparedTree = prepareTreeForDisplay(data)
+  const preparedTree = prepareTreeForDisplay(data || { name: "ROOT" })
 
   const NODE_W = 96
   const NODE_H = 48
@@ -92,14 +97,112 @@ function getNodeStyle(node, depth) {
   const nodes = treeRoot.descendants()
   const links = treeRoot.links()
 
+  useEffect(() => {
+    const element = viewportRef.current
+    if (!element) return undefined
+
+    const updateViewport = () => {
+      setViewport({ width: element.clientWidth, height: element.clientHeight })
+    }
+
+    updateViewport()
+    const observer = new ResizeObserver(updateViewport)
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
+
+  const fitPadding = 24
+  const fitScale = viewport.width && viewport.height
+    ? Math.min(
+      (viewport.width - fitPadding * 2) / svgWidth,
+      (viewport.height - fitPadding * 2) / svgHeight,
+      1
+    )
+    : 1
+  const initialTransform = {
+    x: Math.max(fitPadding, (viewport.width - svgWidth * fitScale) / 2),
+    y: Math.max(fitPadding, (viewport.height - svgHeight * fitScale) / 2),
+    scale: fitScale
+  }
+  const activeTransform = transform || initialTransform
+
+  const handleWheel = (event) => {
+    event.preventDefault()
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const pointerX = event.clientX - bounds.left
+    const pointerY = event.clientY - bounds.top
+    const zoomFactor = event.deltaY < 0 ? 1.12 : 0.89
+
+    setTransform((current) => {
+      const active = current || initialTransform
+      const nextScale = Math.min(2.5, Math.max(0.35, active.scale * zoomFactor))
+      const worldX = (pointerX - active.x) / active.scale
+      const worldY = (pointerY - active.y) / active.scale
+
+      return {
+        x: pointerX - worldX * nextScale,
+        y: pointerY - worldY * nextScale,
+        scale: nextScale
+      }
+    })
+  }
+
+  const handlePointerDown = (event) => {
+    if (event.button !== 0) return
+
+    event.currentTarget.setPointerCapture(event.pointerId)
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: activeTransform.x,
+      originY: activeTransform.y,
+      moved: false
+    }
+  }
+
+  const handlePointerMove = (event) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+
+    const deltaX = event.clientX - drag.startX
+    const deltaY = event.clientY - drag.startY
+    if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) drag.moved = true
+
+    setTransform((current) => ({
+      ...current,
+      x: drag.originX + deltaX,
+      y: drag.originY + deltaY
+    }))
+  }
+
+  const handlePointerEnd = (event) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+
+    if (drag.moved) ignoreClickRef.current = true
+    dragRef.current = null
+  }
+
+  if (!data) return null
+
   return (
-    <svg
-      width={svgWidth}
-      height={svgHeight}
-      viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-      preserveAspectRatio="xMinYMin meet"
-      className="block max-w-none"
+    <div
+      ref={viewportRef}
+      className="h-[440px] w-full touch-none cursor-grab select-none sm:h-[520px] active:cursor-grabbing"
+      onWheel={handleWheel}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
     >
+      <svg
+        viewBox={`0 0 ${Math.max(viewport.width, 1)} ${Math.max(viewport.height, 1)}`}
+        className="block h-full w-full"
+        role="img"
+        aria-label="Interactive syntax tree. Scroll to zoom and drag to pan."
+      >
+      <g transform={`translate(${activeTransform.x}, ${activeTransform.y}) scale(${activeTransform.scale})`}>
       <g transform={`translate(${PADDING_X}, ${PADDING_Y})`}>
         {links.map((link, index) => {
           const sourceX = link.source.x
@@ -137,6 +240,10 @@ function getNodeStyle(node, depth) {
             <g
               key={`node-${node.name}-${index}`}
               onClick={() => {
+                if (ignoreClickRef.current) {
+                  ignoreClickRef.current = false
+                  return
+                }
                 if (nodeWords.length > 0) {
                   const same =
                     selectedWords.length === nodeWords.length &&
@@ -212,7 +319,9 @@ function getNodeStyle(node, depth) {
           )
         })}
       </g>
-    </svg>
+      </g>
+      </svg>
+    </div>
   )
 }
 
