@@ -1,3 +1,4 @@
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -47,6 +48,7 @@ allowed_origins = [
 ]
 
 app = FastAPI(title="Syntactic Analysis API")
+logger = logging.getLogger(__name__)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
@@ -58,6 +60,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def load_analysis_model_on_startup():
+    """Fail fast instead of returning a misleading error on the first request."""
+    try:
+        load_model()
+    except ModelLoadError as exc:
+        logger.exception("The analysis model could not be loaded during startup")
+        raise RuntimeError("The analysis model could not be loaded during startup.") from exc
 
 
 def normalize_email(email: str) -> str:
