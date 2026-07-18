@@ -8,11 +8,17 @@ import os
 from typing import Any
 
 import httpx
+from dotenv import load_dotenv
 from fastapi import HTTPException
 
 
 class SupabaseClient:
     def __init__(self) -> None:
+        self.url = ""
+        self.secret_key = ""
+        self.reload_config()
+
+    def reload_config(self) -> None:
         self.url = os.getenv("SUPABASE_URL", "").rstrip("/")
         # Supabase's current server-only key name is SUPABASE_SECRET_KEY.
         # Retain the legacy variable as a migration fallback.
@@ -33,6 +39,13 @@ class SupabaseClient:
         json: Any = None,
         prefer: str | None = None,
     ) -> Any:
+        if not self.configured:
+            # Helpful in local development when .env was saved after the
+            # reload process already started. Production environment values
+            # still take precedence because override remains false.
+            load_dotenv()
+            self.reload_config()
+
         if not self.configured:
             raise HTTPException(
                 status_code=503,

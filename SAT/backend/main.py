@@ -1,10 +1,8 @@
 import os
-from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import inspect, text
 
 load_dotenv()
 
@@ -19,7 +17,6 @@ from app.auth import (  # noqa: E402
     to_user,
     verify_password,
 )
-from app.database import Base, engine  # noqa: E402
 from app.model import (  # noqa: E402
     ModelLoadError,
     get_model_status,
@@ -57,78 +54,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def create_database_tables():
-    Base.metadata.create_all(bind=engine)
-    ensure_database_columns()
-
-
-def ensure_database_columns():
-    inspector = inspect(engine)
-    table_columns = {
-        table_name: {column["name"] for column in inspector.get_columns(table_name)}
-        for table_name in inspector.get_table_names()
-    }
-
-    statements = []
-    history_columns = {
-        column["name"]: column
-        for column in inspector.get_columns("analysis_history")
-    } if "analysis_history" in table_columns else {}
-
-    user_id_column = history_columns.get("user_id")
-    if user_id_column and not user_id_column.get("nullable", False):
-        if engine.dialect.name == "sqlite":
-            # The table-rebuild migration selects this column, so ensure it
-            # exists first when upgrading an older SQLite database.
-            if "sentence_type" not in table_columns["analysis_history"]:
-                with engine.begin() as connection:
-                    connection.execute(
-                        text(
-                            "ALTER TABLE analysis_history ADD COLUMN "
-                            "sentence_type VARCHAR(40) NOT NULL DEFAULT 'Unknown'"
-                        )
-                    )
-                inspector = inspect(engine)
-                table_columns["analysis_history"] = {
-                    column["name"]
-                    for column in inspector.get_columns("analysis_history")
-                }
-            migration_path = (
-                Path(__file__).resolve().parent
-                / "migrations"
-                / "001_allow_guest_analysis.sql"
-            )
-            raw_connection = engine.raw_connection()
-            try:
-                raw_connection.executescript(migration_path.read_text(encoding="utf-8"))
-            finally:
-                raw_connection.close()
-            inspector = inspect(engine)
-            table_columns["analysis_history"] = {
-                column["name"] for column in inspector.get_columns("analysis_history")
-            }
-        else:
-            statements.append(
-                "ALTER TABLE analysis_history ALTER COLUMN user_id DROP NOT NULL"
-            )
-    if "analysis_history" in table_columns and "sentence_type" not in table_columns["analysis_history"]:
-        statements.append(
-            "ALTER TABLE analysis_history ADD COLUMN sentence_type VARCHAR(40) NOT NULL DEFAULT 'Unknown'"
-        )
-    if "error_reports" in table_columns and "status" not in table_columns["error_reports"]:
-        statements.append(
-            "ALTER TABLE error_reports ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'open'"
-        )
-
-    if not statements:
-        return
-
-    with engine.begin() as connection:
-        for statement in statements:
-            connection.execute(text(statement))
 
 
 def normalize_email(email: str) -> str:
