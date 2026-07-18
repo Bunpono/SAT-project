@@ -16,8 +16,8 @@ npm install
 npm run dev
 
 
-## SAT/setup-local.cmd 
-— เครื่องใหม่ดับเบิลคลิกครั้งเดียว เพื่อติดตั้งสิ่งที่จำเป็นและเปิดระบบ
+## SAT/setup-local.cmd เพื่อติดตั้งสิ่งที่จำเป็นและเปิดระบบ
+.\SAT\run-local.cmd 
 
-## SAT/run-local.cmd 
-— หลังตั้งค่าเสร็จ ดับเบิลคลิกครั้งเดียวเพื่อเปิด backend + frontend
+## SAT/run-local.cmd เพื่อเปิด backend + frontend
+.\SAT/run-local.cmd
