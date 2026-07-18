@@ -1,12 +1,16 @@
 """API tests with an in-memory stand-in for the Supabase REST tables."""
 
+import asyncio
 import unittest
 from unittest.mock import patch
 
-from fastapi.testclient import TestClient
+import httpx
 
 import main
-from app.auth import create_access_token, hash_password
+from app.auth import create_access_token
+
+
+TEST_PASSWORD_HASH = "$2b$12$jeiRcLUUK3guRt.dLz/YPuJwjSIGfEW36.Qwa5DEeADosmaNlMmQW"
 
 
 class FakeSupabase:
@@ -42,6 +46,8 @@ class FakeSupabase:
                 "created_at": "2026-01-01T00:00:00+00:00",
                 **json,
             }
+            if table == "error_reports":
+                item.setdefault("status", "open")
             self.next_ids[table] += 1
             rows.append(item)
             return [item.copy()]
@@ -58,24 +64,24 @@ class FakeSupabase:
         raise AssertionError(f"Unexpected request: {method} {table}")
 
 
-class AuthenticationFlowTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.supabase = FakeSupabase()
-        cls.supabase_patch = patch.object(main.supabase, "request", side_effect=cls.supabase.request)
-        cls.supabase_patch.start()
-        cls.client = TestClient(main.app)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.supabase_patch.stop()
-
-    def setUp(self):
-        self.supabase.reset()
+class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        asyncio.get_running_loop().set_debug(False)
+        self.supabase = FakeSupabase()
+        self.supabase_patch = patch.object(main.supabase, "request", side_effect=self.supabase.request)
+        self.supabase_patch.start()
+        self.client = httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=main.app),
+            base_url="http://testserver",
+        )
         self.user = self._add_user("Test User", "test-user@example.invalid", "user")
         self.admin = self._add_user("Test Admin", "test-admin@example.invalid", "admin")
         self.user_token = create_access_token(type("User", (), self.user)())
         self.admin_token = create_access_token(type("User", (), self.admin)())
+
+    async def asyncTearDown(self):
+        await self.client.aclose()
+        self.supabase_patch.stop()
 
     def _add_user(self, name, email, role):
         return main.supabase.request(
@@ -84,22 +90,22 @@ class AuthenticationFlowTests(unittest.TestCase):
             json={
                 "name": name,
                 "email": email,
-                "password_hash": hash_password("password123"),
+                "password_hash": TEST_PASSWORD_HASH,
                 "role": role,
             },
         )[0]
 
     @patch("main.predict_s_expression", return_value="(S (NP She) (VP is (NP a doctor)))")
-    def test_guest_analyze_saves_null_user_id(self, _predict):
-        response = self.client.post("/analyze", json={"sentence": "She is a doctor."})
+    async def test_guest_analyze_saves_null_user_id(self, _predict):
+        response = await self.client.post("/analyze", json={"sentence": "She is a doctor."})
 
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.json()["user_id"])
         self.assertIsNone(self.supabase.analyses[0]["user_id"])
 
     @patch("main.predict_s_expression")
-    def test_invalid_token_is_not_treated_as_guest(self, predict):
-        response = self.client.post(
+    async def test_invalid_token_is_not_treated_as_guest(self, predict):
+        response = await self.client.post(
             "/analyze", json={"sentence": "She is a doctor."}, headers={"Authorization": "Bearer invalid-token"}
         )
 
@@ -107,38 +113,40 @@ class AuthenticationFlowTests(unittest.TestCase):
         predict.assert_not_called()
 
     @patch("main.predict_s_expression", return_value="(S (NP She) (VP is (NP a doctor)))")
-    def test_logged_in_analyze_and_private_history(self, _predict):
-        response = self.client.post(
+    async def test_logged_in_analyze_and_private_history(self, _predict):
+        response = await self.client.post(
             "/analyze", json={"sentence": "She is a doctor."}, headers={"Authorization": f"Bearer {self.user_token}"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["user_id"], self.user["id"])
 
-        history_response = self.client.get("/history/my", headers={"Authorization": f"Bearer {self.user_token}"})
+        history_response = await self.client.get("/history/my", headers={"Authorization": f"Bearer {self.user_token}"})
         self.assertEqual(history_response.status_code, 200)
         self.assertEqual(len(history_response.json()), 1)
 
-    def test_register_and_login(self):
-        registration = self.client.post(
+    async def test_register_and_login(self):
+        registration = await self.client.post(
             "/auth/register", json={"name": "New User", "email": "NEW@example.invalid", "password": "password123"}
         )
         self.assertEqual(registration.status_code, 201)
-        login = self.client.post("/auth/login", json={"email": "new@example.invalid", "password": "password123"})
+        login = await self.client.post("/auth/login", json={"email": "new@example.invalid", "password": "password123"})
         self.assertEqual(login.status_code, 200)
 
-    def test_guest_history_is_unauthorized(self):
-        self.assertEqual(self.client.get("/history/my").status_code, 401)
+    async def test_guest_history_is_unauthorized(self):
+        self.assertEqual((await self.client.get("/history/my")).status_code, 401)
 
-    def test_health_and_openapi_are_available(self):
-        self.assertEqual(self.client.get("/health").status_code, 200)
-        self.assertIn("/analyze", self.client.get("/openapi.json").json()["paths"])
+    async def test_health_and_openapi_are_available(self):
+        self.assertEqual((await self.client.get("/health")).status_code, 200)
+        self.assertIn("/analyze", (await self.client.get("/openapi.json")).json()["paths"])
 
     @patch("main.predict_s_expression", return_value="(S (NP She) (VP is (NP a doctor)))")
-    def test_admin_history_includes_guest_and_registered(self, _predict):
-        self.client.post("/analyze", json={"sentence": "Guest sentence."})
-        self.client.post("/analyze", json={"sentence": "User sentence."}, headers={"Authorization": f"Bearer {self.user_token}"})
+    async def test_admin_history_includes_guest_and_registered(self, _predict):
+        await self.client.post("/analyze", json={"sentence": "Guest sentence."})
+        await self.client.post(
+            "/analyze", json={"sentence": "User sentence."}, headers={"Authorization": f"Bearer {self.user_token}"}
+        )
 
-        response = self.client.get("/admin/history", headers={"Authorization": f"Bearer {self.admin_token}"})
+        response = await self.client.get("/admin/history", headers={"Authorization": f"Bearer {self.admin_token}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 2)
         guest = next(item for item in response.json() if item["user_id"] is None)

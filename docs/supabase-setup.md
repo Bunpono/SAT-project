@@ -20,3 +20,12 @@ should remain integer-compatible with the application's existing user records.
 
 After restarting the backend, sign in and analyze a sentence, then refresh the
 Supabase Table Editor. A new `analysis_history` row should appear.
+
+## Secure the existing project
+
+The browser must not have direct access to `users`, `analysis_history`, or
+`error_reports`. In Supabase SQL Editor, run
+[`enable_rls.sql`](../SAT/supabase/enable_rls.sql) once. Then confirm that the
+Table Editor no longer labels these tables as **UNRESTRICTED**. The backend
+continues to work because its server-only secret key is not exposed to the
+browser.
