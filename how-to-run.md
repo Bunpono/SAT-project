@@ -10,7 +10,7 @@ cd SAT\backend
 venv\Scripts\activate
 python -m uvicorn main:app --reload
 
-## 2. run frontend
+## 2. run frontend in terminal แบบ cmd only 
 cd SAT\frontend
 npm install
 npm run dev
