@@ -24,6 +24,9 @@ build/
 .vite/
 *.local
 
+# Retired local database; Supabase is the application data store.
+SAT/backend/sat.db
+
 # Editors and operating systems
 .idea/
 .DS_Store

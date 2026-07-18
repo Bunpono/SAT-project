@@ -117,7 +117,11 @@ def detect_sentence_type(sentence: str, tree: dict | None = None) -> str:
     return "Simple"
 
 
-def serialize_supabase_analysis(item: dict, include_user: bool = False) -> dict:
+def serialize_supabase_analysis(
+    item: dict,
+    include_user: bool = False,
+    user: SupabaseUser | None = None,
+) -> dict:
     """Keep the frontend response stable while history comes from Supabase."""
     result = {
         "id": item["id"],
@@ -134,13 +138,17 @@ def serialize_supabase_analysis(item: dict, include_user: bool = False) -> dict:
     }
     if include_user:
         user_id = item.get("user_id")
-        result["user"] = None
-        result["user_label"] = "Guest" if user_id is None else f"User #{user_id}"
+        result["user"] = (
+            {"id": user.id, "name": user.name, "email": user.email, "role": user.role}
+            if user is not None
+            else None
+        )
+        result["user_label"] = "Guest" if user_id is None else user.name if user else f"User #{user_id}"
     return result
 
 
-def serialize_supabase_report(item: dict) -> dict:
-    return {
+def serialize_supabase_report(item: dict, user: SupabaseUser | None = None) -> dict:
+    result = {
         "id": item["id"],
         "user_id": item["user_id"],
         "sentence": item["sentence"],
@@ -149,8 +157,19 @@ def serialize_supabase_report(item: dict) -> dict:
         "result": item.get("analysis_result_json"),
         "status": item["status"],
         "created_at": item["created_at"],
-        "user": None,
+        "user": (
+            {"id": user.id, "name": user.name, "email": user.email, "role": user.role}
+            if user is not None
+            else None
+        ),
     }
+    return result
+
+
+def get_user_map() -> dict[int, SupabaseUser]:
+    """Load user display data once for an admin list response."""
+    users = supabase.request("GET", "users")
+    return {user["id"]: to_user(user) for user in users}
 
 
 @app.get("/")
@@ -308,7 +327,11 @@ def get_all_history(
     _admin: SupabaseUser = Depends(require_admin),
 ):
     items = supabase.request("GET", "analysis_history", params={"order": "created_at.desc"})
-    return [serialize_supabase_analysis(item, include_user=True) for item in items]
+    users_by_id = get_user_map()
+    return [
+        serialize_supabase_analysis(item, include_user=True, user=users_by_id.get(item.get("user_id")))
+        for item in items
+    ]
 
 
 @app.get("/admin/users")
@@ -324,7 +347,8 @@ def get_all_reports(
     _admin: SupabaseUser = Depends(require_admin),
 ):
     items = supabase.request("GET", "error_reports", params={"order": "created_at.desc"})
-    return [serialize_supabase_report(item) for item in items]
+    users_by_id = get_user_map()
+    return [serialize_supabase_report(item, user=users_by_id.get(item.get("user_id"))) for item in items]
 
 
 @app.patch("/admin/reports/{report_id}")
@@ -342,4 +366,4 @@ def update_error_report_status(
     )
     if not reports:
         raise HTTPException(status_code=404, detail="Error report was not found.")
-    return serialize_supabase_report(reports[0])
+    return serialize_supabase_report(reports[0], user=get_user_map().get(reports[0].get("user_id")))

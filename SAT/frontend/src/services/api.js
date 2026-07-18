@@ -2,15 +2,19 @@ import { clearAuthToken, getAuthToken } from "../utils/authStorage"
 
 const DEFAULT_API_URL = "http://127.0.0.1:8000"
 const API_URL = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/+$/, "")
+const REQUEST_TIMEOUT_MS = 15_000
 
 async function apiRequest(path, options = {}) {
   const { body, auth = true, headers = {}, ...requestOptions } = options
   const token = getAuthToken()
   let response
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
   try {
     response = await fetch(`${API_URL}${path}`, {
       ...requestOptions,
+      signal: controller.signal,
       headers: {
         ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
         ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
@@ -18,10 +22,18 @@ async function apiRequest(path, options = {}) {
       },
       ...(body !== undefined ? { body: JSON.stringify(body) } : {})
     })
-  } catch {
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error("The analysis service took too long to respond. Please try again.", {
+        cause: error
+      })
+    }
     throw new Error(
-      "Cannot connect to the analysis service. Make sure the backend is running and try again."
+      "Cannot connect to the analysis service. Make sure the backend is running and try again.",
+      { cause: error }
     )
+  } finally {
+    window.clearTimeout(timeoutId)
   }
 
   if (response.status === 401 && auth) {

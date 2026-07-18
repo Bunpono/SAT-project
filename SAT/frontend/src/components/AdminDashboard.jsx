@@ -28,6 +28,11 @@ function getUserName(user) {
   return user?.name || user?.full_name || user?.email || "Guest"
 }
 
+function getEntryUser(entry, users) {
+  if (entry?.user) return entry.user
+  return users.find((user) => String(user.id) === String(entry?.user_id)) || null
+}
+
 function getUserEmail(user) {
   return user?.email || "—"
 }
@@ -274,8 +279,8 @@ export default function AdminDashboard() {
                     <tr key={entry.id} className="border-b border-[#E5E7EB] last:border-b-0 dark:border-[#263042]">
                       <td className="whitespace-nowrap px-3 py-3 text-[#6B7280] dark:text-[#9CA3AF]">{formatDate(entry.created_at)}</td>
                       <td className="px-3 py-3">
-                        <p className="font-semibold text-[#111827] dark:text-white">{getUserName(entry.user)}</p>
-                        <p className="break-all text-sm text-[#6B7280] dark:text-[#9CA3AF]">{getUserEmail(entry.user)}</p>
+                        <p className="font-semibold text-[#111827] dark:text-white">{getUserName(getEntryUser(entry, users))}</p>
+                        <p className="break-all text-sm text-[#6B7280] dark:text-[#9CA3AF]">{getUserEmail(getEntryUser(entry, users))}</p>
                       </td>
                       <td className="max-w-xl break-words px-3 py-3 text-[#374151] dark:text-[#D1D5DB]">{entry.sentence}</td>
                       <td className="px-3 py-3 text-[#374151] dark:text-[#D1D5DB]">{entry.sentence_type || "Unknown"}</td>
