@@ -50,6 +50,10 @@ app = FastAPI(title="Syntactic Analysis API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    # Vite selects the next available 517x port when another development
+    # server is already running (for example, localhost:5176). Keep this
+    # flexible only for local development; deployed origins remain explicit.
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1):517[3-9]",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
