@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Response, status
@@ -223,12 +224,16 @@ def analyze(
     if not sentence:
         raise HTTPException(status_code=400, detail="Sentence is required.")
 
+    logger.info("Starting model inference")
+    inference_started_at = time.perf_counter()
     try:
         s_expression = predict_s_expression(sentence)
     except ModelLoadError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    logger.info("Model inference completed in %.2fs", time.perf_counter() - inference_started_at)
     tree = s_expression_to_tree(s_expression)
 
+    logger.info("Saving analysis to Supabase")
     saved_items = supabase.request(
         "POST",
         "analysis_history",
@@ -243,6 +248,7 @@ def analyze(
     )
     if not saved_items:
         raise HTTPException(status_code=502, detail="Supabase did not return the saved analysis.")
+    logger.info("Analysis saved to Supabase")
     return serialize_supabase_analysis(saved_items[0])
 
 
