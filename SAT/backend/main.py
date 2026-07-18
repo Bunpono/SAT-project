@@ -3,7 +3,7 @@ import os
 import time
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, Response, status
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
@@ -177,6 +177,20 @@ def serialize_supabase_report(item: dict, user: SupabaseUser | None = None) -> d
     return result
 
 
+def save_analysis_history(payload: dict) -> None:
+    """Persist history without delaying the analysis response shown to the user."""
+    try:
+        supabase.request(
+            "POST",
+            "analysis_history",
+            json=payload,
+            prefer="return=representation",
+        )
+        logger.info("Analysis saved to Supabase")
+    except HTTPException:
+        logger.exception("Analysis completed, but saving its history to Supabase failed")
+
+
 def get_user_map() -> dict[int, SupabaseUser]:
     """Load user display data once for an admin list response."""
     users = supabase.request("GET", "users")
@@ -248,6 +262,7 @@ def get_me(current_user: SupabaseUser = Depends(get_current_user)):
 @app.post("/analyze")
 def analyze(
     data: AnalyzeRequest,
+    background_tasks: BackgroundTasks,
     current_user: SupabaseUser | None = Depends(get_optional_current_user),
 ):
     sentence = validate_analysis_sentence(data.sentence.strip())
@@ -263,23 +278,24 @@ def analyze(
     logger.info("Model inference completed in %.2fs", time.perf_counter() - inference_started_at)
     tree = s_expression_to_tree(s_expression)
 
-    logger.info("Saving analysis to Supabase")
-    saved_items = supabase.request(
-        "POST",
-        "analysis_history",
-        json={
-            "user_id": current_user.id if current_user is not None else None,
-            "sentence": sentence,
-            "s_expression": s_expression,
-            "tree_json": tree,
-            "sentence_type": detect_sentence_type(sentence, tree),
-        },
-        prefer="return=representation",
-    )
-    if not saved_items:
-        raise HTTPException(status_code=502, detail="Supabase did not return the saved analysis.")
-    logger.info("Analysis saved to Supabase")
-    return serialize_supabase_analysis(saved_items[0])
+    sentence_type = detect_sentence_type(sentence, tree)
+    history_payload = {
+        "user_id": current_user.id if current_user is not None else None,
+        "sentence": sentence,
+        "s_expression": s_expression,
+        "tree_json": tree,
+        "sentence_type": sentence_type,
+    }
+    logger.info("Queueing analysis history save to Supabase")
+    background_tasks.add_task(save_analysis_history, history_payload)
+    return {
+        "user_id": history_payload["user_id"],
+        "sentence": sentence,
+        "s_expression": s_expression,
+        "tree": tree,
+        "result": {"s_expression": s_expression, "tree": tree},
+        "sentence_type": sentence_type,
+    }
 
 
 @app.get("/history/my")
