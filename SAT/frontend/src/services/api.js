@@ -1,7 +1,9 @@
 import { clearAuthToken, getAuthToken } from "../utils/authStorage"
 
 const DEFAULT_API_URL = "http://127.0.0.1:8000"
-const API_URL = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/+$/, "")
+const API_URL = (
+  import.meta.env.DEV ? "/api" : (import.meta.env.VITE_API_URL || DEFAULT_API_URL)
+).replace(/\/+$/, "")
 const REQUEST_TIMEOUT_MS = 15_000
 
 async function apiRequest(path, options = {}) {

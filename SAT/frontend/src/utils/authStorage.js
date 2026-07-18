@@ -1,4 +1,4 @@
-const TOKEN_KEY = "sat-auth-token"
+const TOKEN_KEY = "sat-auth-token-v2"
 
 export function getAuthToken() {
   return localStorage.getItem(TOKEN_KEY)
