@@ -1,4 +1,5 @@
 import os
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
@@ -6,10 +7,7 @@ from dotenv import load_dotenv
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from sqlalchemy.orm import Session
-
-from app.database import get_db
-from app.db_models import User
+from app.supabase import supabase
 
 load_dotenv()
 
@@ -24,6 +22,37 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
 
+@dataclass
+class SupabaseUser:
+    id: int
+    name: str
+    email: str
+    password_hash: str
+    role: str
+    created_at: str
+
+
+def to_user(item: dict) -> SupabaseUser:
+    return SupabaseUser(
+        id=item["id"],
+        name=item["name"],
+        email=item["email"],
+        password_hash=item["password_hash"],
+        role=item["role"],
+        created_at=item["created_at"],
+    )
+
+
+def find_user_by_id(user_id: int) -> SupabaseUser | None:
+    items = supabase.request("GET", "users", params={"id": f"eq.{user_id}", "limit": "1"})
+    return to_user(items[0]) if items else None
+
+
+def find_user_by_email(email: str) -> SupabaseUser | None:
+    items = supabase.request("GET", "users", params={"email": f"eq.{email}", "limit": "1"})
+    return to_user(items[0]) if items else None
+
+
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
@@ -35,7 +64,7 @@ def verify_password(password: str, password_hash: str) -> bool:
         return False
 
 
-def create_access_token(user: User) -> str:
+def create_access_token(user: SupabaseUser) -> str:
     expires_at = datetime.now(timezone.utc) + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
     payload = {
         "sub": str(user.id),
@@ -45,7 +74,7 @@ def create_access_token(user: User) -> str:
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
 
-def _get_user_from_token(token: str, db: Session) -> User:
+def _get_user_from_token(token: str) -> SupabaseUser:
     credentials_error = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid or expired authentication token.",
@@ -58,30 +87,27 @@ def _get_user_from_token(token: str, db: Session) -> User:
     except (JWTError, TypeError, ValueError):
         raise credentials_error
 
-    user = db.get(User, user_id)
+    user = find_user_by_id(user_id)
     if not user:
         raise credentials_error
 
     return user
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-) -> User:
-    return _get_user_from_token(token, db)
+def get_current_user(token: str = Depends(oauth2_scheme)) -> SupabaseUser:
+    return _get_user_from_token(token)
 
 
 def get_optional_current_user(
     token: str | None = Depends(optional_oauth2_scheme),
-    db: Session = Depends(get_db),
-) -> User | None:
+) -> SupabaseUser | None:
     if token is None:
         return None
 
-    return _get_user_from_token(token, db)
+    return _get_user_from_token(token)
 
 
-def require_admin(current_user: User = Depends(get_current_user)) -> User:
+def require_admin(current_user: SupabaseUser = Depends(get_current_user)) -> SupabaseUser:
     if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

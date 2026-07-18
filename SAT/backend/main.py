@@ -1,25 +1,25 @@
-import logging
 import os
 from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Response, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import delete, inspect, select, text
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import inspect, text
 
 load_dotenv()
 
 from app.auth import (  # noqa: E402
     create_access_token,
+    find_user_by_email,
     get_current_user,
     get_optional_current_user,
     hash_password,
     require_admin,
+    SupabaseUser,
+    to_user,
     verify_password,
 )
-from app.database import Base, engine, get_db  # noqa: E402
-from app.db_models import AnalysisHistory, ErrorReport, User  # noqa: E402
+from app.database import Base, engine  # noqa: E402
 from app.model import (  # noqa: E402
     ModelLoadError,
     get_model_status,
@@ -36,6 +36,7 @@ from app.schemas import (  # noqa: E402
     RegisterRequest,
     UserResponse,
 )
+from app.supabase import supabase  # noqa: E402
 
 production_origins = [
     origin.strip().rstrip("/")
@@ -49,7 +50,6 @@ allowed_origins = [
 ]
 
 app = FastAPI(title="Syntactic Analysis API")
-logger = logging.getLogger(__name__)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
@@ -175,39 +175,39 @@ def detect_sentence_type(sentence: str, tree: dict | None = None) -> str:
     return "Simple"
 
 
-def serialize_analysis(item: AnalysisHistory, include_user: bool = False) -> dict:
+def serialize_supabase_analysis(item: dict, include_user: bool = False) -> dict:
+    """Keep the frontend response stable while history comes from Supabase."""
     result = {
-        "id": item.id,
-        "user_id": item.user_id,
-        "sentence": item.sentence,
-        "s_expression": item.s_expression,
-        "tree": item.tree_json,
+        "id": item["id"],
+        "user_id": item.get("user_id"),
+        "sentence": item["sentence"],
+        "s_expression": item["s_expression"],
+        "tree": item["tree_json"],
         "result": {
-            "s_expression": item.s_expression,
-            "tree": item.tree_json,
+            "s_expression": item["s_expression"],
+            "tree": item["tree_json"],
         },
-        "sentence_type": item.sentence_type,
-        "created_at": item.created_at,
+        "sentence_type": item.get("sentence_type", "Unknown"),
+        "created_at": item["created_at"],
     }
     if include_user:
-        result["user"] = (
-            UserResponse.model_validate(item.user) if item.user is not None else None
-        )
-        result["user_label"] = item.user.name if item.user is not None else "Guest"
+        user_id = item.get("user_id")
+        result["user"] = None
+        result["user_label"] = "Guest" if user_id is None else f"User #{user_id}"
     return result
 
 
-def serialize_report(item: ErrorReport) -> dict:
+def serialize_supabase_report(item: dict) -> dict:
     return {
-        "id": item.id,
-        "user_id": item.user_id,
-        "sentence": item.sentence,
-        "description": item.description,
-        "analysis_result": item.analysis_result_json,
-        "result": item.analysis_result_json,
-        "status": item.status,
-        "created_at": item.created_at,
-        "user": UserResponse.model_validate(item.user),
+        "id": item["id"],
+        "user_id": item["user_id"],
+        "sentence": item["sentence"],
+        "description": item["description"],
+        "analysis_result": item.get("analysis_result_json"),
+        "result": item.get("analysis_result_json"),
+        "status": item["status"],
+        "created_at": item["created_at"],
+        "user": None,
     }
 
 
@@ -222,7 +222,7 @@ def health():
 
 
 @app.get("/load-model")
-def load_hf_model(current_user: User = Depends(require_admin)):
+def load_hf_model(current_user: SupabaseUser = Depends(require_admin)):
     try:
         load_model()
     except ModelLoadError as exc:
@@ -231,7 +231,7 @@ def load_hf_model(current_user: User = Depends(require_admin)):
 
 
 @app.post("/auth/register", response_model=AuthResponse, status_code=201)
-def register(data: RegisterRequest, db: Session = Depends(get_db)):
+def register(data: RegisterRequest):
     email = validate_email(data.email)
     name = data.name.strip()
     if not name:
@@ -239,27 +239,25 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if len(data.password.encode("utf-8")) > 72:
         raise HTTPException(status_code=422, detail="Password is too long.")
 
-    existing_user = db.scalar(select(User).where(User.email == email))
+    existing_user = find_user_by_email(email)
     if existing_user:
         raise HTTPException(status_code=409, detail="An account with this email already exists.")
 
-    user = User(
-        name=name,
-        email=email,
-        password_hash=hash_password(data.password),
-        role="user",
+    saved_users = supabase.request(
+        "POST",
+        "users",
+        json={"name": name, "email": email, "password_hash": hash_password(data.password), "role": "user"},
+        prefer="return=representation",
     )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+    user = to_user(saved_users[0])
 
     return AuthResponse(access_token=create_access_token(user), user=user)
 
 
 @app.post("/auth/login", response_model=AuthResponse)
-def login(data: LoginRequest, db: Session = Depends(get_db)):
+def login(data: LoginRequest):
     email = normalize_email(data.email)
-    user = db.scalar(select(User).where(User.email == email))
+    user = find_user_by_email(email)
 
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(
@@ -271,15 +269,14 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
 
 @app.get("/auth/me", response_model=UserResponse)
-def get_me(current_user: User = Depends(get_current_user)):
+def get_me(current_user: SupabaseUser = Depends(get_current_user)):
     return current_user
 
 
 @app.post("/analyze")
 def analyze(
     data: AnalyzeRequest,
-    current_user: User | None = Depends(get_optional_current_user),
-    db: Session = Depends(get_db),
+    current_user: SupabaseUser | None = Depends(get_optional_current_user),
 ):
     sentence = data.sentence.strip()
     if not sentence:
@@ -291,140 +288,111 @@ def analyze(
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     tree = s_expression_to_tree(s_expression)
 
-    history_item = AnalysisHistory(
-        user_id=current_user.id if current_user is not None else None,
-        sentence=sentence,
-        s_expression=s_expression,
-        tree_json=tree,
-        sentence_type=detect_sentence_type(sentence, tree),
+    saved_items = supabase.request(
+        "POST",
+        "analysis_history",
+        json={
+            "user_id": current_user.id if current_user is not None else None,
+            "sentence": sentence,
+            "s_expression": s_expression,
+            "tree_json": tree,
+            "sentence_type": detect_sentence_type(sentence, tree),
+        },
+        prefer="return=representation",
     )
-    try:
-        db.add(history_item)
-        db.commit()
-        db.refresh(history_item)
-    except Exception as exc:
-        db.rollback()
-        logger.exception("Unable to save analysis history")
-        raise HTTPException(
-            status_code=500,
-            detail="The analysis completed, but its history could not be saved.",
-        ) from exc
-
-    return serialize_analysis(history_item)
+    if not saved_items:
+        raise HTTPException(status_code=502, detail="Supabase did not return the saved analysis.")
+    return serialize_supabase_analysis(saved_items[0])
 
 
 @app.get("/history/my")
 def get_my_history(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    current_user: SupabaseUser = Depends(get_current_user),
 ):
-    items = db.scalars(
-        select(AnalysisHistory)
-        .where(AnalysisHistory.user_id == current_user.id)
-        .order_by(AnalysisHistory.created_at.desc())
-    ).all()
-    return [serialize_analysis(item) for item in items]
+    items = supabase.request(
+        "GET", "analysis_history", params={"user_id": f"eq.{current_user.id}", "order": "created_at.desc"}
+    )
+    return [serialize_supabase_analysis(item) for item in items]
 
 
 @app.delete("/history/my/{history_id}", status_code=204)
 def delete_my_history(
     history_id: int,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    current_user: SupabaseUser = Depends(get_current_user),
 ):
-    item = db.scalar(
-        select(AnalysisHistory).where(
-            AnalysisHistory.id == history_id,
-            AnalysisHistory.user_id == current_user.id,
-        )
-    )
-    if not item:
-        raise HTTPException(status_code=404, detail="History item was not found.")
-    db.delete(item)
-    db.commit()
+    supabase.request("DELETE", "analysis_history", params={"id": f"eq.{history_id}", "user_id": f"eq.{current_user.id}"})
     return Response(status_code=204)
 
 
 @app.delete("/history/my", status_code=204)
 def clear_my_history(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    current_user: SupabaseUser = Depends(get_current_user),
 ):
-    db.execute(delete(AnalysisHistory).where(AnalysisHistory.user_id == current_user.id))
-    db.commit()
+    supabase.request("DELETE", "analysis_history", params={"user_id": f"eq.{current_user.id}"})
     return Response(status_code=204)
 
 
 @app.post("/reports", status_code=201)
 def create_error_report(
     data: ErrorReportRequest,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    current_user: SupabaseUser = Depends(get_current_user),
 ):
     sentence = data.sentence.strip()
     description = data.description.strip()
     if not sentence or not description:
         raise HTTPException(status_code=422, detail="Sentence and description are required.")
 
-    report = ErrorReport(
-        user_id=current_user.id,
-        sentence=sentence,
-        description=description,
-        analysis_result_json=data.analysis_result,
+    reports = supabase.request(
+        "POST",
+        "error_reports",
+        json={
+            "user_id": current_user.id,
+            "sentence": sentence,
+            "description": description,
+            "analysis_result_json": data.analysis_result,
+        },
+        prefer="return=representation",
     )
-    db.add(report)
-    db.commit()
-    db.refresh(report)
-    return {"id": report.id, "created_at": report.created_at}
+    return {"id": reports[0]["id"], "created_at": reports[0]["created_at"]}
 
 
 @app.get("/admin/history")
 def get_all_history(
-    _admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
+    _admin: SupabaseUser = Depends(require_admin),
 ):
-    items = db.scalars(
-        select(AnalysisHistory)
-        .options(joinedload(AnalysisHistory.user))
-        .order_by(AnalysisHistory.created_at.desc())
-    ).all()
-    return [serialize_analysis(item, include_user=True) for item in items]
+    items = supabase.request("GET", "analysis_history", params={"order": "created_at.desc"})
+    return [serialize_supabase_analysis(item, include_user=True) for item in items]
 
 
 @app.get("/admin/users")
 def get_all_users(
-    _admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
+    _admin: SupabaseUser = Depends(require_admin),
 ):
-    users = db.scalars(select(User).order_by(User.created_at.desc())).all()
-    return [UserResponse.model_validate(user) for user in users]
+    users = supabase.request("GET", "users", params={"order": "created_at.desc"})
+    return [UserResponse.model_validate(to_user(user)) for user in users]
 
 
 @app.get("/admin/reports")
 def get_all_reports(
-    _admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
+    _admin: SupabaseUser = Depends(require_admin),
 ):
-    items = db.scalars(
-        select(ErrorReport)
-        .options(joinedload(ErrorReport.user))
-        .order_by(ErrorReport.created_at.desc())
-    ).all()
-    return [serialize_report(item) for item in items]
+    items = supabase.request("GET", "error_reports", params={"order": "created_at.desc"})
+    return [serialize_supabase_report(item) for item in items]
 
 
 @app.patch("/admin/reports/{report_id}")
 def update_error_report_status(
     report_id: int,
     data: ErrorReportStatusRequest,
-    _admin: User = Depends(require_admin),
-    db: Session = Depends(get_db),
+    _admin: SupabaseUser = Depends(require_admin),
 ):
-    report = db.get(ErrorReport, report_id)
-    if not report:
+    reports = supabase.request(
+        "PATCH",
+        "error_reports",
+        params={"id": f"eq.{report_id}"},
+        json={"status": data.status},
+        prefer="return=representation",
+    )
+    if not reports:
         raise HTTPException(status_code=404, detail="Error report was not found.")
-
-    report.status = data.status
-    db.commit()
-    db.refresh(report)
-    return serialize_report(report)
+    return serialize_supabase_report(reports[0])
