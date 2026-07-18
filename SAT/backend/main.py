@@ -84,6 +84,17 @@ def validate_email(email: str) -> str:
     return normalized
 
 
+def validate_analysis_sentence(sentence: str) -> str:
+    """Keep direct API calls within the same scope as the browser UI."""
+    words = sentence.split()
+    if len(words) < 2 or sentence.rstrip().endswith(("?", "!")):
+        raise HTTPException(
+            status_code=422,
+            detail="Enter an English declarative sentence with at least two words.",
+        )
+    return sentence
+
+
 def detect_sentence_type(sentence: str, tree: dict | None = None) -> str:
     normalized = f" {sentence.lower()} "
     if tree and isinstance(tree, dict):
@@ -239,7 +250,7 @@ def analyze(
     data: AnalyzeRequest,
     current_user: SupabaseUser | None = Depends(get_optional_current_user),
 ):
-    sentence = data.sentence.strip()
+    sentence = validate_analysis_sentence(data.sentence.strip())
     if not sentence:
         raise HTTPException(status_code=400, detail="Sentence is required.")
 
