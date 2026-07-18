@@ -17,7 +17,7 @@ npm run dev
 
 
 ## SAT/setup-local.cmd เพื่อติดตั้งสิ่งที่จำเป็นและเปิดระบบ
-.\SAT\run-local.cmd 
+.\SAT\setup-local.cmd
 
 ## SAT/run-local.cmd เพื่อเปิด backend + frontend
 .\SAT/run-local.cmd
