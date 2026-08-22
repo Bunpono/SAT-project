@@ -29,6 +29,13 @@ if (( ${#MISSING_VARIABLES[@]} > 0 )); then
   exit 1
 fi
 
+if [[ ! -x "$BACKEND_DIR/venv/bin/python" ]] \
+  || ! "$BACKEND_DIR/venv/bin/python" -c "import uvicorn" >/dev/null 2>&1 \
+  || [[ ! -d "$FRONTEND_DIR/node_modules" ]]; then
+  echo "Codespace dependencies are incomplete. Running the setup script first..."
+  bash "$REPO_ROOT/.devcontainer/setup-codespace.sh"
+fi
+
 export HF_MODEL_ID="${HF_MODEL_ID:-SAT-Project/SAT-Model-T1}"
 export HF_MODEL_CACHE_DIR="${HF_MODEL_CACHE_DIR:-$BACKEND_DIR/.cache/huggingface}"
 
