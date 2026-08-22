@@ -135,6 +135,13 @@ the backend service, and enough memory to load the model.
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for the complete deployment checklist.
 
+## GitHub Codespaces classroom preview
+
+The repository includes a Codespaces configuration that runs the existing
+React, FastAPI, PyTorch, Hugging Face, and Supabase stack without changing the
+application architecture. See the Thai step-by-step guide in
+[`docs/GITHUB_CODESPACES_GUIDE_TH.md`](docs/GITHUB_CODESPACES_GUIDE_TH.md).
+
 ## Security
 
 - Never commit `.env` files, access tokens, or service credentials.
