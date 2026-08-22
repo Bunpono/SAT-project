@@ -11,7 +11,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-MODEL_ID = os.getenv("HF_MODEL_ID", "SAT-Project/SAT-Model-T1")
+MODEL_ID = os.getenv("HF_MODEL_ID", "SAT-Project/SAT-T5model-P3")
 HF_TOKEN = os.getenv("HF_TOKEN", "").strip()
 DEFAULT_CACHE_DIR = Path(__file__).resolve().parents[1] / ".cache" / "huggingface"
 MODEL_CACHE_DIR = Path(os.getenv("HF_MODEL_CACHE_DIR", DEFAULT_CACHE_DIR)).expanduser()
