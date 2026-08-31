@@ -41,7 +41,7 @@ SAT/
 - Frontend: React 19, Vite, Tailwind CSS, D3 hierarchy, and react-d3-tree
 - Backend: Python, FastAPI, Uvicorn, and Pydantic
 - Machine learning: Hugging Face Transformers and PyTorch
-- Model: `SAT-Project/SAT-T5model-P3`
+- Model: `SAT-Project/SAT-T5model-P8` (`best_model` artifact)
 
 ## Prerequisites
 
@@ -119,9 +119,11 @@ Use the committed `.env.example` files as templates. Real `.env` files are
 ignored by Git.
 
 - Backend: `HF_TOKEN` authorizes model downloads from Hugging Face,
-  `HF_MODEL_ID` selects the model repository, and `HF_MODEL_CACHE_DIR` selects
-  the local model cache. `FRONTEND_URL` adds the deployed frontend origin to
-  the CORS allowlist. Multiple production origins can be separated with commas.
+  `HF_MODEL_ID` selects the model repository, `HF_MODEL_SUBFOLDER` selects the
+  deployable artifact folder inside that repository, and `HF_MODEL_CACHE_DIR`
+  selects the local model cache. `FRONTEND_URL` adds the deployed frontend
+  origin to the CORS allowlist. Multiple production origins can be separated
+  with commas.
 - Frontend: `VITE_API_URL` selects the FastAPI base URL and defaults to
   `http://127.0.0.1:8000` when it is not set. The current project has no mock
   implementation, so analysis requests use the real FastAPI backend.

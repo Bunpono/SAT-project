@@ -11,7 +11,8 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-MODEL_ID = os.getenv("HF_MODEL_ID", "SAT-Project/SAT-T5model-P3")
+MODEL_ID = os.getenv("HF_MODEL_ID", "SAT-Project/SAT-T5model-P8")
+MODEL_SUBFOLDER = os.getenv("HF_MODEL_SUBFOLDER", "").strip()
 HF_TOKEN = os.getenv("HF_TOKEN", "").strip()
 DEFAULT_CACHE_DIR = Path(__file__).resolve().parents[1] / ".cache" / "huggingface"
 MODEL_CACHE_DIR = Path(os.getenv("HF_MODEL_CACHE_DIR", DEFAULT_CACHE_DIR)).expanduser()
@@ -28,6 +29,7 @@ class ModelLoadError(RuntimeError):
 def get_model_status() -> dict:
     return {
         "model_id": MODEL_ID,
+        "model_subfolder": MODEL_SUBFOLDER or None,
         "loaded": _tokenizer is not None and _model is not None,
         "cache_dir": str(MODEL_CACHE_DIR),
     }
@@ -40,24 +42,28 @@ def _load_from_hugging_face():
         )
 
     MODEL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    hub_kwargs = {
+        "token": HF_TOKEN,
+        "cache_dir": MODEL_CACHE_DIR,
+    }
+    if MODEL_SUBFOLDER:
+        hub_kwargs["subfolder"] = MODEL_SUBFOLDER
 
     try:
         tokenizer = AutoTokenizer.from_pretrained(
             MODEL_ID,
-            token=HF_TOKEN,
-            cache_dir=MODEL_CACHE_DIR,
+            **hub_kwargs,
         )
         model = AutoModelForSeq2SeqLM.from_pretrained(
             MODEL_ID,
-            token=HF_TOKEN,
-            cache_dir=MODEL_CACHE_DIR,
+            **hub_kwargs,
         )
         model.eval()
         return tokenizer, model
     except Exception as exc:
         logger.exception("Unable to load Hugging Face model %s", MODEL_ID)
         raise ModelLoadError(
-            f"The analysis model could not be loaded. Check that HF_TOKEN has read access to {MODEL_ID}."
+            f"The analysis model could not be loaded. Check access and files for {MODEL_ID}."
         ) from exc
 
 

@@ -30,7 +30,7 @@ Record these details before a test run:
 | Browser and version | |
 | Frontend URL | |
 | Backend URL | |
-| Model version | `SAT-Project/SAT-T5model-P3` unless changed |
+| Model version | `SAT-Project/SAT-T5model-P8` / `best_model` unless changed |
 
 Start the backend and frontend as described in the project README. Confirm that
 the backend root endpoint and `/docs` load before testing the browser UI.
