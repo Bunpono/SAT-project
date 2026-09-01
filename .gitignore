@@ -36,4 +36,5 @@ Thumbs.db
 *.log
 coverage/
 .coverage
+.sat-public-server-state.json
 

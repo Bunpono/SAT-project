@@ -1,23 +1,105 @@
-# 0 run backend ครั้งแรก in terminal ใช้แบบ cmd only
-cd SAT\backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-python -m uvicorn main:app --reload
+# คู่มือเปิดและปิด Syntactic Analysis Tool (SAT)
 
-## 1 run backend in terminal แบบ cmd only
-cd SAT\backend
-venv\Scripts\activate
-python -m uvicorn main:app --reload
+คู่มือนี้ใช้สำหรับเปิดระบบบนเครื่อง Windows ของเจ้าของโครงการ และสร้างลิงก์
+ชั่วคราวให้ผู้ใช้งานภายนอกเข้าถึงผ่าน Cloudflare Quick Tunnel
 
-## 2. run frontend in terminal แบบ cmd only 
-cd SAT\frontend
-npm install
-npm run dev
+## สรุปสำหรับอธิบายผู้บริหาร
 
+ระบบประกอบด้วย 3 ส่วน:
 
-## SAT/setup-local.cmd เพื่อติดตั้งสิ่งที่จำเป็นและเปิดระบบ
-.\SAT\setup-local.cmd
+1. **Backend (FastAPI)** โหลดโมเดล P8 จาก Hugging Face และประมวลผลประโยค
+2. **Frontend (React/Vite)** แสดงหน้าเว็บและแผนผังวากยสัมพันธ์
+3. **Cloudflare Quick Tunnel** สร้าง HTTPS URL ชั่วคราวจากอินเทอร์เน็ตมายัง
+   frontend บนเครื่อง โดยไม่ต้องเปิดพอร์ตเราเตอร์
 
-## SAT/run-local.cmd เพื่อเปิด backend + frontend
-.\SAT/run-local.cmd
+ผู้ดูแลระบบเปิดและปิดทั้งสามส่วนด้วยสคริปต์ที่กำหนดไว้ ไม่จำเป็นต้องแก้โค้ด
+และไม่ต้องเปิดเผย Hugging Face token ให้ผู้ใช้งาน
+
+## สิ่งที่ต้องเตรียมครั้งแรก
+
+- เครื่องต้องติดตั้ง Python, Node.js และ Cloudflared
+- ต้องมี `SAT/backend/.env` ที่ตั้งค่าโมเดลและ token เรียบร้อย
+- ค่าโมเดลปัจจุบันควรเป็น:
+
+```env
+HF_MODEL_ID=SAT-Project/SAT-T5model-P8
+HF_MODEL_SUBFOLDER=best_model
+```
+
+- ติดตั้ง dependencies ครั้งแรกโดยดับเบิลคลิก `setup-local.cmd`
+- ห้ามนำไฟล์ `.env` หรือ token ขึ้น GitHub หรือแสดงบนหน้าจอระหว่างนำเสนอ
+
+## วิธีเปิดให้ผู้ใช้งานภายนอก
+
+1. เสียบสายชาร์จและเชื่อมต่ออินเทอร์เน็ต
+2. ตั้งค่าไม่ให้เครื่อง Sleep
+3. เปิดโฟลเดอร์ `D:\SAT-project\SAT`
+4. ดับเบิลคลิก `start-public-server.cmd`
+5. รอข้อความ `เปิดเซิร์ฟเวอร์สำเร็จ` การโหลดครั้งแรกอาจใช้ 1–3 นาที
+6. คัดลอก URL ที่ขึ้นต้นด้วย `https://` และลงท้ายด้วย
+   `.trycloudflare.com` ส่งให้ผู้ใช้งาน
+7. ทดลองเปิด URL ด้วยเบราว์เซอร์ก่อนเริ่มสาธิต
+
+สคริปต์จะดำเนินการให้โดยอัตโนมัติ:
+
+- ตรวจว่าพอร์ต 8000 และ 5173 ว่าง
+- เปิด backend และรอจนโมเดลโหลดสำเร็จ
+- สร้าง Cloudflare Quick Tunnel
+- นำ hostname ที่ได้ไปตั้งค่า Vite อย่างถูกต้อง
+- เปิด frontend และตรวจทั้ง local URL กับ public URL
+- บันทึกเฉพาะหมายเลข process เพื่อให้ปิดได้อย่างเจาะจงภายหลัง
+
+## วิธีตรวจสอบระบบ
+
+ตรวจ backend ใน PowerShell:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8000/health | ConvertTo-Json -Depth 5
+```
+
+ผลที่พร้อมใช้งานต้องมี:
+
+```text
+status          ok
+model_id        SAT-Project/SAT-T5model-P8
+model_subfolder best_model
+loaded          true
+```
+
+จากนั้นทดสอบหน้าเว็บด้วยตัวอย่าง:
+
+- Simple: `I am thirsty.`
+- Compound: `I read, and she writes.`
+- Complex: `I know what you did.`
+
+## วิธีปิด
+
+1. แจ้งผู้ใช้งานให้บันทึกงานก่อน
+2. เปิดโฟลเดอร์ `D:\SAT-project\SAT`
+3. ดับเบิลคลิก `stop-public-server.cmd`
+4. รอข้อความ `ปิด SAT Server เรียบร้อย`
+5. ตรวจว่าลิงก์สาธารณะเข้าไม่ได้แล้ว จากนั้นจึง Sleep หรือปิดเครื่องได้
+
+สคริปต์ปิดจะตรวจชื่อ process ก่อนปิด เพื่อไม่ให้ปิดโปรแกรมอื่นที่ไม่เกี่ยวข้อง
+
+## ข้อควรรู้
+
+- Quick Tunnel เป็นลิงก์ชั่วคราว URL มักเปลี่ยนทุกครั้งที่เปิดใหม่
+- เครื่องต้องเปิด ตื่น เชื่อมอินเทอร์เน็ต และเสียบชาร์จตลอดการใช้งาน
+- การเล่นเกมหรือโปรแกรมหนักพร้อมกันอาจทำให้ inference ช้าลง
+- หากต้องการ URL คงที่และเปิดตลอด 24 ชั่วโมง ควรย้าย backend/frontend ไป
+  production hosting หรือใช้ Cloudflare Named Tunnel แทน Quick Tunnel
+- Log สำหรับวิเคราะห์ปัญหาอยู่ที่ `SAT/.server-logs` และไม่ควรส่งต่อหากยัง
+  ไม่ได้ตรวจข้อมูลภายใน
+
+## การเปิดเฉพาะในเครื่อง
+
+หากไม่ต้องแชร์ให้บุคคลภายนอก ดับเบิลคลิก `run-local.cmd` แล้วเปิด
+`http://127.0.0.1:5173`
+
+## คำอธิบายสั้นสำหรับพูดกับผู้บริหาร
+
+> ผู้ดูแลเปิดบริการผ่านสคริปต์ที่ควบคุม Backend, Frontend และ HTTPS Tunnel
+> โดย Backend จะตรวจสถานะการโหลดโมเดล P8 ก่อนเผยแพร่ลิงก์ให้ผู้ใช้งาน
+> ลิงก์สาธารณะเป็นลิงก์ชั่วคราวและสามารถยกเลิกได้ทันทีด้วยสคริปต์ปิดระบบ
+> จึงควบคุมช่วงเวลาการให้บริการได้จากเครื่องแม่ข่ายโดยตรง
