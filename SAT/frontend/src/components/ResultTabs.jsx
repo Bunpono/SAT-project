@@ -27,7 +27,7 @@ const tabs = [
   {
     id: "clause",
     title: "Clause Analysis",
-    description: "Main & Sub Clauses",
+    description: "Independent / Noun / Adjective / Adverb",
     dotClass: "bg-purple-500",
     activeClass:
       "border-[#050816] bg-[#050816] text-white shadow-[0_18px_36px_rgba(5,8,22,0.22)] dark:border-white dark:bg-white dark:text-[#111827] dark:shadow-[0_16px_34px_rgba(255,255,255,0.12)]",

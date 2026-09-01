@@ -56,9 +56,8 @@ function terminalText(node, parentLabel = "") {
     .join(" ")
 }
 
-function containsClause(node) {
-  if (normalizeLabel(node?.name) === "S") return true
-  return childrenOf(node).some(containsClause)
+function isClauseLabel(label) {
+  return /^S\d*$/.test(label)
 }
 
 function hasCoordinator(node) {
@@ -68,13 +67,63 @@ function hasCoordinator(node) {
 
 function hasCoordinatedClauses(node) {
   const children = childrenOf(node)
-  const clauseBranches = children.filter(containsClause).length
+  const clauseBranches = children.filter((child) =>
+    isClauseLabel(normalizeLabel(child?.name))
+  ).length
 
   if (clauseBranches >= 2 && children.some(hasCoordinator)) {
     return true
   }
 
   return children.some(hasCoordinatedClauses)
+}
+
+const ADVERB_CONNECTORS = new Set([
+  "after",
+  "although",
+  "as",
+  "as soon as",
+  "because",
+  "before",
+  "even if",
+  "even though",
+  "if",
+  "in order that",
+  "since",
+  "so that",
+  "though",
+  "unless",
+  "until",
+  "when",
+  "whenever",
+  "while"
+])
+
+function firstTerminal(node) {
+  return terminalValues(node)[0]?.toLowerCase() || ""
+}
+
+function dependentClauseType(node, parent) {
+  const parentLabel = normalizeLabel(parent?.name)
+  const firstWord = firstTerminal(node)
+
+  // In the course tree convention, an S2 attached to an NP modifies the
+  // preceding noun (for example, "the woman [who wears ...]").
+  if (parentLabel === "NP") return "Adjective Clause"
+
+  // An S2 used as a VP complement fills a noun position (direct object).
+  if (parentLabel === "VP") return "Noun Clause"
+
+  // An S2 attached directly to S1 modifies the independent clause/verb.
+  if (isClauseLabel(parentLabel)) return "Adverb Clause"
+
+  if (["who", "whom", "whose", "which"].includes(firstWord)) {
+    return "Adjective Clause"
+  }
+
+  if (ADVERB_CONNECTORS.has(firstWord)) return "Adverb Clause"
+
+  return "Noun Clause"
 }
 
 function terminalValues(node) {
@@ -152,22 +201,37 @@ export function analyzeTree(tree) {
     childrenOf(node).forEach(collectPhrases)
   }
 
-  function collectClauses(node, isNestedInClause = false, entries = []) {
+  function collectClauses(node, parent = null, role = "independent", entries = []) {
     if (!node || typeof node !== "object") return entries
 
     const label = normalizeLabel(node.name)
-    const isClause = label === "S"
+    const isClause = isClauseLabel(label)
+    const children = childrenOf(node)
+    const directClauseChildren = children.filter((child) =>
+      isClauseLabel(normalizeLabel(child?.name))
+    )
+    const isCoordinationWrapper =
+      isClause && directClauseChildren.length >= 2 && children.some(hasCoordinator)
 
-    if (isClause) {
+    if (isClause && !isCoordinationWrapper) {
       entries.push({
-        kind: isNestedInClause ? "dependent" : "independent",
+        label: String(node.name || label).trim(),
+        kind: role,
+        clauseType: role === "dependent" ? dependentClauseType(node, parent) : null,
         text: terminalText(node)
       })
     }
 
-    childrenOf(node).forEach((child) =>
-      collectClauses(child, isNestedInClause || isClause, entries)
-    )
+    children.forEach((child) => {
+      const childIsClause = isClauseLabel(normalizeLabel(child?.name))
+      const childRole = isCoordinationWrapper && childIsClause
+        ? "independent"
+        : isClause && !isCoordinationWrapper
+          ? "dependent"
+          : role
+
+      collectClauses(child, node, childRole, entries)
+    })
 
     return entries
   }
@@ -219,20 +283,15 @@ export function analyzeTree(tree) {
   const clauseEntries = collectClauses(tree)
   const normalizedClauseEntries = clauseEntries.length > 0
     ? clauseEntries
-    : [{ kind: "independent", text: terminalText(displayTree) }]
+    : [{ label: "S", kind: "independent", clauseType: null, text: terminalText(displayTree) }]
   const dependentCount = normalizedClauseEntries.filter((entry) => entry.kind === "dependent").length
   const independentCount = normalizedClauseEntries.length - dependentCount
 
-  normalizedClauseEntries.forEach((entry, index) => {
-    const isSingleIndependent = independentCount === 1 && dependentCount === 0
-    const number = entry.kind === "independent" && independentCount > 1
-      ? ` ${normalizedClauseEntries.slice(0, index + 1).filter((item) => item.kind === "independent").length}`
-      : ""
-
+  normalizedClauseEntries.forEach((entry) => {
     clauses.push({
-      type: isSingleIndependent
-        ? "Single Independent Clause"
-        : `${entry.kind === "independent" ? "Independent" : "Dependent"} Clause${number}`,
+      type: entry.kind === "independent"
+        ? `${entry.label} — Independent Clause`
+        : `${entry.label} — Dependent ${entry.clauseType}`,
       text: entry.text
     })
   })
@@ -241,16 +300,26 @@ export function analyzeTree(tree) {
   const coordinatedClauses = hasCoordinatedClauses(tree)
 
   let sentenceType = "Simple Sentence"
-  let sentenceTypeReason = "The tree contains one independent clause."
+  let sentenceTypeReason = `The tree contains 1 independent clause (${normalizedClauseEntries[0]?.label || "S"}) and no dependent clauses.`
 
   if (dependentCount > 0) {
     sentenceType = "Complex Sentence"
-    sentenceTypeReason =
-      "A dependent S clause is nested inside an independent clause."
+    const independentLabels = normalizedClauseEntries
+      .filter((entry) => entry.kind === "independent")
+      .map((entry) => entry.label)
+      .join(", ")
+    const dependentLabels = normalizedClauseEntries
+      .filter((entry) => entry.kind === "dependent")
+      .map((entry) => `${entry.label}: ${entry.clauseType}`)
+      .join(", ")
+    sentenceTypeReason = `Independent: ${independentLabels}. Dependent: ${dependentLabels}.`
   } else if (independentCount >= 2 && coordinatedClauses) {
     sentenceType = "Compound Sentence"
-    sentenceTypeReason =
-      "Independent S clauses are coordinated at the same structural level."
+    const independentLabels = normalizedClauseEntries
+      .filter((entry) => entry.kind === "independent")
+      .map((entry) => entry.label)
+      .join(", ")
+    sentenceTypeReason = `The tree contains ${independentCount} coordinated independent clauses (${independentLabels}) and no dependent clauses.`
   }
 
   return {
