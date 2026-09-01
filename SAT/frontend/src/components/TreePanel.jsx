@@ -9,6 +9,7 @@ function cleanWord(word) {
 export default function TreePanel({ analysis }) {
   const [selectedWords, setSelectedWords] = useState([])
   const [saveError, setSaveError] = useState("")
+  const [isRulesOpen, setIsRulesOpen] = useState(false)
   const treeSvgRef = useRef(null)
   const productionRules = useMemo(
     () => extractProductionRules(analysis?.tree, { includeLexicalRules: false }),
@@ -65,25 +66,7 @@ export default function TreePanel({ analysis }) {
   }
 
   return (
-    <section className="grid min-w-0 grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
-      <div className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-6 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
-        <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Production Rules</h2>
-
-        <div className="mt-5 max-h-[520px] space-y-3 overflow-y-auto pr-1">
-          {productionRules.length > 0 ? (
-            productionRules.map((rule) => (
-              <div key={rule} className="rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-2 text-base text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
-                {rule}
-              </div>
-            ))
-          ) : (
-            <p className="text-base text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
-              Production rules will appear with the syntax tree.
-            </p>
-          )}
-        </div>
-      </div>
-
+    <section className="min-w-0">
       <div className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-6 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Tree Diagram</h2>
@@ -138,6 +121,42 @@ export default function TreePanel({ analysis }) {
         <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-3 text-base text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
           Tip: Scroll to zoom, drag to pan, or click a terminal node to highlight the corresponding word.
         </div>
+
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setIsRulesOpen((value) => !value)}
+            aria-expanded={isRulesOpen}
+            aria-controls="production-rules"
+            className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 text-base font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+          >
+            {isRulesOpen ? "Hide production rules" : "Show production rules"}
+          </button>
+        </div>
+
+        {isRulesOpen && (
+          <div
+            id="production-rules"
+            className="mt-3 min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]"
+          >
+            <p className="text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
+              Production rules
+            </p>
+            <div className="mt-3 max-h-80 space-y-2 overflow-y-auto pr-1">
+              {productionRules.length > 0 ? (
+                productionRules.map((rule) => (
+                  <div key={rule} className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 text-base text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+                    {rule}
+                  </div>
+                ))
+              ) : (
+                <p className="text-base text-[#6B7280] dark:text-[#9CA3AF]">
+                  No production rules are available.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
         {saveError && (
           <p role="alert" className="mt-3 text-sm text-red-600 dark:text-red-300">{saveError}</p>
         )}

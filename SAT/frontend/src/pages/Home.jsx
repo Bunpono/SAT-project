@@ -188,7 +188,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
   }
 
   return (
-    <div className="app-surface min-h-screen overflow-x-hidden px-4 py-5 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-6 lg:px-8 dark:text-white">
+    <div className="app-surface min-h-screen overflow-x-hidden px-3 pb-28 pt-4 text-[#111827] transition-colors duration-300 sm:px-6 sm:py-6 lg:px-8 dark:text-white">
       <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] w-full max-w-[1400px] min-w-0 flex-col">
         <Header
           theme={theme}
@@ -201,12 +201,12 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
 
         <nav
           aria-label="Main navigation"
-          className={`mt-6 grid w-full min-w-0 gap-2 rounded-2xl bg-[#E8E8ED] p-2 transition-all duration-300 dark:bg-[#151B2D] ${
+          className={`fixed inset-x-3 bottom-3 z-40 grid min-w-0 grid-cols-3 gap-1 rounded-2xl border border-white/70 bg-[#E8E8ED]/95 p-1.5 shadow-[0_18px_45px_rgba(17,24,39,0.22)] backdrop-blur-xl transition-all duration-300 sm:static sm:inset-auto sm:mt-6 sm:w-full sm:gap-2 sm:border-0 sm:p-2 sm:shadow-none sm:backdrop-blur-none dark:border-[#263042] dark:bg-[#151B2D]/95 sm:dark:bg-[#151B2D] ${
             user?.role === "admin"
-              ? "grid-cols-1 sm:grid-cols-2 lg:max-w-[1240px] lg:grid-cols-4"
+              ? "sm:grid-cols-2 lg:max-w-[1240px] lg:grid-cols-4"
               : user
-                ? "grid-cols-1 sm:grid-cols-3 lg:max-w-[840px]"
-                : "grid-cols-1 sm:grid-cols-3 lg:max-w-[840px]"
+                ? "sm:grid-cols-3 lg:max-w-[840px]"
+                : "sm:grid-cols-3 lg:max-w-[840px]"
           }`}
         >
           <button
@@ -220,7 +220,8 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             }`}
           >
             <SyntaxIcon />
-            Syntax Analysis
+            <span className="sm:hidden">Analyze</span>
+            <span className="hidden sm:inline">Syntax Analysis</span>
           </button>
           <button
             type="button"
@@ -233,7 +234,8 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             }`}
           >
             <HistoryIcon />
-            Analysis History
+            <span className="sm:hidden">History</span>
+            <span className="hidden sm:inline">Analysis History</span>
           </button>
           <button
             type="button"
@@ -246,14 +248,15 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             }`}
           >
             <BookIcon />
-            How to Use
+            <span className="sm:hidden">Guide</span>
+            <span className="hidden sm:inline">How to Use</span>
           </button>
           {user?.role === "admin" && (
             <button
               type="button"
               onClick={() => navigateToView("admin")}
               aria-pressed={activeView === "admin"}
-              className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 lg:px-5 ${
+              className={`hidden min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 sm:flex lg:px-5 ${
                 activeView === "admin"
                   ? "bg-white text-[#111827] shadow-sm dark:bg-white dark:text-[#111827]"
                   : "text-[#111827] hover:bg-white/45 dark:text-[#D1D5DB] dark:hover:bg-white/10"
@@ -279,15 +282,15 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             </div>
 
             {analysis && (
-              <>
-                <div className="mt-5">
+              <div className="flex flex-col">
+                <div className="order-2 mt-4 sm:order-1 sm:mt-5">
                   <ResultTabs analysis={analysis} />
                 </div>
 
-                <div className="mt-5">
+                <div className="order-1 mt-4 sm:order-2 sm:mt-5">
                   <TreePanel analysis={analysis} />
                 </div>
-              </>
+              </div>
             )}
             </>
           )}

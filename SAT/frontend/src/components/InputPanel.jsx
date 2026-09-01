@@ -157,9 +157,9 @@ export default function InputPanel({
 
   return (
     <section className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-7 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
-      <h2 className="text-xl font-medium text-[#111827] transition-colors duration-300 dark:text-white">Input Sentence</h2>
+      <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 sm:text-xl sm:font-medium dark:text-white">Analyze a sentence</h2>
 
-      <label className="mt-5 block text-base font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
+      <label className="mt-3 block text-base font-semibold text-[#374151] transition-colors duration-300 sm:mt-5 dark:text-[#D1D5DB]">
         Enter or Paste English Sentence Here
       </label>
       <p className="mt-1 text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
@@ -179,7 +179,7 @@ export default function InputPanel({
           }
         }}
         placeholder="Type a sentence to analyze..."
-        className="mt-2 h-40 w-full min-w-0 resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-4 leading-7 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:bg-white focus:ring-4 focus:ring-[#111827]/10 sm:p-5 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
+        className="mt-2 h-28 w-full min-w-0 resize-none rounded-xl border border-transparent bg-[#F3F3F5] p-4 leading-7 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827]/20 focus:bg-white focus:ring-4 focus:ring-[#111827]/10 sm:h-40 sm:p-5 dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white/20 dark:focus:bg-[#0B1120] dark:focus:ring-white/15"
       />
 
       <div className="mt-2 flex flex-col gap-2 text-base sm:flex-row sm:items-center sm:justify-between">
@@ -193,11 +193,11 @@ export default function InputPanel({
           <span className="text-[#111827] dark:text-white">{validation.sentenceType}</span>
         </p>
       </div>
-      <p className="mt-3 text-sm leading-5 text-[#6B7280] dark:text-[#9CA3AF]">
+      <p className="mt-2 text-xs leading-5 text-[#6B7280] sm:mt-3 sm:text-sm dark:text-[#9CA3AF]">
         Submitted sentences and analysis results may be stored for system evaluation and administrator review. Sign in to save and view your history.
       </p>
 
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 hidden justify-end sm:flex">
         <select
           value=""
           onChange={handleExampleSelect}
@@ -249,7 +249,7 @@ export default function InputPanel({
       )}
 
       <div className="mt-5 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex min-w-0 flex-col flex-wrap gap-3 sm:flex-row sm:items-center">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-3 sm:flex sm:flex-row sm:flex-wrap sm:items-center">
           <button
             onClick={handleAnalyze}
             disabled={!canAnalyze}
@@ -261,7 +261,7 @@ export default function InputPanel({
 
           <button
             onClick={handleClear}
-            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-5 py-3 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]">
+            className="flex min-h-12 w-auto items-center justify-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 dark:border-[#263042] dark:bg-[#111827] dark:text-[#D1D5DB] dark:hover:bg-[#151B2D]">
             <TrashIcon />
             Clear
           </button>
@@ -276,7 +276,7 @@ export default function InputPanel({
           </button>}
         </div>
 
-        <label className="flex w-full min-w-0 flex-col gap-2 text-base font-bold text-[#111827] transition-colors duration-300 sm:flex-row sm:items-center lg:w-auto dark:text-white">
+        <label className="hidden w-full min-w-0 flex-col gap-2 text-base font-bold text-[#111827] transition-colors duration-300 sm:flex sm:flex-row sm:items-center lg:w-auto dark:text-white">
           Visualization:
           <select
             defaultValue="tree"

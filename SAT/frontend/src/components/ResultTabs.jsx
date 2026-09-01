@@ -147,9 +147,9 @@ export default function ResultTabs({ analysis }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">
-            Analysis Results
+            Analysis Details
           </h2>
-          <p className="mt-1 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+          <p className="mt-1 hidden text-base text-[#6B7280] transition-colors duration-300 sm:block dark:text-[#D1D5DB]">
             Select a category to inspect the result extracted from the syntax tree.
           </p>
         </div>
@@ -163,7 +163,18 @@ export default function ResultTabs({ analysis }) {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <label className="mt-4 block text-sm font-semibold text-[#374151] sm:hidden dark:text-[#D1D5DB]">
+        Choose detail
+        <select
+          value={activeTab}
+          onChange={(event) => setActiveTab(event.target.value)}
+          className="mt-2 min-h-12 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 font-bold text-[#111827] outline-none dark:border-[#263042] dark:bg-[#151B2D] dark:text-white"
+        >
+          {tabs.map((tab) => <option key={tab.id} value={tab.id}>{tab.title}</option>)}
+        </select>
+      </label>
+
+      <div className="mt-5 hidden grid-cols-1 gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id
 

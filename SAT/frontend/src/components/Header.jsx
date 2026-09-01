@@ -80,30 +80,30 @@ export default function Header({
   const [isAccountOpen, setIsAccountOpen] = useState(false)
 
   return (
-    <header className="flex min-w-0 flex-col gap-4 transition-colors duration-300 lg:flex-row lg:items-start lg:justify-between">
-      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+    <header className="flex min-w-0 items-start justify-between gap-3 transition-colors duration-300">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-4">
         <img
           src="/sat-logo.png"
           alt="Syntactic Analysis Tool logo"
-          className="h-10 w-14 shrink-0 object-contain brightness-0 drop-shadow-[0_10px_16px_rgba(17,24,39,0.18)] transition-all duration-300 sm:h-12 sm:w-[72px] lg:h-14 lg:w-20 dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
+          className="h-8 w-10 shrink-0 object-contain brightness-0 drop-shadow-[0_10px_16px_rgba(17,24,39,0.18)] transition-all duration-300 sm:h-12 sm:w-[72px] lg:h-14 lg:w-20 dark:invert dark:drop-shadow-[0_10px_24px_rgba(255,255,255,0.18)]"
         />
         <div className="min-w-0">
-          <h1 className="break-words text-2xl font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-3xl dark:text-white">
+          <h1 className="break-words text-lg font-bold leading-tight tracking-normal text-[#111827] transition-colors duration-300 sm:text-3xl dark:text-white">
             Syntactic Analysis Tool
           </h1>
-          <p className="mt-1 max-w-2xl text-base font-medium leading-5 text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
+          <p className="mt-1 hidden max-w-2xl text-base font-medium leading-5 text-[#6B7280] transition-colors duration-300 sm:block dark:text-[#D1D5DB]">
             Advanced English Sentence Parser with Interactive Visualization
           </p>
         </div>
       </div>
 
-      <div className="relative flex w-full shrink-0 items-center justify-end gap-3 lg:w-auto lg:self-start">
+      <div className="relative flex w-auto shrink-0 items-center justify-end gap-2 sm:gap-3">
         <button
           type="button"
           onClick={onToggleTheme}
           aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
           title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-[#F7F8FC] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F7FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:shadow-[0_18px_45px_rgba(0,0,0,0.28)] dark:hover:border-[#D1D5DB] dark:hover:bg-[#151B2D] dark:focus-visible:ring-white/30 dark:focus-visible:ring-offset-[#050816]"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E5E7EB] bg-white text-[#374151] shadow-sm transition-all duration-300 hover:border-[#111827] hover:bg-[#F7F8FC] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]/25 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F7FC] sm:h-11 sm:w-11 dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:shadow-[0_18px_45px_rgba(0,0,0,0.28)] dark:hover:border-[#D1D5DB] dark:hover:bg-[#151B2D] dark:focus-visible:ring-white/30 dark:focus-visible:ring-offset-[#050816]"
         >
           {isDark ? <MoonIcon /> : <SunIcon />}
         </button>
@@ -112,7 +112,7 @@ export default function Header({
             type="button"
             onClick={() => setIsAccountOpen((value) => !value)}
             aria-expanded={isAccountOpen}
-            className="flex h-12 min-w-0 max-w-[calc(100vw-6rem)] items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 text-base font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
+            className="flex h-10 min-w-0 max-w-28 items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] sm:h-12 sm:max-w-[calc(100vw-6rem)] sm:px-4 sm:text-base dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
           >
             <UserIcon />
             <span className="truncate">{user.name}</span>
@@ -121,7 +121,7 @@ export default function Header({
           <button
             type="button"
             onClick={onSignIn}
-            className="flex h-12 items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 text-base font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
+            className="flex h-10 items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3 text-sm font-bold text-[#111827] shadow-sm transition-all duration-300 hover:bg-[#F7F8FC] active:scale-[0.98] sm:h-12 sm:px-4 sm:text-base dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
           >
             <UserIcon />
             Sign in
