@@ -47,6 +47,11 @@
           context.fillStyle = faviconTheme.matches ? "#FFFFFF" : "#111827"
           context.fillRect(0, 0, size, size)
 
+          // Keep the mark visible when the browser chrome and OS theme differ.
+          context.globalCompositeOperation = "destination-over"
+          context.fillStyle = faviconTheme.matches ? "#111827" : "#FFFFFF"
+          context.fillRect(0, 0, size, size)
+
           const favicon = document.getElementById("site-favicon")
           favicon.href = canvas.toDataURL("image/png")
         })
