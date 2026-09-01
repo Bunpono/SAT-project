@@ -91,9 +91,12 @@ export function getCurrentUser() {
   return apiRequest("/auth/me")
 }
 
-export async function analyzeSentence(sentence) {
+export async function analyzeSentence(sentence, sentenceType) {
   return toAnalysisResult(
-    await apiRequest("/analyze", { method: "POST", body: { sentence } })
+    await apiRequest("/analyze", {
+      method: "POST",
+      body: { sentence, sentence_type: sentenceType }
+    })
   )
 }
 

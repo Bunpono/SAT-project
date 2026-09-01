@@ -103,7 +103,10 @@ export default function InputPanel({
     setErrorMessage("")
 
     try {
-      const result = await analyzeSentence(validation.normalizedInput)
+      const result = await analyzeSentence(
+        validation.normalizedInput,
+        validation.sentenceType
+      )
       onAnalyzeComplete(result)
     } catch (error) {
       console.error("Unable to analyze the sentence:", error)

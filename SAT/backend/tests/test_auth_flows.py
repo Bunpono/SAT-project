@@ -96,12 +96,15 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
         )[0]
 
     @patch("main.predict_s_expression", return_value="(S (NP She) (VP is (NP a doctor)))")
-    async def test_guest_analyze_saves_null_user_id(self, _predict):
-        response = await self.client.post("/analyze", json={"sentence": "She is a doctor."})
+    async def test_guest_analyze_saves_null_user_id(self, predict):
+        response = await self.client.post(
+            "/analyze", json={"sentence": "She is a doctor.", "sentence_type": "Simple"}
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.json()["user_id"])
         self.assertIsNone(self.supabase.analyses[0]["user_id"])
+        predict.assert_called_once_with("She is a doctor.", "Simple")
 
     @patch("main.predict_s_expression")
     async def test_invalid_token_is_not_treated_as_guest(self, predict):

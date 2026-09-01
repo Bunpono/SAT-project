@@ -140,7 +140,7 @@ function escapeRegExp(value: string) {
 }
 
 function getWords(value: string) {
-  return value.toLowerCase().match(/[a-z]+(?:'[a-z]+)?/g) ?? []
+  return value.toLowerCase().match(/[a-z]+(?:['’][a-z]+)?/g) ?? []
 }
 
 function includesPhrase(wordsText: string, phrase: string) {
@@ -195,9 +195,16 @@ function detectSentenceType(input: string, words: string[]): SentenceType {
   if (hasComplexMarker) return "Complex"
 
   const hasCompoundPunctuation = /;/.test(input)
-  const hasCompoundConjunction = COORDINATORS.some((coordinator) =>
-    new RegExp(`,\\s+${coordinator}\\b|\\b${coordinator}\\b.+\\b(?:i|you|he|she|it|we|they|the|a|an)\\b`, "i").test(input)
-  )
+  const hasCompoundConjunction = COORDINATORS.some((coordinator) => {
+    // "for" is commonly a preposition (for the interview), so only treat it
+    // as a coordinator when punctuation clearly introduces a new clause.
+    if (coordinator === "for") return /,\s+for\b/i.test(input)
+
+    return new RegExp(
+      `,\\s+${coordinator}\\b|\\b${coordinator}\\b.+\\b(?:i|you|he|she|it|we|they|the|a|an)\\b`,
+      "i"
+    ).test(input)
+  })
 
   if (hasCompoundPunctuation || hasCompoundConjunction) return "Compound"
   return "Simple"
@@ -243,7 +250,7 @@ export function validateSentenceInput(input: string): SentenceValidationResult {
   const isEmpty = normalizedInput.length === 0
   const isTooLong = normalizedInput.length > MAX_SENTENCE_LENGTH
   const hasLetters = /[A-Za-z]/.test(normalizedInput)
-  const hasUnsupportedCharacters = /[^A-Za-z0-9\s.,;:'"()!?-]/.test(normalizedInput)
+  const hasUnsupportedCharacters = /[^A-Za-z0-9\s.,;:'’"()!?-]/.test(normalizedInput)
   const isEnglishInput = !isEmpty && hasLetters && !hasUnsupportedCharacters
   const isInterrogative = /\?$/.test(normalizedInput) || startsWithQuestionStarter(words)
   const isExclamatory = /!$/.test(normalizedInput) || normalizedInput.includes("!")

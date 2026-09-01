@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class AnalyzeRequest(BaseModel):
     sentence: str = Field(min_length=1, max_length=5000)
+    sentence_type: Literal["Simple", "Compound", "Complex"] | None = None
 
 
 class RegisterRequest(BaseModel):

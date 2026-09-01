@@ -8,8 +8,15 @@ describe("validateSentenceInput", () => {
     expect(result.sentenceType).toBe("Simple")
   })
 
+  it("accepts a curly apostrophe used in supported English contractions", () => {
+    const result = validateSentenceInput("I’m here for the interview.")
+    expect(result.canAnalyze).toBe(true)
+    expect(result.sentenceType).toBe("Simple")
+  })
+
   it("detects compound and complex sentences", () => {
     expect(validateSentenceInput("I read, and she writes.").sentenceType).toBe("Compound")
+    expect(validateSentenceInput("I stayed home, for it was raining.").sentenceType).toBe("Compound")
     expect(validateSentenceInput("The woman who sings smiles.").sentenceType).toBe("Complex")
   })
 

@@ -121,8 +121,11 @@ def detect_sentence_type(sentence: str, tree: dict | None = None) -> str:
     if any(marker in normalized for marker in complex_markers):
         return "Complex"
 
-    compound_markers = [" and ", " but ", " or ", " nor ", " for ", " yet ", " so ", ";"]
+    compound_markers = [" and ", " but ", " or ", " nor ", " yet ", " so ", ";"]
     if any(marker in normalized for marker in compound_markers):
+        return "Compound"
+
+    if ", for " in normalized:
         return "Compound"
 
     return "Simple"
@@ -269,16 +272,17 @@ def analyze(
     if not sentence:
         raise HTTPException(status_code=400, detail="Sentence is required.")
 
+    sentence_type = data.sentence_type or detect_sentence_type(sentence)
+
     logger.info("Starting model inference")
     inference_started_at = time.perf_counter()
     try:
-        s_expression = predict_s_expression(sentence)
+        s_expression = predict_s_expression(sentence, sentence_type)
     except ModelLoadError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     logger.info("Model inference completed in %.2fs", time.perf_counter() - inference_started_at)
     tree = s_expression_to_tree(s_expression)
 
-    sentence_type = detect_sentence_type(sentence, tree)
     history_payload = {
         "user_id": current_user.id if current_user is not None else None,
         "sentence": sentence,

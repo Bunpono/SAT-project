@@ -41,7 +41,7 @@ SAT/
 - Frontend: React 19, Vite, Tailwind CSS, D3 hierarchy, and react-d3-tree
 - Backend: Python, FastAPI, Uvicorn, and Pydantic
 - Machine learning: Hugging Face Transformers and PyTorch
-- Model: `SAT-Project/SAT-T5model-P8` (`best_model` artifact)
+- Model: `SAT-Project/SAT-T5model-P8` (`checkpoints/checkpoint-1935` artifact)
 
 ## Prerequisites
 
@@ -92,9 +92,11 @@ application.
 ## API flow
 
 1. A user enters an English sentence in the frontend.
-2. The frontend sends `POST /analyze` with `{ "sentence": "..." }`.
-3. FastAPI validates the request and passes the sentence to the Hugging Face
-   model.
+2. The frontend sends `POST /analyze` with the sentence and detected sentence
+   type, for example `{ "sentence": "...", "sentence_type": "Simple" }`.
+3. FastAPI validates the request and adds the matching training instruction
+   prefix (`parse simple:`, `parse compound:`, or `parse complex:`) before
+   passing the text to the Hugging Face model.
 4. The model returns an S-expression.
 5. The backend converts the S-expression into a nested JSON tree.
 6. The API returns the sentence, S-expression, and tree to the frontend for

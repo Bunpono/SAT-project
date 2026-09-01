@@ -21,6 +21,12 @@ _tokenizer = None
 _model = None
 _load_lock = Lock()
 
+INSTRUCTION_PREFIXES = {
+    "Simple": "parse simple: ",
+    "Compound": "parse compound: ",
+    "Complex": "parse complex: ",
+}
+
 
 class ModelLoadError(RuntimeError):
     """Raised when the configured Hugging Face model cannot be loaded."""
@@ -81,10 +87,14 @@ def load_model():
     return _tokenizer, _model
 
 
-def predict_s_expression(sentence: str) -> str:
+def predict_s_expression(sentence: str, sentence_type: str) -> str:
     tokenizer, model = load_model()
+    try:
+        source_text = INSTRUCTION_PREFIXES[sentence_type] + sentence
+    except KeyError as exc:
+        raise ValueError(f"Unsupported sentence type: {sentence_type}") from exc
     inputs = tokenizer(
-        sentence,
+        source_text,
         return_tensors="pt",
         truncation=True,
         max_length=128,
