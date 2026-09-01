@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link id="site-favicon" rel="icon" type="image/png" href="/sat-logo.png" />
+    <link rel="apple-touch-icon" href="/sat-logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -10,7 +11,7 @@
       rel="stylesheet"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Syntactic Analysis Tool</title>
   </head>
   <body>
     <script>
@@ -28,6 +29,33 @@
       } catch {
         document.documentElement.classList.remove("dark")
       }
+
+      const faviconTheme = matchMedia("(prefers-color-scheme: dark)")
+
+      function updateFavicon() {
+        const logo = new Image()
+
+        logo.addEventListener("load", () => {
+          const canvas = document.createElement("canvas")
+          const context = canvas.getContext("2d")
+          const size = 64
+
+          canvas.width = size
+          canvas.height = size
+          context.drawImage(logo, 0, 0, size, size)
+          context.globalCompositeOperation = "source-in"
+          context.fillStyle = faviconTheme.matches ? "#FFFFFF" : "#111827"
+          context.fillRect(0, 0, size, size)
+
+          const favicon = document.getElementById("site-favicon")
+          favicon.href = canvas.toDataURL("image/png")
+        })
+
+        logo.src = "/sat-logo.png"
+      }
+
+      updateFavicon()
+      faviconTheme.addEventListener("change", updateFavicon)
     </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
