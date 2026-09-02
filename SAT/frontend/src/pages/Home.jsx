@@ -5,6 +5,7 @@ import ResultTabs from "../components/ResultTabs"
 import TreePanel from "../components/TreePanel"
 import HowToUse from "../components/HowToUse"
 import AnalysisHistory from "../components/AnalysisHistory"
+import HistoryDetailModal from "../components/HistoryDetailModal"
 import AdminDashboard from "../components/AdminDashboard"
 import { clearMyHistory, deleteMyHistory, getMyHistory } from "../services/api"
 
@@ -93,6 +94,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
   const [history, setHistory] = useState([])
   const [inputSentence, setInputSentence] = useState("She is talking about her dog.")
   const [inputVersion, setInputVersion] = useState(0)
+  const [historyPreview, setHistoryPreview] = useState(null)
   const userId = user?.id
 
   const loadAccountHistory = async () => {
@@ -154,15 +156,11 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
   }
 
   const handleViewHistory = (entry) => {
-    setAnalysis({
-      sentence: entry.sentence,
-      s_expression: entry.s_expression,
-      tree: entry.tree
-    })
-    navigateToView("analysis")
+    setHistoryPreview(entry)
   }
 
   const handleAnalyzeAgain = (entry) => {
+    setHistoryPreview(null)
     setInputSentence(entry.sentence)
     setInputVersion((current) => current + 1)
     setAnalysis(null)
@@ -326,6 +324,12 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
 
         <Footer />
       </div>
+
+      <HistoryDetailModal
+        entry={historyPreview}
+        onClose={() => setHistoryPreview(null)}
+        onAnalyzeAgain={handleAnalyzeAgain}
+      />
     </div>
   )
 }
