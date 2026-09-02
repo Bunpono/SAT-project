@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react"
 import { hierarchy, tree } from "d3-hierarchy"
 import { prepareTreeForDisplay } from "../utils/treeRules"
 
-export default function StaticTree({ data, selectedWords = [], onSelectWords, svgRef }) {
+export default function StaticTree({ data, selectedWords = [], onSelectWords, svgRef, isFullscreen = false }) {
   const viewportRef = useRef(null)
-  const dragRef = useRef(null)
+  const pointersRef = useRef(new Map())
+  const gestureRef = useRef(null)
   const ignoreClickRef = useRef(false)
   const activeTransformRef = useRef({ x: 24, y: 24, scale: 1 })
   const [viewport, setViewport] = useState({ width: 0, height: 0 })
@@ -99,13 +100,16 @@ function getNodeStyle(node, depth) {
   const links = treeRoot.links()
 
   const fitPadding = 24
-  const fitScale = viewport.width && viewport.height
+  const calculatedFitScale = viewport.width && viewport.height
     ? Math.min(
       (viewport.width - fitPadding * 2) / svgWidth,
       (viewport.height - fitPadding * 2) / svgHeight,
       1
     )
     : 1
+  const fitScale = viewport.width > 0 && viewport.width < 640
+    ? Math.max(calculatedFitScale, 0.48)
+    : calculatedFitScale
   const initialTransform = {
     x: Math.max(fitPadding, (viewport.width - svgWidth * fitScale) / 2),
     y: Math.max(fitPadding, (viewport.height - svgHeight * fitScale) / 2),
@@ -116,6 +120,29 @@ function getNodeStyle(node, depth) {
   useEffect(() => {
     activeTransformRef.current = activeTransform
   }, [activeTransform])
+
+  const commitTransform = (nextTransform) => {
+    activeTransformRef.current = nextTransform
+    setTransform(nextTransform)
+  }
+
+  const zoomAt = (factor, pointerX = viewport.width / 2, pointerY = viewport.height / 2) => {
+    const active = activeTransformRef.current
+    const nextScale = Math.min(3.5, Math.max(0.25, active.scale * factor))
+    const worldX = (pointerX - active.x) / active.scale
+    const worldY = (pointerY - active.y) / active.scale
+
+    commitTransform({
+      x: pointerX - worldX * nextScale,
+      y: pointerY - worldY * nextScale,
+      scale: nextScale
+    })
+  }
+
+  const resetView = () => {
+    activeTransformRef.current = initialTransform
+    setTransform(null)
+  }
 
   useEffect(() => {
     const element = viewportRef.current
@@ -132,21 +159,18 @@ function getNodeStyle(node, depth) {
       const bounds = element.getBoundingClientRect()
       const pointerX = event.clientX - bounds.left
       const pointerY = event.clientY - bounds.top
+      const active = activeTransformRef.current
       const zoomFactor = event.deltaY < 0 ? 1.12 : 0.89
-      const fallbackTransform = activeTransformRef.current
-
-      setTransform((current) => {
-        const active = current || fallbackTransform
-        const nextScale = Math.min(2.5, Math.max(0.35, active.scale * zoomFactor))
-        const worldX = (pointerX - active.x) / active.scale
-        const worldY = (pointerY - active.y) / active.scale
-
-        return {
-          x: pointerX - worldX * nextScale,
-          y: pointerY - worldY * nextScale,
-          scale: nextScale
-        }
-      })
+      const nextScale = Math.min(3.5, Math.max(0.25, active.scale * zoomFactor))
+      const worldX = (pointerX - active.x) / active.scale
+      const worldY = (pointerY - active.y) / active.scale
+      const nextTransform = {
+        x: pointerX - worldX * nextScale,
+        y: pointerY - worldY * nextScale,
+        scale: nextScale
+      }
+      activeTransformRef.current = nextTransform
+      setTransform(nextTransform)
     }
 
     updateViewport()
@@ -161,53 +185,135 @@ function getNodeStyle(node, depth) {
   }, [])
 
   const handlePointerDown = (event) => {
-    if (event.button !== 0) return
+    if (event.pointerType === "mouse" && event.button !== 0) return
 
     event.currentTarget.setPointerCapture(event.pointerId)
-    dragRef.current = {
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      originX: activeTransform.x,
-      originY: activeTransform.y,
-      moved: false
+    pointersRef.current.set(event.pointerId, {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY
+    })
+
+    const pointers = [...pointersRef.current.values()]
+    if (pointers.length === 1) {
+      const active = activeTransformRef.current
+      gestureRef.current = {
+        type: "pan",
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        originX: active.x,
+        originY: active.y,
+        moved: false
+      }
+      return
+    }
+
+    if (pointers.length === 2) {
+      const [first, second] = pointers
+      const bounds = event.currentTarget.getBoundingClientRect()
+      const centerX = (first.x + second.x) / 2 - bounds.left
+      const centerY = (first.y + second.y) / 2 - bounds.top
+      const active = activeTransformRef.current
+      gestureRef.current = {
+        type: "pinch",
+        startDistance: Math.hypot(second.x - first.x, second.y - first.y),
+        startScale: active.scale,
+        worldX: (centerX - active.x) / active.scale,
+        worldY: (centerY - active.y) / active.scale,
+        moved: false
+      }
     }
   }
 
   const handlePointerMove = (event) => {
-    const drag = dragRef.current
-    if (!drag || drag.pointerId !== event.pointerId) return
+    if (!pointersRef.current.has(event.pointerId)) return
+    pointersRef.current.set(event.pointerId, {
+      id: event.pointerId,
+      x: event.clientX,
+      y: event.clientY
+    })
 
-    const deltaX = event.clientX - drag.startX
-    const deltaY = event.clientY - drag.startY
-    if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) drag.moved = true
+    const gesture = gestureRef.current
+    const pointers = [...pointersRef.current.values()]
+    if (!gesture) return
 
-    setTransform((current) => ({
-      ...current,
-      x: drag.originX + deltaX,
-      y: drag.originY + deltaY
-    }))
+    if (gesture.type === "pinch" && pointers.length >= 2) {
+      const [first, second] = pointers
+      const bounds = event.currentTarget.getBoundingClientRect()
+      const centerX = (first.x + second.x) / 2 - bounds.left
+      const centerY = (first.y + second.y) / 2 - bounds.top
+      const distance = Math.hypot(second.x - first.x, second.y - first.y)
+      const nextScale = Math.min(3.5, Math.max(0.25, gesture.startScale * (distance / Math.max(gesture.startDistance, 1))))
+      gesture.moved = true
+      ignoreClickRef.current = true
+      commitTransform({
+        x: centerX - gesture.worldX * nextScale,
+        y: centerY - gesture.worldY * nextScale,
+        scale: nextScale
+      })
+      return
+    }
+
+    if (gesture.type === "pan" && gesture.pointerId === event.pointerId) {
+      const deltaX = event.clientX - gesture.startX
+      const deltaY = event.clientY - gesture.startY
+      if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+        gesture.moved = true
+        ignoreClickRef.current = true
+      }
+      commitTransform({
+        ...activeTransformRef.current,
+        x: gesture.originX + deltaX,
+        y: gesture.originY + deltaY
+      })
+    }
   }
 
   const handlePointerEnd = (event) => {
-    const drag = dragRef.current
-    if (!drag || drag.pointerId !== event.pointerId) return
+    if (!pointersRef.current.has(event.pointerId)) return
+    const moved = gestureRef.current?.moved
+    pointersRef.current.delete(event.pointerId)
 
-    if (drag.moved) ignoreClickRef.current = true
-    dragRef.current = null
+    const remaining = [...pointersRef.current.values()]
+    if (remaining.length === 1) {
+      const pointer = remaining[0]
+      const active = activeTransformRef.current
+      gestureRef.current = {
+        type: "pan",
+        pointerId: pointer.id,
+        startX: pointer.x,
+        startY: pointer.y,
+        originX: active.x,
+        originY: active.y,
+        moved: false
+      }
+    } else if (remaining.length === 0) {
+      gestureRef.current = null
+    }
+
+    if (moved) {
+      window.setTimeout(() => { ignoreClickRef.current = false }, 0)
+    }
   }
 
   if (!data) return null
 
   return (
-    <div
-      ref={viewportRef}
-      className="h-[440px] w-full touch-none overscroll-contain cursor-grab select-none sm:h-[520px] active:cursor-grabbing"
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerEnd}
-      onPointerCancel={handlePointerEnd}
-    >
+    <div className="relative">
+      <div className="absolute right-3 top-3 z-10 flex gap-1 rounded-xl border border-[#E5E7EB] bg-white/95 p-1 shadow-md backdrop-blur dark:border-[#263042] dark:bg-[#111827]/95">
+        <button type="button" onClick={() => zoomAt(1.25)} aria-label="Zoom in" title="Zoom in" className="flex h-10 w-10 items-center justify-center rounded-lg text-xl font-semibold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">+</button>
+        <button type="button" onClick={() => zoomAt(0.8)} aria-label="Zoom out" title="Zoom out" className="flex h-10 w-10 items-center justify-center rounded-lg text-xl font-semibold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">−</button>
+        <button type="button" onClick={resetView} aria-label="Reset tree view" title="Reset view" className="flex h-10 min-w-10 items-center justify-center rounded-lg px-2 text-xs font-bold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">Reset</button>
+      </div>
+      <div
+        ref={viewportRef}
+        className={`${isFullscreen ? "h-[calc(100dvh-9rem)]" : "h-[440px] sm:h-[520px]"} w-full touch-none cursor-grab select-none overscroll-contain active:cursor-grabbing`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+      >
       <svg
         ref={svgRef}
         viewBox={`0 0 ${Math.max(viewport.width, 1)} ${Math.max(viewport.height, 1)}`}
@@ -334,6 +440,7 @@ function getNodeStyle(node, depth) {
       </g>
       </g>
       </svg>
+      </div>
     </div>
   )
 }

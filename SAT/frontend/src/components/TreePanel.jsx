@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import StaticTree from "./StaticTree"
 import { extractProductionRules } from "../utils/treeRules"
 
@@ -10,6 +10,7 @@ export default function TreePanel({ analysis }) {
   const [selectedWords, setSelectedWords] = useState([])
   const [saveError, setSaveError] = useState("")
   const [isRulesOpen, setIsRulesOpen] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const treeSvgRef = useRef(null)
   const productionRules = useMemo(
     () => extractProductionRules(analysis?.tree, { includeLexicalRules: false }),
@@ -19,6 +20,22 @@ export default function TreePanel({ analysis }) {
   const words = analysis?.sentence
     ? analysis.sentence.trim().split(/\s+/)
     : []
+
+  useEffect(() => {
+    if (!isFullscreen) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setIsFullscreen(false)
+    }
+
+    document.body.style.overflow = "hidden"
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isFullscreen])
 
   const handleSaveTree = async () => {
     const svg = treeSvgRef.current
@@ -67,21 +84,37 @@ export default function TreePanel({ analysis }) {
 
   return (
     <section className="min-w-0">
-      <div className="min-w-0 rounded-2xl border border-white/70 bg-white p-4 shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 sm:p-6 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+      <div
+        className={`${isFullscreen ? "fixed inset-0 z-50 overflow-y-auto rounded-none p-3 sm:p-5" : "min-w-0 rounded-2xl p-4 sm:p-6"} border border-white/70 bg-white shadow-[0_18px_50px_rgba(17,24,39,0.06)] ring-1 ring-[#E5E7EB]/80 transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:ring-white/5 dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]`}
+        role={isFullscreen ? "dialog" : undefined}
+        aria-modal={isFullscreen ? "true" : undefined}
+        aria-label={isFullscreen ? "Fullscreen syntax tree" : undefined}
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-bold text-[#111827] transition-colors duration-300 dark:text-white">Tree Diagram</h2>
           {analysis?.tree && (
-            <button
-              type="button"
-              onClick={handleSaveTree}
-              className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
-            >
-              Save PNG
-            </button>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIsFullscreen((value) => !value)}
+                className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+              >
+                {isFullscreen ? "Close" : "Full screen"}
+              </button>
+              {!isFullscreen && (
+                <button
+                  type="button"
+                  onClick={handleSaveTree}
+                  className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-sm font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+                >
+                  Save PNG
+                </button>
+              )}
+            </div>
           )}
         </div>
 
-        {analysis?.tree && (
+        {analysis?.tree && !isFullscreen && (
           <div className="mt-5 flex flex-wrap gap-2 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D]">
             {words.map((word, index) => {
               const active = selectedWords.includes(cleanWord(word))
@@ -110,6 +143,7 @@ export default function TreePanel({ analysis }) {
               data={analysis.tree}
               selectedWords={selectedWords}
               onSelectWords={setSelectedWords}
+              isFullscreen={isFullscreen}
             />
           ) : (
             <div className="flex h-[430px] items-center justify-center text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
@@ -118,11 +152,13 @@ export default function TreePanel({ analysis }) {
           )}
         </div>
 
-        <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-3 text-base text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
-          Tip: Scroll to zoom, drag to pan, or click a terminal node to highlight the corresponding word.
-        </div>
+        {!isFullscreen && (
+          <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-3 text-base text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+            Tip: Drag to pan, pinch or use +/− to zoom, and tap a terminal node to highlight its word.
+          </div>
+        )}
 
-        <div className="mt-4 flex justify-end">
+        {!isFullscreen && <div className="mt-4 flex justify-end">
           <button
             type="button"
             onClick={() => setIsRulesOpen((value) => !value)}
@@ -132,9 +168,9 @@ export default function TreePanel({ analysis }) {
           >
             {isRulesOpen ? "Hide production rules" : "Show production rules"}
           </button>
-        </div>
+        </div>}
 
-        {isRulesOpen && (
+        {isRulesOpen && !isFullscreen && (
           <div
             id="production-rules"
             className="mt-3 min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]"
