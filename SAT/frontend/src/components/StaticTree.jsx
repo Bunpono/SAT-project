@@ -128,11 +128,11 @@ function getNodeStyle(node, depth) {
   }, [activeTransform])
 
   useEffect(() => {
-    const media = window.matchMedia("(pointer: coarse)")
-    const updatePointerType = () => setIsCoarsePointer(media.matches)
+    const primaryTouch = window.matchMedia("(pointer: coarse)")
+    const updatePointerType = () => setIsCoarsePointer(primaryTouch.matches)
     updatePointerType()
-    media.addEventListener("change", updatePointerType)
-    return () => media.removeEventListener("change", updatePointerType)
+    primaryTouch.addEventListener("change", updatePointerType)
+    return () => primaryTouch.removeEventListener("change", updatePointerType)
   }, [])
 
   const commitTransform = (nextTransform) => {
@@ -167,6 +167,8 @@ function getNodeStyle(node, depth) {
     }
 
     const handleWheel = (event) => {
+      if (!event.ctrlKey && !event.metaKey) return
+
       event.preventDefault()
       event.stopPropagation()
 
@@ -333,7 +335,14 @@ function getNodeStyle(node, depth) {
             onClick={() => setIsInteractionActive(true)}
             className="pointer-events-auto flex min-h-16 items-center gap-3 rounded-2xl border-2 border-blue-500 bg-white/95 px-5 py-3 text-left text-[#111827] shadow-[0_14px_35px_rgba(37,99,235,0.25)] backdrop-blur transition-all duration-200 active:scale-[0.97] dark:bg-[#111827]/95 dark:text-white"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xl text-white" aria-hidden="true">☝</span>
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white" aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 11V5.5a1.5 1.5 0 0 1 3 0V10" />
+                <path d="M11 10V4.5a1.5 1.5 0 0 1 3 0V10" />
+                <path d="M14 10V6a1.5 1.5 0 0 1 3 0v6" />
+                <path d="M8 9.5a1.5 1.5 0 0 0-3 0V13c0 4.4 2.7 7 7 7h1c4.4 0 7-2.6 7-7v-2a1.5 1.5 0 0 0-3 0" />
+              </svg>
+            </span>
             <span>
               <span className="block text-base font-bold">Explore tree</span>
               <span className="mt-0.5 block text-xs font-medium text-[#6B7280] dark:text-[#9CA3AF]">Interactive canvas · tap to activate</span>
@@ -356,7 +365,7 @@ function getNodeStyle(node, depth) {
       )}
       <div
         ref={viewportRef}
-        className={`${isFullscreen ? "h-[calc(100dvh-9rem)]" : "h-[440px] sm:h-[520px]"} ${interactionEnabled ? "touch-none cursor-grab overscroll-contain active:cursor-grabbing" : "touch-pan-y cursor-default"} w-full select-none`}
+        className={`${isFullscreen ? "h-[calc(100dvh-9rem)]" : "h-[380px] sm:h-[440px] lg:h-[480px]"} ${interactionEnabled ? "touch-none cursor-grab overscroll-contain active:cursor-grabbing" : "touch-pan-y cursor-default"} w-full select-none`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
@@ -367,7 +376,7 @@ function getNodeStyle(node, depth) {
         viewBox={`0 0 ${Math.max(viewport.width, 1)} ${Math.max(viewport.height, 1)}`}
         className="block h-full w-full"
         role="img"
-        aria-label={interactionEnabled ? "Interactive syntax tree. Drag to pan and pinch to zoom." : "Syntax tree preview. Activate Explore tree to interact."}
+        aria-label={interactionEnabled ? "Interactive syntax tree. Drag to pan and use Control or Command plus wheel to zoom." : "Syntax tree preview. Activate Explore tree to interact."}
       >
       <g transform={`translate(${activeTransform.x}, ${activeTransform.y}) scale(${activeTransform.scale})`}>
       <g transform={`translate(${PADDING_X}, ${PADDING_Y})`}>

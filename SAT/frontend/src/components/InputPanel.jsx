@@ -276,15 +276,6 @@ export default function InputPanel({
           </button>}
         </div>
 
-        <label className="hidden w-full min-w-0 flex-col gap-2 text-base font-bold text-[#111827] transition-colors duration-300 sm:flex sm:flex-row sm:items-center lg:w-auto dark:text-white">
-          Visualization:
-          <select
-            defaultValue="tree"
-            className="min-h-12 w-full min-w-0 rounded-xl border border-transparent bg-[#F3F3F5] px-4 py-3 font-medium text-[#111827] outline-none transition-all duration-300 focus:ring-4 focus:ring-[#111827]/10 sm:min-w-52 dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:focus:ring-white/15"
-          >
-            <option value="tree">Tree Diagram</option>
-          </select>
-        </label>
       </div>
 
       {canReport && showReportForm && (
