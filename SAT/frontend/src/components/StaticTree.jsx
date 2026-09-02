@@ -365,7 +365,7 @@ function getNodeStyle(node, depth) {
       )}
       <div
         ref={viewportRef}
-        className={`${isFullscreen ? "h-[calc(100dvh-9rem)]" : "h-[380px] sm:h-[440px] lg:h-[480px]"} ${interactionEnabled ? "touch-none cursor-grab overscroll-contain active:cursor-grabbing" : "touch-pan-y cursor-default"} w-full select-none`}
+        className={`${isFullscreen ? "h-[calc(100dvh-9rem)]" : "h-[380px] sm:h-[500px] lg:h-[clamp(560px,62vh,680px)]"} ${interactionEnabled ? "touch-none cursor-grab overscroll-contain active:cursor-grabbing" : "touch-pan-y cursor-default"} w-full select-none`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}

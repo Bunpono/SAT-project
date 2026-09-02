@@ -11,7 +11,7 @@ import { clearMyHistory, deleteMyHistory, getMyHistory } from "../services/api"
 
 function SyntaxIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" aria-hidden="true">
       <path
         d="M12 4v5m0 0-5 4m5-4 5 4"
         stroke="currentColor"
@@ -31,7 +31,7 @@ function SyntaxIcon() {
 
 function HistoryIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" aria-hidden="true">
       <path
         d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5M12 7v5l3 2"
         stroke="currentColor"
@@ -45,7 +45,7 @@ function HistoryIcon() {
 
 function BookIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" aria-hidden="true">
       <path
         d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v12H7.5A2.5 2.5 0 0 1 5 16.5v-12Zm0 12A2.5 2.5 0 0 1 7.5 14H18"
         stroke="currentColor"
@@ -59,7 +59,7 @@ function BookIcon() {
 
 function AdminIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" aria-hidden="true">
       <path
         d="M12 3 5 6v5c0 4.4 2.8 8.3 7 9.7 4.2-1.4 7-5.3 7-9.7V6l-7-3Zm0 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm-3.5 4a3.8 3.8 0 0 1 7 0"
         stroke="currentColor"
@@ -206,7 +206,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             onClick={() => navigateToView("analysis")}
             aria-pressed={activeView === "analysis"}
             aria-current={activeView === "analysis" ? "page" : undefined}
-            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] border-b-2 border-transparent px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 sm:min-h-14 sm:justify-start sm:rounded-none sm:px-4 lg:px-5 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] border-b-2 border-transparent px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 sm:min-h-16 sm:justify-start sm:gap-3 sm:rounded-none sm:px-6 sm:text-lg lg:px-8 ${
               activeView === "analysis"
                 ? "bg-white text-[#111827] shadow-sm sm:border-blue-600 sm:bg-transparent sm:text-blue-700 sm:shadow-none sm:dark:border-blue-400 sm:dark:bg-transparent sm:dark:text-blue-300 dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 sm:hover:border-[#9CA3AF] sm:hover:bg-transparent dark:text-[#D1D5DB] dark:hover:bg-white/10 sm:dark:hover:border-[#6B7280] sm:dark:hover:bg-transparent"
@@ -221,7 +221,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             onClick={() => navigateToView("history")}
             aria-pressed={activeView === "history"}
             aria-current={activeView === "history" ? "page" : undefined}
-            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] border-b-2 border-transparent px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 sm:min-h-14 sm:justify-start sm:rounded-none sm:px-4 lg:px-5 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] border-b-2 border-transparent px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 sm:min-h-16 sm:justify-start sm:gap-3 sm:rounded-none sm:px-6 sm:text-lg lg:px-8 ${
               activeView === "history"
                 ? "bg-white text-[#111827] shadow-sm sm:border-blue-600 sm:bg-transparent sm:text-blue-700 sm:shadow-none sm:dark:border-blue-400 sm:dark:bg-transparent sm:dark:text-blue-300 dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 sm:hover:border-[#9CA3AF] sm:hover:bg-transparent dark:text-[#D1D5DB] dark:hover:bg-white/10 sm:dark:hover:border-[#6B7280] sm:dark:hover:bg-transparent"
@@ -236,7 +236,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
             onClick={() => navigateToView("guide")}
             aria-pressed={activeView === "guide"}
             aria-current={activeView === "guide" ? "page" : undefined}
-            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] border-b-2 border-transparent px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 sm:min-h-14 sm:justify-start sm:rounded-none sm:px-4 lg:px-5 ${
+            className={`flex min-h-12 min-w-0 items-center justify-center gap-2 whitespace-normal rounded-[15px] border-b-2 border-transparent px-3 py-2.5 text-base font-bold leading-snug transition-all duration-300 sm:min-h-16 sm:justify-start sm:gap-3 sm:rounded-none sm:px-6 sm:text-lg lg:px-8 ${
               activeView === "guide"
                 ? "bg-white text-[#111827] shadow-sm sm:border-blue-600 sm:bg-transparent sm:text-blue-700 sm:shadow-none sm:dark:border-blue-400 sm:dark:bg-transparent sm:dark:text-blue-300 dark:bg-white dark:text-[#111827]"
                 : "text-[#111827] hover:bg-white/45 sm:hover:border-[#9CA3AF] sm:hover:bg-transparent dark:text-[#D1D5DB] dark:hover:bg-white/10 sm:dark:hover:border-[#6B7280] sm:dark:hover:bg-transparent"
@@ -252,7 +252,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
               onClick={() => navigateToView("admin")}
               aria-pressed={activeView === "admin"}
               aria-current={activeView === "admin" ? "page" : undefined}
-              className={`hidden min-h-14 min-w-0 items-center justify-start gap-2 whitespace-normal rounded-none border-b-2 border-transparent px-4 py-2.5 text-base font-bold leading-snug transition-all duration-300 sm:flex lg:px-5 ${
+              className={`hidden min-h-16 min-w-0 items-center justify-start gap-3 whitespace-normal rounded-none border-b-2 border-transparent px-6 py-2.5 text-lg font-bold leading-snug transition-all duration-300 sm:flex lg:px-8 ${
                 activeView === "admin"
                   ? "border-blue-600 bg-transparent text-blue-700 dark:border-blue-400 dark:text-blue-300"
                   : "text-[#111827] hover:border-[#9CA3AF] dark:text-[#D1D5DB] dark:hover:border-[#6B7280]"
