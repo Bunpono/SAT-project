@@ -154,7 +154,8 @@ export default function TreePanel({ analysis }) {
 
         {!isFullscreen && (
           <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-3 text-base text-[#6B7280] transition-all duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
-            Tip: Drag to pan, pinch or use +/− to zoom, and tap a terminal node to highlight its word.
+            <span className="sm:hidden"><span className="font-semibold text-[#111827] dark:text-white">On mobile:</span> Swipe over the preview to scroll the page. Tap <span className="font-semibold">Explore tree</span> when you want to drag or pinch the diagram. Tap <span className="font-semibold">Done</span> to return to page scrolling.</span>
+            <span className="hidden sm:inline">Tip: Drag to pan, use the mouse wheel or +/− to zoom, and click a terminal node to highlight its word.</span>
           </div>
         )}
 

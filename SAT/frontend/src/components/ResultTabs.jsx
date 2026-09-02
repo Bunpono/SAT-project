@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { analyzeTree } from "../utils/treeAnalysis"
 
 const tabs = [
@@ -54,12 +54,29 @@ const idleCardClass =
 export default function ResultTabs({ analysis }) {
   const [activeTab, setActiveTab] = useState("pos")
   const [isModelOutputOpen, setIsModelOutputOpen] = useState(false)
+  const [isChooserOpen, setIsChooserOpen] = useState(false)
   const treeAnalysis = useMemo(() => analyzeTree(analysis?.tree), [analysis?.tree])
   const wordCount = useMemo(
     () => String(analysis?.sentence || "").trim().split(/\s+/).filter(Boolean).length,
     [analysis?.sentence]
   )
   const activeTabConfig = tabs.find((tab) => tab.id === activeTab) || tabs[0]
+
+  useEffect(() => {
+    if (!isChooserOpen) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setIsChooserOpen(false)
+    }
+
+    document.body.style.overflow = "hidden"
+    window.addEventListener("keydown", handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [isChooserOpen])
 
   const renderActiveResult = () => {
     if (activeTab === "pos") {
@@ -163,16 +180,97 @@ export default function ResultTabs({ analysis }) {
         </div>
       </div>
 
-      <label className="mt-4 block text-sm font-semibold text-[#374151] sm:hidden dark:text-[#D1D5DB]">
-        Choose detail
-        <select
-          value={activeTab}
-          onChange={(event) => setActiveTab(event.target.value)}
-          className="mt-2 min-h-12 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 font-bold text-[#111827] outline-none dark:border-[#263042] dark:bg-[#151B2D] dark:text-white"
+      <div className="mt-5 sm:hidden">
+        <p className="mb-2 text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
+          Explore analysis details
+        </p>
+        <button
+          type="button"
+          onClick={() => setIsChooserOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={isChooserOpen}
+          className="group flex min-h-20 w-full items-center gap-4 rounded-2xl border-2 border-blue-300 bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 text-left shadow-[0_10px_24px_rgba(37,99,235,0.14)] transition-all duration-200 hover:border-blue-500 hover:shadow-[0_14px_30px_rgba(37,99,235,0.2)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/20 dark:border-blue-700 dark:from-blue-950/60 dark:to-indigo-950/40 dark:hover:border-blue-500"
         >
-          {tabs.map((tab) => <option key={tab.id} value={tab.id}>{tab.title}</option>)}
-        </select>
-      </label>
+          <span className={`h-3 w-3 shrink-0 rounded-full ring-4 ring-white dark:ring-[#111827] ${activeTabConfig.dotClass}`} />
+          <span className="min-w-0 flex-1">
+            <span className="block text-lg font-bold text-[#111827] dark:text-white">
+              {activeTabConfig.title}
+            </span>
+            <span className="mt-0.5 block text-sm font-medium text-blue-700 dark:text-blue-300">
+              Tap to change detail
+            </span>
+          </span>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-sm transition-transform duration-200 group-hover:translate-y-0.5 dark:bg-blue-500" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
+              <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        </button>
+      </div>
+
+      {isChooserOpen && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center sm:hidden">
+          <button
+            type="button"
+            onClick={() => setIsChooserOpen(false)}
+            className="absolute inset-0 bg-[#050816]/60 backdrop-blur-sm"
+            aria-label="Close detail chooser"
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="detail-chooser-title"
+            className="relative z-10 w-full max-w-xl rounded-t-[28px] border border-[#E5E7EB] bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-20px_60px_rgba(5,8,22,0.28)] dark:border-[#263042] dark:bg-[#111827]"
+          >
+            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#D1D5DB] dark:bg-[#4B5563]" />
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 id="detail-chooser-title" className="text-xl font-bold text-[#111827] dark:text-white">
+                  Choose analysis detail
+                </h3>
+                <p className="mt-1 text-sm text-[#6B7280] dark:text-[#9CA3AF]">
+                  Select one category to explore
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsChooserOpen(false)}
+                aria-label="Close"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F3F3F5] text-2xl text-[#374151] hover:bg-[#E5E7EB] dark:bg-[#151B2D] dark:text-white dark:hover:bg-[#263042]"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-3">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(tab.id)
+                      setIsChooserOpen(false)
+                    }}
+                    aria-pressed={isActive}
+                    className={`flex min-h-16 w-full items-center gap-4 rounded-2xl border-2 px-4 py-3 text-left transition-all duration-200 active:scale-[0.98] ${isActive ? "border-blue-500 bg-blue-50 shadow-sm dark:border-blue-400 dark:bg-blue-950/40" : "border-[#E5E7EB] bg-white hover:border-blue-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:bg-[#151B2D] dark:hover:border-blue-700"}`}
+                  >
+                    <span className={`h-3 w-3 shrink-0 rounded-full ${tab.dotClass}`} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-base font-bold text-[#111827] dark:text-white">{tab.title}</span>
+                      <span className="mt-0.5 block text-sm text-[#6B7280] dark:text-[#9CA3AF]">
+                        {tab.id === "sentence" ? treeAnalysis.sentenceType : tab.description}
+                      </span>
+                    </span>
+                    {isActive && <span className="text-xl font-bold text-blue-600 dark:text-blue-300" aria-label="Selected">✓</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-5 hidden grid-cols-1 gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4">
         {tabs.map((tab) => {

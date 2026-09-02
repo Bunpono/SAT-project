@@ -10,6 +10,12 @@ export default function StaticTree({ data, selectedWords = [], onSelectWords, sv
   const activeTransformRef = useRef({ x: 24, y: 24, scale: 1 })
   const [viewport, setViewport] = useState({ width: 0, height: 0 })
   const [transform, setTransform] = useState(null)
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false)
+  const [isInteractionActive, setIsInteractionActive] = useState(false)
+  const needsActivation = !isFullscreen && (
+    isCoarsePointer || (viewport.width > 0 && viewport.width < 640)
+  )
+  const interactionEnabled = !needsActivation || isInteractionActive
 
   const preparedTree = prepareTreeForDisplay(data || { name: "ROOT" })
 
@@ -121,6 +127,14 @@ function getNodeStyle(node, depth) {
     activeTransformRef.current = activeTransform
   }, [activeTransform])
 
+  useEffect(() => {
+    const media = window.matchMedia("(pointer: coarse)")
+    const updatePointerType = () => setIsCoarsePointer(media.matches)
+    updatePointerType()
+    media.addEventListener("change", updatePointerType)
+    return () => media.removeEventListener("change", updatePointerType)
+  }, [])
+
   const commitTransform = (nextTransform) => {
     activeTransformRef.current = nextTransform
     setTransform(nextTransform)
@@ -185,6 +199,7 @@ function getNodeStyle(node, depth) {
   }, [])
 
   const handlePointerDown = (event) => {
+    if (!interactionEnabled) return
     if (event.pointerType === "mouse" && event.button !== 0) return
 
     event.currentTarget.setPointerCapture(event.pointerId)
@@ -227,6 +242,7 @@ function getNodeStyle(node, depth) {
   }
 
   const handlePointerMove = (event) => {
+    if (!interactionEnabled) return
     if (!pointersRef.current.has(event.pointerId)) return
     pointersRef.current.set(event.pointerId, {
       id: event.pointerId,
@@ -271,6 +287,7 @@ function getNodeStyle(node, depth) {
   }
 
   const handlePointerEnd = (event) => {
+    if (!interactionEnabled) return
     if (!pointersRef.current.has(event.pointerId)) return
     const moved = gestureRef.current?.moved
     pointersRef.current.delete(event.pointerId)
@@ -301,14 +318,45 @@ function getNodeStyle(node, depth) {
 
   return (
     <div className="relative">
-      <div className="absolute right-3 top-3 z-10 flex gap-1 rounded-xl border border-[#E5E7EB] bg-white/95 p-1 shadow-md backdrop-blur dark:border-[#263042] dark:bg-[#111827]/95">
-        <button type="button" onClick={() => zoomAt(1.25)} aria-label="Zoom in" title="Zoom in" className="flex h-10 w-10 items-center justify-center rounded-lg text-xl font-semibold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">+</button>
-        <button type="button" onClick={() => zoomAt(0.8)} aria-label="Zoom out" title="Zoom out" className="flex h-10 w-10 items-center justify-center rounded-lg text-xl font-semibold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">−</button>
-        <button type="button" onClick={resetView} aria-label="Reset tree view" title="Reset view" className="flex h-10 min-w-10 items-center justify-center rounded-lg px-2 text-xs font-bold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">Reset</button>
-      </div>
+      {interactionEnabled && (
+        <div className="absolute right-3 top-3 z-10 flex gap-1 rounded-xl border border-[#E5E7EB] bg-white/95 p-1 shadow-md backdrop-blur dark:border-[#263042] dark:bg-[#111827]/95">
+          <button type="button" onClick={() => zoomAt(1.25)} aria-label="Zoom in" title="Zoom in" className="flex h-10 w-10 items-center justify-center rounded-lg text-xl font-semibold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">+</button>
+          <button type="button" onClick={() => zoomAt(0.8)} aria-label="Zoom out" title="Zoom out" className="flex h-10 w-10 items-center justify-center rounded-lg text-xl font-semibold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">−</button>
+          <button type="button" onClick={resetView} aria-label="Reset tree view" title="Reset view" className="flex h-10 min-w-10 items-center justify-center rounded-lg px-2 text-xs font-bold text-[#111827] hover:bg-[#F3F3F5] dark:text-white dark:hover:bg-[#263042]">Reset</button>
+        </div>
+      )}
+
+      {needsActivation && !isInteractionActive && (
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/15 dark:bg-[#050816]/10">
+          <button
+            type="button"
+            onClick={() => setIsInteractionActive(true)}
+            className="pointer-events-auto flex min-h-16 items-center gap-3 rounded-2xl border-2 border-blue-500 bg-white/95 px-5 py-3 text-left text-[#111827] shadow-[0_14px_35px_rgba(37,99,235,0.25)] backdrop-blur transition-all duration-200 active:scale-[0.97] dark:bg-[#111827]/95 dark:text-white"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xl text-white" aria-hidden="true">☝</span>
+            <span>
+              <span className="block text-base font-bold">Explore tree</span>
+              <span className="mt-0.5 block text-xs font-medium text-[#6B7280] dark:text-[#9CA3AF]">Interactive canvas · tap to activate</span>
+            </span>
+          </button>
+        </div>
+      )}
+
+      {needsActivation && isInteractionActive && (
+        <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2 rounded-xl border border-blue-300 bg-blue-50/95 p-1.5 pl-3 text-xs font-bold text-blue-800 shadow-md backdrop-blur dark:border-blue-700 dark:bg-blue-950/90 dark:text-blue-200">
+          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-blue-500" />Interactive mode</span>
+          <button
+            type="button"
+            onClick={() => setIsInteractionActive(false)}
+            className="min-h-9 rounded-lg bg-blue-600 px-3 text-sm font-bold text-white active:scale-[0.97] dark:bg-blue-500"
+          >
+            Done
+          </button>
+        </div>
+      )}
       <div
         ref={viewportRef}
-        className={`${isFullscreen ? "h-[calc(100dvh-9rem)]" : "h-[440px] sm:h-[520px]"} w-full touch-none cursor-grab select-none overscroll-contain active:cursor-grabbing`}
+        className={`${isFullscreen ? "h-[calc(100dvh-9rem)]" : "h-[440px] sm:h-[520px]"} ${interactionEnabled ? "touch-none cursor-grab overscroll-contain active:cursor-grabbing" : "touch-pan-y cursor-default"} w-full select-none`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
@@ -319,7 +367,7 @@ function getNodeStyle(node, depth) {
         viewBox={`0 0 ${Math.max(viewport.width, 1)} ${Math.max(viewport.height, 1)}`}
         className="block h-full w-full"
         role="img"
-        aria-label="Interactive syntax tree. Scroll to zoom and drag to pan."
+        aria-label={interactionEnabled ? "Interactive syntax tree. Drag to pan and pinch to zoom." : "Syntax tree preview. Activate Explore tree to interact."}
       >
       <g transform={`translate(${activeTransform.x}, ${activeTransform.y}) scale(${activeTransform.scale})`}>
       <g transform={`translate(${PADDING_X}, ${PADDING_Y})`}>
