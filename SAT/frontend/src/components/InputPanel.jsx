@@ -92,7 +92,7 @@ export default function InputPanel({
     if (!validation.canAnalyze) {
       setErrorMessage(
         validation.errors[0] ||
-          "Please enter a supported English declarative sentence before analyzing."
+          "Please enter an English sentence before analyzing."
       )
       return
     }
@@ -162,7 +162,7 @@ export default function InputPanel({
         Enter or Paste English Sentence Here
       </label>
       <p className="mt-1 text-sm text-[#6B7280] transition-colors duration-300 dark:text-[#9CA3AF]">
-        English only · Declarative sentences · Simple, compound, or complex
+        English only · Best results with declarative sentences · Simple, compound, or complex
       </p>
 
       <textarea

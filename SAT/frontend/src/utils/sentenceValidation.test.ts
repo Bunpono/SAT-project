@@ -26,15 +26,31 @@ describe("validateSentenceInput", () => {
     expect(validateSentenceInput("The woman who sings smiles.").sentenceType).toBe("Complex")
   })
 
-  it("rejects unsupported sentence types", () => {
-    expect(validateSentenceInput("Is the cat sleeping?").canAnalyze).toBe(false)
-    expect(validateSentenceInput("Close the door.").canAnalyze).toBe(false)
-    expect(validateSentenceInput("What a beautiful day!").canAnalyze).toBe(false)
+  it("allows non-declarative English with a warning and declarative suggestion", () => {
+    const question = validateSentenceInput("Is the cat sleeping?")
+    expect(question.canAnalyze).toBe(true)
+    expect(question.warnings[0]).toContain("supports declarative sentences")
+    expect(question.suggestion).toBe("The cat is sleeping.")
+
+    const imperative = validateSentenceInput("Close the door.")
+    expect(imperative.canAnalyze).toBe(true)
+    expect(imperative.suggestion).toBe("You close the door.")
+
+    const exclamation = validateSentenceInput("What a beautiful day!")
+    expect(exclamation.canAnalyze).toBe(true)
+    expect(exclamation.suggestion).toBe("It is a beautiful day.")
   })
 
   it("rejects non-English characters and overly long input", () => {
     expect(validateSentenceInput("ฉันรักแมว").canAnalyze).toBe(false)
     expect(validateSentenceInput(`The cat ${"sleeps ".repeat(50)}.`).canAnalyze).toBe(false)
+  })
+
+  it("allows an uncertain English input with a warning", () => {
+    const result = validateSentenceInput("green curry tastes spicy.")
+    expect(result.canAnalyze).toBe(true)
+    expect(result.sentenceType).toBe("Unknown")
+    expect(result.warnings[0]).toContain("could not confidently detect")
   })
 
   it("offers a spelling suggestion", () => {

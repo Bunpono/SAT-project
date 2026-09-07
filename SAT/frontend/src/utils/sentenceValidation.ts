@@ -228,7 +228,62 @@ function ensurePeriod(value: string) {
   return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`
 }
 
-function getSuggestion(input: string) {
+function capitalizeSentence(value: string) {
+  const trimmed = value.trim()
+  return trimmed ? `${trimmed[0].toUpperCase()}${trimmed.slice(1)}` : trimmed
+}
+
+function getDeclarativeSuggestion(
+  input: string,
+  words: string[],
+  isInterrogative: boolean,
+  isImperative: boolean,
+  isExclamatory: boolean
+) {
+  const content = input.trim().replace(/[.!?]+$/, "").trim()
+  if (!content) return undefined
+
+  if (isImperative) {
+    return ensurePeriod(`You ${content[0].toLowerCase()}${content.slice(1)}`)
+  }
+
+  if (isExclamatory) {
+    const whatExclamation = content.match(/^what\s+(a|an)\s+(.+)$/i)
+    if (whatExclamation) {
+      return ensurePeriod(`It is ${whatExclamation[1].toLowerCase()} ${whatExclamation[2]}`)
+    }
+    return ensurePeriod(content)
+  }
+
+  if (isInterrogative) {
+    const auxiliaryQuestion = content.match(
+      /^(is|are|am|was|were|can|could|will|would|should|may|might|must|have|has|had|do|does|did)\s+(i|you|he|she|it|we|they|there)\s+(.+)$/i
+    )
+    if (auxiliaryQuestion) {
+      const [, auxiliary, subject, predicate] = auxiliaryQuestion
+      return ensurePeriod(
+        `${capitalizeSentence(subject)} ${auxiliary.toLowerCase()} ${predicate}`
+      )
+    }
+
+    const nounPhraseQuestion = content.match(
+      /^(is|are|was|were|can|could|will|would|should|may|might|must|have|has|had)\s+((?:the|a|an|this|that|these|those|my|your|his|her|our|their)\s+[A-Za-z'’-]+)\s+(.+)$/i
+    )
+    if (nounPhraseQuestion) {
+      const [, auxiliary, subject, predicate] = nounPhraseQuestion
+      return ensurePeriod(
+        `${capitalizeSentence(subject)} ${auxiliary.toLowerCase()} ${predicate}`
+      )
+    }
+
+    const subject = words.includes("you") ? "You" : "The answer"
+    return `${subject} can be stated as a declarative sentence.`
+  }
+
+  return undefined
+}
+
+function getSpellingSuggestion(input: string) {
   const trimmed = input.trim()
   const simpleKey = trimmed.toLowerCase().replace(/[.!?]+$/, "")
   if (WHOLE_SENTENCE_SUGGESTIONS[simpleKey]) {
@@ -261,6 +316,15 @@ export function validateSentenceInput(input: string): SentenceValidationResult {
   const isImperative = startsWithImperativeStarter(words)
   const isDeclarative = isEnglishInput && !isInterrogative && !isImperative && !isExclamatory
   const sentenceType = isDeclarative ? detectSentenceType(normalizedInput, words) : "Unknown"
+  const declarativeSuggestion = isEnglishInput
+    ? getDeclarativeSuggestion(
+        normalizedInput,
+        words,
+        isInterrogative,
+        isImperative,
+        isExclamatory
+      )
+    : undefined
 
   if (isTooLong) {
     errors.push(`Please keep the sentence within ${MAX_SENTENCE_LENGTH} characters.`)
@@ -271,23 +335,19 @@ export function validateSentenceInput(input: string): SentenceValidationResult {
   }
 
   if (!isEmpty && !hasLetters) {
-    errors.push("Please enter an English declarative sentence.")
+    errors.push("Please enter an English sentence.")
   }
 
-  if (isInterrogative) {
-    errors.push("Interrogative sentences are currently not supported.")
-  }
-
-  if (isImperative) {
-    errors.push("Imperative sentences are currently not supported.")
-  }
-
-  if (isExclamatory) {
-    errors.push("Exclamatory sentences are currently not supported.")
+  if (isEnglishInput && (isInterrogative || isImperative || isExclamatory)) {
+    warnings.push(
+      "This system currently supports declarative sentences. You can still analyze this sentence, but the result may be inaccurate. Try the suggested declarative sentence below."
+    )
   }
 
   if (isDeclarative && sentenceType === "Unknown") {
-    errors.push("This sentence does not look like a supported Simple, Compound or Complex declarative sentence.")
+    warnings.push(
+      "We could not confidently detect the sentence type. You can still analyze it, but the result may be inaccurate."
+    )
   }
 
   if (isDeclarative && normalizedInput && !/[.]$/.test(normalizedInput)) {
@@ -305,10 +365,12 @@ export function validateSentenceInput(input: string): SentenceValidationResult {
     isImperative,
     isExclamatory,
     isTooLong,
-    canAnalyze: !isEmpty && isDeclarative && sentenceType !== "Unknown" && !isTooLong && errors.length === 0,
+    canAnalyze: !isEmpty && isEnglishInput && !isTooLong && errors.length === 0,
     errors,
     warnings,
-    suggestion: isEnglishInput ? getSuggestion(normalizedInput) : undefined
+    suggestion:
+      declarativeSuggestion ||
+      (isEnglishInput ? getSpellingSuggestion(normalizedInput) : undefined)
   }
 }
 
