@@ -3,6 +3,7 @@ import Header from "../components/Header"
 import InputPanel from "../components/InputPanel"
 import ResultTabs from "../components/ResultTabs"
 import TreePanel from "../components/TreePanel"
+import FeedbackPrompt from "../components/FeedbackPrompt"
 import HowToUse from "../components/HowToUse"
 import AnalysisHistory from "../components/AnalysisHistory"
 import HistoryDetailModal from "../components/HistoryDetailModal"
@@ -273,18 +274,21 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
                 analysis={analysis}
                 onAnalyzeComplete={handleAnalysisComplete}
                 initialSentence={inputSentence}
-                canReport={Boolean(user)}
               />
             </div>
 
             {analysis && (
               <div className="flex flex-col">
                 <div className="order-2 mt-4 sm:order-1 sm:mt-5">
-                  <ResultTabs analysis={analysis} />
+                  <ResultTabs analysis={analysis} showDeveloperOutput={user?.role === "admin"} />
                 </div>
 
                 <div className="order-1 mt-4 sm:order-2 sm:mt-5">
                   <TreePanel analysis={analysis} />
+                </div>
+
+                <div className="order-3">
+                  <FeedbackPrompt />
                 </div>
               </div>
             )}
@@ -327,6 +331,7 @@ export default function Home({ user, onSignIn, onLogout, theme, onToggleTheme })
 
       <HistoryDetailModal
         entry={historyPreview}
+        showDeveloperOutput={user?.role === "admin"}
         onClose={() => setHistoryPreview(null)}
         onAnalyzeAgain={handleAnalyzeAgain}
       />

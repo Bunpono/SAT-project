@@ -10,15 +10,15 @@ const guideContent = {
     availableNow: "No sign-in needed",
     signInRequired: "Sign in required",
     features: [
-      { icon: "tree", title: "Analyze and explore", description: "Analyze a sentence, view its S-expression, and explore the interactive syntax tree.", access: "guest" },
+      { icon: "tree", title: "Analyze and explore", description: "Analyze a sentence and explore its interactive syntax tree.", access: "guest" },
       { icon: "history", title: "Save your history", description: "Reopen, search, repeat, or delete analyses saved to your account.", access: "account" },
-      { icon: "report", title: "Report a result", description: "Tell the administrator when an analysis may be incorrect.", access: "account" }
+      { icon: "report", title: "Report a result", description: "Tell the administrator when an analysis may be incorrect.", access: "guest" }
     ],
     stepsTitle: "Start an analysis",
     steps: [
       { icon: "keyboard", title: "Enter an English sentence", description: "Type or paste the sentence you want to examine into the Input Sentence box." },
       { icon: "analyze", title: "Click Analyze Syntax", description: "Select Analyze Syntax and wait briefly while the sentence is processed." },
-      { icon: "result", title: "View the analysis", description: "Read the S-expression in Analysis Results, then explore the syntax tree below it." },
+      { icon: "result", title: "View the analysis", description: "Review words, phrases, clauses, and sentence type, then explore the syntax tree below." },
       { icon: "pointer", title: "Explore the tree", description: "Click a tree node to highlight the word or phrase connected to that part of the sentence." },
       { icon: "history", title: "Review previous results", description: "Sign in and open Analysis History to revisit results saved to your account." }
     ],
@@ -40,15 +40,15 @@ const guideContent = {
     availableNow: "ใช้ได้ทันที ไม่ต้องล็อกอิน",
     signInRequired: "ต้องล็อกอิน",
     features: [
-      { icon: "tree", title: "วิเคราะห์และสำรวจโครงสร้าง", description: "วิเคราะห์ประโยค ดู S-expression และสำรวจแผนภาพต้นไม้แบบโต้ตอบ", access: "guest" },
+      { icon: "tree", title: "วิเคราะห์และสำรวจโครงสร้าง", description: "วิเคราะห์ประโยคและสำรวจแผนภาพต้นไม้แบบโต้ตอบ", access: "guest" },
       { icon: "history", title: "บันทึกประวัติของคุณ", description: "เปิดดู ค้นหา วิเคราะห์ซ้ำ หรือลบผลวิเคราะห์ที่บันทึกไว้ในบัญชี", access: "account" },
-      { icon: "report", title: "รายงานผลที่อาจไม่ถูกต้อง", description: "แจ้งผู้ดูแลระบบเมื่อพบว่าผลการวิเคราะห์อาจมีข้อผิดพลาด", access: "account" }
+      { icon: "report", title: "รายงานผลที่อาจไม่ถูกต้อง", description: "แจ้งผู้ดูแลระบบเมื่อพบว่าผลการวิเคราะห์อาจมีข้อผิดพลาด", access: "guest" }
     ],
     stepsTitle: "เริ่มวิเคราะห์ประโยค",
     steps: [
       { icon: "keyboard", title: "ป้อนประโยคภาษาอังกฤษ", description: "พิมพ์หรือวางประโยคที่ต้องการตรวจสอบลงในช่อง Input Sentence" },
       { icon: "analyze", title: "กด Analyze Syntax", description: "กดปุ่ม Analyze Syntax แล้วรอสักครู่ระหว่างที่ระบบประมวลผลประโยค" },
-      { icon: "result", title: "ดูผลการวิเคราะห์", description: "ดู S-expression ใน Analysis Results และดูแผนภาพต้นไม้ที่อยู่ด้านล่าง" },
+      { icon: "result", title: "ดูผลการวิเคราะห์", description: "ดูชนิดคำ วลี อนุประโยค และชนิดประโยค จากนั้นสำรวจแผนภาพต้นไม้ด้านล่าง" },
       { icon: "pointer", title: "สำรวจแผนภาพต้นไม้", description: "กดที่โหนดเพื่อเน้นคำหรือวลีที่สัมพันธ์กับส่วนนั้นของประโยค" },
       { icon: "history", title: "ย้อนดูผลลัพธ์เดิม", description: "ล็อกอินแล้วเปิด Analysis History เพื่อดูผลที่บันทึกไว้ในบัญชีของคุณ" }
     ],

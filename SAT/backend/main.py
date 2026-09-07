@@ -164,7 +164,7 @@ def serialize_supabase_analysis(
 def serialize_supabase_report(item: dict, user: SupabaseUser | None = None) -> dict:
     result = {
         "id": item["id"],
-        "user_id": item["user_id"],
+        "user_id": item.get("user_id"),
         "sentence": item["sentence"],
         "description": item["description"],
         "analysis_result": item.get("analysis_result_json"),
@@ -332,7 +332,7 @@ def clear_my_history(
 @app.post("/reports", status_code=201)
 def create_error_report(
     data: ErrorReportRequest,
-    current_user: SupabaseUser = Depends(get_current_user),
+    current_user: SupabaseUser | None = Depends(get_optional_current_user),
 ):
     sentence = data.sentence.strip()
     description = data.description.strip()
@@ -343,7 +343,7 @@ def create_error_report(
         "POST",
         "error_reports",
         json={
-            "user_id": current_user.id,
+            "user_id": current_user.id if current_user else None,
             "sentence": sentence,
             "description": description,
             "analysis_result_json": data.analysis_result,

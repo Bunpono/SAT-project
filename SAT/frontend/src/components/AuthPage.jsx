@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { loginAccount, registerAccount } from "../services/api"
-import { isSupabaseConfigured, supabase } from "../services/supabaseClient"
 
 function LoginIcon() {
   return (
@@ -45,11 +44,6 @@ export default function AuthPage({
   const [form, setForm] = useState({ name: "", email: "", password: "" })
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isResetOpen, setIsResetOpen] = useState(false)
-  const [resetEmail, setResetEmail] = useState("")
-  const [resetError, setResetError] = useState("")
-  const [resetSuccess, setResetSuccess] = useState("")
-  const [isResetSubmitting, setIsResetSubmitting] = useState(false)
   const isRegister = mode === "register"
 
   const updateField = (event) => {
@@ -72,51 +66,6 @@ export default function AuthPage({
       setError(submitError.message)
     } finally {
       setIsSubmitting(false)
-    }
-  }
-
-  const openResetDialog = () => {
-    setResetEmail(form.email)
-    setResetError("")
-    setResetSuccess("")
-    setIsResetOpen(true)
-  }
-
-  const closeResetDialog = () => {
-    if (isResetSubmitting) return
-    setIsResetOpen(false)
-    setResetError("")
-    setResetSuccess("")
-  }
-
-  const handlePasswordReset = async (event) => {
-    event.preventDefault()
-    if (isResetSubmitting) return
-
-    if (!isSupabaseConfigured || !supabase) {
-      setResetError("Password reset is not configured yet.")
-      return
-    }
-
-    setIsResetSubmitting(true)
-    setResetError("")
-    setResetSuccess("")
-
-    try {
-      const { error: resetPasswordError } = await supabase.auth.resetPasswordForEmail(
-        resetEmail,
-        {
-          redirectTo: `${window.location.origin}/reset-password`
-        }
-      )
-
-      if (resetPasswordError) throw resetPasswordError
-
-      setResetSuccess("Password reset link has been sent to your email.")
-    } catch (submitError) {
-      setResetError(submitError.message)
-    } finally {
-      setIsResetSubmitting(false)
     }
   }
 
@@ -220,18 +169,6 @@ export default function AuthPage({
             />
           </label>
 
-          {!isRegister && (
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={openResetDialog}
-                className="text-base font-semibold text-[#374151] transition-colors duration-300 hover:text-[#111827] dark:text-[#D1D5DB] dark:hover:text-white"
-              >
-                Forgot password?
-              </button>
-            </div>
-          )}
-
           {error && <p role="alert" className="text-base text-red-600 dark:text-red-300">{error}</p>}
 
           <button
@@ -261,67 +198,6 @@ export default function AuthPage({
         Powered by WJ & AJ Syntactic Algorithm
       </footer>
 
-      {isResetOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#050816]/60 px-4 backdrop-blur-sm transition-all duration-300"
-          role="presentation"
-        >
-          <section
-            aria-labelledby="reset-password-title"
-            className="w-full max-w-md rounded-2xl border border-[#E5E7EB] bg-white p-6 shadow-[0_24px_70px_rgba(17,24,39,0.18)] transition-all duration-300 dark:border-[#263042] dark:bg-[#111827] dark:shadow-[0_24px_70px_rgba(0,0,0,0.42)]"
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 id="reset-password-title" className="text-xl font-bold text-[#111827] transition-colors duration-300 dark:text-white">
-                  Reset Password
-                </h2>
-                <p className="mt-1 text-base text-[#6B7280] transition-colors duration-300 dark:text-[#D1D5DB]">
-                  Enter your email address and we will send you a password reset link.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={closeResetDialog}
-                className="rounded-xl border border-[#E5E7EB] px-3 py-1.5 text-base font-semibold text-[#374151] transition-all duration-300 hover:border-[#111827] hover:bg-[#F7F8FC] disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#263042] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB] dark:hover:bg-[#151B2D]"
-                disabled={isResetSubmitting}
-              >
-                Close
-              </button>
-            </div>
-
-            <form onSubmit={handlePasswordReset} className="mt-5 space-y-4">
-              <label className="block text-base font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
-                Email
-                <input
-                  type="email"
-                  value={resetEmail}
-                  onChange={(event) => {
-                    setResetEmail(event.target.value)
-                    setResetError("")
-                    setResetSuccess("")
-                  }}
-                  required
-                  autoComplete="email"
-                  className="mt-2 w-full rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] px-4 py-3 text-[#111827] outline-none transition-all duration-300 placeholder:text-[#6B7280] focus:border-[#111827] focus:ring-4 focus:ring-[#111827]/10 dark:border-[#263042] dark:bg-[#151B2D] dark:text-white dark:placeholder:text-[#9CA3AF] dark:focus:border-white dark:focus:ring-white/15"
-                />
-              </label>
-
-              {resetError && <p role="alert" className="text-base text-red-600 dark:text-red-300">{resetError}</p>}
-              {resetSuccess && <p role="status" className="text-base text-emerald-600 dark:text-emerald-300">{resetSuccess}</p>}
-
-              <button
-                type="submit"
-                disabled={isResetSubmitting}
-                className="w-full rounded-xl bg-[#111827] px-5 py-3 text-base font-semibold text-white shadow-[0_14px_30px_rgba(17,24,39,0.18)] transition-all duration-300 hover:bg-[#374151] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-[#374151] disabled:opacity-50 dark:bg-white dark:text-[#111827] dark:shadow-[0_14px_30px_rgba(255,255,255,0.12)] dark:hover:bg-[#D1D5DB]"
-              >
-                {isResetSubmitting ? "Sending..." : "Send Reset Link"}
-              </button>
-            </form>
-          </section>
-        </div>
-      )}
     </main>
   )
 }

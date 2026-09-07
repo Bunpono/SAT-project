@@ -19,7 +19,7 @@ function CloseIcon() {
   )
 }
 
-export default function HistoryDetailModal({ entry, onClose, onAnalyzeAgain }) {
+export default function HistoryDetailModal({ entry, showDeveloperOutput = false, onClose, onAnalyzeAgain }) {
   const closeButtonRef = useRef(null)
   const dialogRef = useRef(null)
   const previousFocusRef = useRef(null)
@@ -111,7 +111,7 @@ export default function HistoryDetailModal({ entry, onClose, onAnalyzeAgain }) {
             <TreePanel analysis={analysis} />
           </div>
           <div className="mt-5">
-            <ResultTabs analysis={analysis} />
+            <ResultTabs analysis={analysis} showDeveloperOutput={showDeveloperOutput} />
           </div>
         </div>
 

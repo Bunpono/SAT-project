@@ -51,7 +51,7 @@ const tabs = [
 const idleCardClass =
   "border-[#E5E7EB] bg-white text-[#374151] shadow-sm hover:border-[#111827]/25 hover:bg-[#F7F8FC] hover:text-[#111827] dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-[#D1D5DB]/50 dark:hover:bg-[#111827] dark:hover:text-white"
 
-export default function ResultTabs({ analysis }) {
+export default function ResultTabs({ analysis, showDeveloperOutput = false }) {
   const [activeTab, setActiveTab] = useState("pos")
   const [isModelOutputOpen, setIsModelOutputOpen] = useState(false)
   const [isChooserOpen, setIsChooserOpen] = useState(false)
@@ -311,27 +311,31 @@ export default function ResultTabs({ analysis }) {
         {renderActiveResult()}
       </div>
 
-      <div className="mt-4 flex justify-end">
-        <button
-          type="button"
-          onClick={() => setIsModelOutputOpen((value) => !value)}
-          aria-expanded={isModelOutputOpen}
-          aria-controls="model-output"
-          className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 text-base font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
-        >
-          {isModelOutputOpen ? "Hide model output" : "Show model output"}
-        </button>
-      </div>
+      {showDeveloperOutput && (
+        <>
+          <div className="mt-4 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setIsModelOutputOpen((value) => !value)}
+              aria-expanded={isModelOutputOpen}
+              aria-controls="model-output"
+              className="rounded-xl border border-[#E5E7EB] bg-white px-4 py-2 text-base font-semibold text-[#374151] shadow-sm transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB] dark:hover:border-blue-700 dark:hover:bg-blue-950/30 dark:hover:text-blue-300"
+            >
+              {isModelOutputOpen ? "Hide developer output" : "Show developer output"}
+            </button>
+          </div>
 
-      {isModelOutputOpen && (
-        <div id="model-output" className="mt-3 min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
-          <p className="text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
-            Model output (S-expression)
-          </p>
-          <pre className="mt-3 max-w-full overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white p-4 text-base text-[#374151] transition-colors duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
-            {analysis?.s_expression || "No analysis yet."}
-          </pre>
-        </div>
+          {isModelOutputOpen && (
+            <div id="model-output" className="mt-3 min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
+              <p className="text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
+                Developer output (S-expression)
+              </p>
+              <pre className="mt-3 max-w-full overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white p-4 text-base text-[#374151] transition-colors duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+                {analysis?.s_expression || "No analysis yet."}
+              </pre>
+            </div>
+          )}
+        </>
       )}
     </section>
   )

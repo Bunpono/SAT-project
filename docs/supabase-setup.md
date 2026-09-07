@@ -18,6 +18,11 @@ project's current table): `id`, `user_id`, `sentence`, `s_expression`,
 `tree_json`, `sentence_type`, and `created_at`. The `id` and `user_id` columns
 should remain integer-compatible with the application's existing user records.
 
+For an existing project created before guest error reporting was supported, run
+[`002_allow_guest_error_reports.sql`](../SAT/backend/migrations/002_allow_guest_error_reports.sql)
+once in Supabase SQL Editor. This makes only `error_reports.user_id` nullable;
+signed-in reports continue to keep their account association.
+
 After restarting the backend, sign in and analyze a sentence, then refresh the
 Supabase Table Editor. A new `analysis_history` row should appear.
 

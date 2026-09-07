@@ -138,6 +138,50 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
     async def test_guest_history_is_unauthorized(self):
         self.assertEqual((await self.client.get("/history/my")).status_code, 401)
 
+    async def test_guest_can_submit_error_report(self):
+        response = await self.client.post(
+            "/reports",
+            json={
+                "sentence": "She is a doctor.",
+                "description": "The tree label looks incorrect.",
+                "analysis_result": {"s_expression": "(S ...)"},
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertIsNone(self.supabase.reports[0]["user_id"])
+
+    async def test_logged_in_error_report_keeps_user_id(self):
+        response = await self.client.post(
+            "/reports",
+            headers={"Authorization": f"Bearer {self.user_token}"},
+            json={
+                "sentence": "She is a doctor.",
+                "description": "The tree label looks incorrect.",
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(self.supabase.reports[0]["user_id"], self.user["id"])
+
+    async def test_admin_report_list_labels_guest_report(self):
+        await self.client.post(
+            "/reports",
+            json={
+                "sentence": "She is a doctor.",
+                "description": "The tree label looks incorrect.",
+            },
+        )
+
+        response = await self.client.get(
+            "/admin/reports", headers={"Authorization": f"Bearer {self.admin_token}"}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertIsNone(response.json()[0]["user_id"])
+        self.assertIsNone(response.json()[0]["user"])
+
     async def test_health_and_openapi_are_available(self):
         self.assertEqual((await self.client.get("/health")).status_code, 200)
         self.assertIn("/analyze", (await self.client.get("/openapi.json")).json()["paths"])
