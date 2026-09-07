@@ -123,13 +123,15 @@ export default function HistoryDetailModal({ entry, showDeveloperOutput = false,
           >
             Close
           </button>
-          <button
-            type="button"
-            onClick={() => onAnalyzeAgain(entry)}
-            className="min-h-11 rounded-xl bg-blue-600 px-5 text-base font-bold text-white shadow-sm hover:bg-blue-700 active:scale-[0.98]"
-          >
-            Analyze again
-          </button>
+          {onAnalyzeAgain && (
+            <button
+              type="button"
+              onClick={() => onAnalyzeAgain(entry)}
+              className="min-h-11 rounded-xl bg-blue-600 px-5 text-base font-bold text-white shadow-sm hover:bg-blue-700 active:scale-[0.98]"
+            >
+              Analyze again
+            </button>
+          )}
         </footer>
       </section>
     </div>

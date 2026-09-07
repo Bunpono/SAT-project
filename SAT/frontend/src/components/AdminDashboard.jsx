@@ -5,6 +5,7 @@ import {
   getAdminUsers,
   updateErrorReportStatus
 } from "../services/api"
+import HistoryDetailModal from "./HistoryDetailModal"
 
 const tabs = [
   { id: "users", label: "Users" },
@@ -37,10 +38,12 @@ function getUserEmail(user) {
   return user?.email || "—"
 }
 
-function getResultPreview(entry) {
-  return entry?.result || entry?.analysis_result || {
-    s_expression: entry?.s_expression,
-    tree: entry?.tree
+function getHistoryPreview(entry) {
+  const result = entry?.result || entry?.analysis_result || {}
+  return {
+    ...entry,
+    s_expression: entry?.s_expression || result?.s_expression,
+    tree: entry?.tree || result?.tree
   }
 }
 
@@ -72,7 +75,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("users")
   const [status, setStatus] = useState("loading")
   const [errorMessage, setErrorMessage] = useState("")
-  const [selectedResult, setSelectedResult] = useState(null)
+  const [selectedHistoryEntry, setSelectedHistoryEntry] = useState(null)
   const [updatingReportId, setUpdatingReportId] = useState(null)
   const [historyFilter, setHistoryFilter] = useState("all")
 
@@ -287,7 +290,7 @@ export default function AdminDashboard() {
                       <td className="px-3 py-3 text-right">
                         <button
                           type="button"
-                          onClick={() => setSelectedResult(getResultPreview(entry))}
+                          onClick={() => setSelectedHistoryEntry(getHistoryPreview(entry))}
                           className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:bg-[#111827] dark:text-white dark:hover:bg-[#151B2D]"
                         >
                           View Result
@@ -368,27 +371,11 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {selectedResult && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#050816]/60 px-4 backdrop-blur-sm">
-          <section className="w-full max-w-3xl rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_24px_70px_rgba(17,24,39,0.18)] transition-all duration-300 sm:p-6 dark:border-[#263042] dark:bg-[#111827]">
-            <div className="flex items-start justify-between gap-4">
-              <h3 className="text-lg font-bold text-[#111827] dark:text-white">
-                Analysis Result
-              </h3>
-              <button
-                type="button"
-                onClick={() => setSelectedResult(null)}
-                className="rounded-xl border border-[#E5E7EB] px-3 py-2 text-base font-bold text-[#111827] transition-all duration-300 hover:bg-[#F7F8FC] dark:border-[#263042] dark:text-white dark:hover:bg-[#151B2D]"
-              >
-                Close
-              </button>
-            </div>
-            <pre className="mt-4 max-h-[70vh] overflow-auto rounded-xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 text-sm text-[#374151] transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120] dark:text-[#D1D5DB]">
-              {JSON.stringify(selectedResult, null, 2)}
-            </pre>
-          </section>
-        </div>
-      )}
+      <HistoryDetailModal
+        entry={selectedHistoryEntry}
+        showDeveloperOutput
+        onClose={() => setSelectedHistoryEntry(null)}
+      />
     </section>
   )
 }
