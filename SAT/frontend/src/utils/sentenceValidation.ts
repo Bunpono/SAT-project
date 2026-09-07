@@ -157,7 +157,7 @@ function startsWithImperativeStarter(words: string[]) {
   return IMPERATIVE_STARTERS.includes(words[0])
 }
 
-function hasLikelySubject(words: string[]) {
+function hasLikelySubject(input: string, words: string[]) {
   const subjectHints = [
     "i",
     "you",
@@ -181,11 +181,15 @@ function hasLikelySubject(words: string[]) {
     "our",
     "their"
   ]
-  return words.some((word, index) => index < 5 && subjectHints.includes(word))
+  const hasSubjectHint = words.some(
+    (word, index) => index < 5 && subjectHints.includes(word)
+  )
+  const startsWithCapitalizedNoun = /^[A-Z][A-Za-z'’-]*\b/.test(input.trim())
+  return hasSubjectHint || startsWithCapitalizedNoun
 }
 
 function detectSentenceType(input: string, words: string[]): SentenceType {
-  if (words.length < 2 || !hasLikelySubject(words)) return "Unknown"
+  if (words.length < 2 || !hasLikelySubject(input, words)) return "Unknown"
 
   const wordsText = words.join(" ")
   const hasComplexMarker =

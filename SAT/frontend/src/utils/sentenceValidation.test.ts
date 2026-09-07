@@ -8,6 +8,12 @@ describe("validateSentenceInput", () => {
     expect(result.sentenceType).toBe("Simple")
   })
 
+  it("accepts a capitalized noun phrase as the subject", () => {
+    const result = validateSentenceInput("Green Curry tastes spicy.")
+    expect(result.canAnalyze).toBe(true)
+    expect(result.sentenceType).toBe("Simple")
+  })
+
   it("accepts a curly apostrophe used in supported English contractions", () => {
     const result = validateSentenceInput("I’m here for the interview.")
     expect(result.canAnalyze).toBe(true)
