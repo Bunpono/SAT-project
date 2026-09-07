@@ -14,6 +14,13 @@ const LOADING_STEPS = [
   "Generating syntax tree...",
   "Preparing visualization..."
 ]
+const REPORT_TYPES = [
+  { value: "analysis_result", label: "Analysis result is incorrect" },
+  { value: "tree_diagram", label: "Tree diagram is incorrect" },
+  { value: "usability", label: "Website usage problem" },
+  { value: "feedback", label: "Suggestion or feedback" },
+  { value: "other", label: "Other" }
+]
 
 function PlayIcon() {
   return (
@@ -67,6 +74,7 @@ export default function InputPanel({
   const [errorMessage, setErrorMessage] = useState("")
   const [showReportForm, setShowReportForm] = useState(false)
   const [reportDescription, setReportDescription] = useState("")
+  const [reportType, setReportType] = useState("analysis_result")
   const [reportStatus, setReportStatus] = useState("")
   const validation = useMemo(() => validateSentenceInput(sentence), [sentence])
   const guidanceMessage = !validation.isEmpty ? validation.errors[0] : ""
@@ -144,9 +152,17 @@ export default function InputPanel({
       return
     }
 
+    const matchingAnalysis =
+      analysis?.sentence?.trim() === sentence.trim() ? analysis : null
+    const requiresAnalysis = ["analysis_result", "tree_diagram"].includes(reportType)
+    if (requiresAnalysis && !matchingAnalysis) {
+      setReportStatus("Please analyze this sentence first so the reported result can be attached.")
+      return
+    }
+
     setReportStatus("Sending...")
     try {
-      await submitErrorReport(sentence, reportDescription.trim(), analysis)
+      await submitErrorReport(sentence, reportDescription.trim(), matchingAnalysis, reportType)
       setReportDescription("")
       setReportStatus("Report sent successfully.")
     } catch (error) {
@@ -196,7 +212,7 @@ export default function InputPanel({
         Submitted sentences and analysis results may be stored for system evaluation and administrator review. Sign in to save and view your history.
       </p>
 
-      <div className="mt-4 hidden justify-end sm:flex">
+      <div className="mt-4 flex justify-end">
         <select
           value=""
           onChange={handleExampleSelect}
@@ -280,7 +296,19 @@ export default function InputPanel({
       {showReportForm && (
         <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 p-4 shadow-sm transition-all duration-300 dark:border-orange-900 dark:bg-orange-950/30">
           <label className="block text-base font-semibold text-orange-900 dark:text-orange-200">
-            Describe what looks incorrect
+            What would you like to report?
+            <select
+              value={reportType}
+              onChange={(event) => { setReportType(event.target.value); setReportStatus("") }}
+              className="mt-2 min-h-12 w-full rounded-xl border border-orange-200 bg-white px-3 py-2 text-[#111827] outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/15 dark:border-orange-900 dark:bg-[#151B2D] dark:text-white"
+            >
+              {REPORT_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>{type.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="block text-base font-semibold text-orange-900 dark:text-orange-200">
+            <span className="mt-4 block">Describe what happened or what should be corrected</span>
             <textarea
               value={reportDescription}
               onChange={(event) => { setReportDescription(event.target.value); setReportStatus("") }}

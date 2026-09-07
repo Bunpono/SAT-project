@@ -112,13 +112,16 @@ export function clearMyHistory() {
   return apiRequest("/history/my", { method: "DELETE" })
 }
 
-export function submitErrorReport(sentence, description, analysisResult) {
+export function submitErrorReport(sentence, description, analysisResult, reportType = "analysis_result") {
   return apiRequest("/reports", {
     method: "POST",
     body: {
       sentence,
       description,
-      analysis_result: analysisResult
+      analysis_result: {
+        ...(analysisResult || {}),
+        report_type: reportType
+      }
     }
   })
 }

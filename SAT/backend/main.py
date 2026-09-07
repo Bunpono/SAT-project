@@ -162,13 +162,15 @@ def serialize_supabase_analysis(
 
 
 def serialize_supabase_report(item: dict, user: SupabaseUser | None = None) -> dict:
+    analysis_result = item.get("analysis_result_json")
     result = {
         "id": item["id"],
         "user_id": item.get("user_id"),
         "sentence": item["sentence"],
         "description": item["description"],
-        "analysis_result": item.get("analysis_result_json"),
-        "result": item.get("analysis_result_json"),
+        "analysis_result": analysis_result,
+        "result": analysis_result,
+        "report_type": analysis_result.get("report_type", "other") if isinstance(analysis_result, dict) else "other",
         "status": item["status"],
         "created_at": item["created_at"],
         "user": (

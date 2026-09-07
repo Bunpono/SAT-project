@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import AdminDashboard from "./AdminDashboard"
 
 vi.mock("../services/api", () => ({
@@ -20,7 +20,22 @@ vi.mock("../services/api", () => ({
     },
     { id: 2, user_id: null, sentence: "The cat sleeps.", sentence_type: "Simple", created_at: "2026-07-18T08:01:00Z", result: {} }
   ]),
-  getAdminReports: vi.fn().mockResolvedValue([]),
+  getAdminReports: vi.fn().mockResolvedValue([
+    {
+      id: 9,
+      user_id: 7,
+      sentence: "I love MALA.",
+      description: "The VP branch is incorrect.",
+      status: "open",
+      created_at: "2026-07-18T08:02:00Z",
+      analysis_result: {
+        report_type: "tree_diagram",
+        s_expression: "(S (NP I) (VP love MALA))",
+        tree: { name: "S", children: [{ name: "VP", children: [{ name: "love" }] }] }
+      },
+      user: { id: 7, name: "Mala", email: "mala@example.com" }
+    }
+  ]),
   updateErrorReportStatus: vi.fn()
 }))
 
@@ -35,6 +50,8 @@ beforeAll(() => {
     disconnect() {}
   })
 })
+
+afterEach(() => cleanup())
 
 describe("AdminDashboard", () => {
   it("shows the registered user's name and keeps guests labelled as Guest", async () => {
@@ -55,5 +72,14 @@ describe("AdminDashboard", () => {
     expect(screen.getByRole("button", { name: "Full screen" })).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Save PNG" })).toBeInTheDocument()
     expect(screen.queryByText(/"s_expression"/)).not.toBeInTheDocument()
+  })
+
+  it("shows a report category and opens the reported tree", async () => {
+    render(<AdminDashboard />)
+    fireEvent.click(await screen.findByRole("button", { name: "Error Reports" }))
+
+    expect(await screen.findByText("Tree diagram")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "View reported result" }))
+    expect(await screen.findByRole("heading", { name: "Tree Diagram" })).toBeInTheDocument()
   })
 })

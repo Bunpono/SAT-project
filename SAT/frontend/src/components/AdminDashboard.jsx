@@ -14,6 +14,13 @@ const tabs = [
 ]
 
 const reportStatuses = ["open", "reviewing", "resolved"]
+const reportTypeLabels = {
+  analysis_result: "Analysis result",
+  tree_diagram: "Tree diagram",
+  usability: "Website usage",
+  feedback: "Feedback",
+  other: "Other"
+}
 
 function formatDate(value) {
   const date = new Date(value)
@@ -44,6 +51,22 @@ function getHistoryPreview(entry) {
     ...entry,
     s_expression: entry?.s_expression || result?.s_expression,
     tree: entry?.tree || result?.tree
+  }
+}
+
+function getReportType(report) {
+  return report?.report_type || report?.analysis_result?.report_type || "other"
+}
+
+function getReportedAnalysis(report) {
+  const result = report?.analysis_result || report?.result
+  if (!result?.tree) return null
+  return {
+    id: `report-${report.id}`,
+    sentence: report.sentence,
+    s_expression: result.s_expression,
+    tree: result.tree,
+    created_at: report.created_at
   }
 }
 
@@ -333,6 +356,12 @@ export default function AdminDashboard() {
                         </span>
                       </p>
                       <p className="mt-3 text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
+                        Report type
+                      </p>
+                      <span className="mt-1 inline-flex rounded-lg bg-orange-100 px-3 py-1 text-sm font-bold text-orange-800 dark:bg-orange-950/50 dark:text-orange-200">
+                        {reportTypeLabels[getReportType(report)] || reportTypeLabels.other}
+                      </span>
+                      <p className="mt-3 text-sm font-bold uppercase text-[#6B7280] dark:text-[#9CA3AF]">
                         Sentence
                       </p>
                       <p className="mt-1 break-words">{report.sentence}</p>
@@ -340,6 +369,15 @@ export default function AdminDashboard() {
                         Description
                       </p>
                       <p className="mt-1 break-words">{report.description}</p>
+                      {getReportedAnalysis(report) && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedHistoryEntry(getReportedAnalysis(report))}
+                          className="mt-4 min-h-11 rounded-xl border border-blue-200 bg-white px-4 py-2 text-base font-bold text-blue-700 transition hover:bg-blue-50 dark:border-blue-800 dark:bg-[#111827] dark:text-blue-300 dark:hover:bg-blue-950/30"
+                        >
+                          View reported result
+                        </button>
+                      )}
                     </div>
 
                     <div className="min-w-0 lg:w-64">

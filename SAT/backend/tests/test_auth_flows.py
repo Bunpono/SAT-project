@@ -144,12 +144,13 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
             json={
                 "sentence": "She is a doctor.",
                 "description": "The tree label looks incorrect.",
-                "analysis_result": {"s_expression": "(S ...)"},
+                "analysis_result": {"s_expression": "(S ...)", "report_type": "tree_diagram"},
             },
         )
 
         self.assertEqual(response.status_code, 201)
         self.assertIsNone(self.supabase.reports[0]["user_id"])
+        self.assertEqual(self.supabase.reports[0]["analysis_result_json"]["report_type"], "tree_diagram")
 
     async def test_logged_in_error_report_keeps_user_id(self):
         response = await self.client.post(
