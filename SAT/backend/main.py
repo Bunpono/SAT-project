@@ -26,6 +26,7 @@ from app.model import (  # noqa: E402
     predict_s_expression,
 )
 from app.parser import s_expression_to_tree  # noqa: E402
+from app.tree_analysis import classify_sentence_type  # noqa: E402
 from app.schemas import (  # noqa: E402
     AnalyzeRequest,
     AuthResponse,
@@ -95,13 +96,9 @@ def validate_analysis_sentence(sentence: str) -> str:
     return sentence
 
 
-def detect_sentence_type(sentence: str, tree: dict | None = None) -> str:
+def select_model_prompt_type(sentence: str) -> str:
+    """Choose a legacy P8 instruction prefix; this is not the reported type."""
     normalized = f" {sentence.lower()} "
-    if tree and isinstance(tree, dict):
-        child_names = [child.get("name") for child in tree.get("children", []) if isinstance(child, dict)]
-        if {"S1", "S2"}.issubset(set(child_names)):
-            return "Compound"
-
     complex_markers = [
         " who ",
         " whom ",
@@ -274,16 +271,17 @@ def analyze(
     if not sentence:
         raise HTTPException(status_code=400, detail="Sentence is required.")
 
-    sentence_type = data.sentence_type or detect_sentence_type(sentence)
+    prompt_type = select_model_prompt_type(sentence)
 
     logger.info("Starting model inference")
     inference_started_at = time.perf_counter()
     try:
-        s_expression = predict_s_expression(sentence, sentence_type)
+        s_expression = predict_s_expression(sentence, prompt_type)
     except ModelLoadError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     logger.info("Model inference completed in %.2fs", time.perf_counter() - inference_started_at)
     tree = s_expression_to_tree(s_expression)
+    sentence_type = classify_sentence_type(tree)
 
     history_payload = {
         "user_id": current_user.id if current_user is not None else None,

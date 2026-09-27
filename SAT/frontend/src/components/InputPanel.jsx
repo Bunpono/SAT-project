@@ -110,10 +110,7 @@ export default function InputPanel({
     setErrorMessage("")
 
     try {
-      const result = await analyzeSentence(
-        validation.normalizedInput,
-        validation.sentenceType
-      )
+      const result = await analyzeSentence(validation.normalizedInput)
       onAnalyzeComplete(result)
     } catch (error) {
       console.error("Unable to analyze the sentence:", error)
@@ -202,10 +199,6 @@ export default function InputPanel({
           sentence.length > MAX_SENTENCE_LENGTH ? "text-red-600 dark:text-red-300" : "text-[#6B7280] dark:text-[#9CA3AF]"
         }`}>
           {sentence.length} / {MAX_SENTENCE_LENGTH}
-        </p>
-        <p className="font-semibold text-[#374151] transition-colors duration-300 dark:text-[#D1D5DB]">
-          Detected sentence type:{" "}
-          <span className="text-[#111827] dark:text-white">{validation.sentenceType}</span>
         </p>
       </div>
       <p className="mt-2 text-xs leading-5 text-[#6B7280] sm:mt-3 sm:text-sm dark:text-[#9CA3AF]">

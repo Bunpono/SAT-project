@@ -98,11 +98,12 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
     @patch("main.predict_s_expression", return_value="(S (NP She) (VP is (NP a doctor)))")
     async def test_guest_analyze_saves_null_user_id(self, predict):
         response = await self.client.post(
-            "/analyze", json={"sentence": "She is a doctor.", "sentence_type": "Simple"}
+            "/analyze", json={"sentence": "She is a doctor."}
         )
 
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.json()["user_id"])
+        self.assertEqual(response.json()["sentence_type"], "Simple")
         self.assertIsNone(self.supabase.analyses[0]["user_id"])
         predict.assert_called_once_with("She is a doctor.", "Simple")
 

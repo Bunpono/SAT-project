@@ -16,6 +16,17 @@ def parse_tokens(tokens):
         node = {"name": label, "children": []}
 
         while tokens and tokens[0] != ")":
+            # Consecutive bare tokens belong to the same lexical value.
+            # For example, (V hope to hear) is one V terminal rather than
+            # three sibling nodes named "hope", "to", and "hear".
+            if tokens[0] != "(":
+                lexical_tokens = []
+                while tokens and tokens[0] not in {"(", ")"}:
+                    lexical_tokens.append(tokens.pop(0))
+                if lexical_tokens:
+                    node["children"].append({"name": " ".join(lexical_tokens)})
+                continue
+
             child = parse_tokens(tokens)
             if child:
                 node["children"].append(child)

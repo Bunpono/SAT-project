@@ -91,11 +91,11 @@ export function getCurrentUser() {
   return apiRequest("/auth/me")
 }
 
-export async function analyzeSentence(sentence, sentenceType) {
+export async function analyzeSentence(sentence) {
   return toAnalysisResult(
     await apiRequest("/analyze", {
       method: "POST",
-      body: { sentence, sentence_type: sentenceType }
+      body: { sentence }
     })
   )
 }

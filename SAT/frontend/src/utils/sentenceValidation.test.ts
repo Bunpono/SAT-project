@@ -5,25 +5,30 @@ describe("validateSentenceInput", () => {
   it("accepts a simple declarative sentence", () => {
     const result = validateSentenceInput("The cat sleeps.")
     expect(result.canAnalyze).toBe(true)
-    expect(result.sentenceType).toBe("Simple")
   })
 
   it("accepts a capitalized noun phrase as the subject", () => {
     const result = validateSentenceInput("Green Curry tastes spicy.")
     expect(result.canAnalyze).toBe(true)
-    expect(result.sentenceType).toBe("Simple")
   })
 
   it("accepts a curly apostrophe used in supported English contractions", () => {
     const result = validateSentenceInput("I’m here for the interview.")
     expect(result.canAnalyze).toBe(true)
-    expect(result.sentenceType).toBe("Simple")
   })
 
-  it("detects compound and complex sentences", () => {
-    expect(validateSentenceInput("I read, and she writes.").sentenceType).toBe("Compound")
-    expect(validateSentenceInput("I stayed home, for it was raining.").sentenceType).toBe("Compound")
-    expect(validateSentenceInput("The woman who sings smiles.").sentenceType).toBe("Complex")
+  it("accepts foreign names and loanwords written with Latin diacritics", () => {
+    const examples = [
+      "He opened a small food stand in his hometown of Cancún.",
+      "Beyoncé ordered a café au lait in São Paulo.",
+      "Her re\u0301sume\u0301 describes a naïve approach."
+    ]
+
+    examples.forEach((sentence) => {
+      const result = validateSentenceInput(sentence)
+      expect(result.canAnalyze).toBe(true)
+      expect(result.hasUnsupportedCharacters).toBe(false)
+    })
   })
 
   it("allows non-declarative English with a warning and declarative suggestion", () => {
@@ -43,14 +48,14 @@ describe("validateSentenceInput", () => {
 
   it("rejects non-English characters and overly long input", () => {
     expect(validateSentenceInput("ฉันรักแมว").canAnalyze).toBe(false)
+    expect(validateSentenceInput("Он любит кошек.").canAnalyze).toBe(false)
     expect(validateSentenceInput(`The cat ${"sleeps ".repeat(50)}.`).canAnalyze).toBe(false)
   })
 
-  it("allows an uncertain English input with a warning", () => {
+  it("allows valid English input without guessing its sentence type", () => {
     const result = validateSentenceInput("green curry tastes spicy.")
     expect(result.canAnalyze).toBe(true)
-    expect(result.sentenceType).toBe("Unknown")
-    expect(result.warnings[0]).toContain("could not confidently detect")
+    expect(result).not.toHaveProperty("sentenceType")
   })
 
   it("offers a spelling suggestion", () => {

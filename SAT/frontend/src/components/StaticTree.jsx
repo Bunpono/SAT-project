@@ -33,13 +33,41 @@ export default function StaticTree({ data, selectedWords = [], onSelectWords, sv
   function isTerminalPair(node) {
     return (
       node.children &&
-      node.children.length === 1 &&
-      (!node.children[0].children || node.children[0].children.length === 0)
+      node.children.length >= 1 &&
+      node.children.every(
+        (child) => !child.children || child.children.length === 0
+      )
     )
   }
 
+  function getTerminalText(node) {
+    if (!isTerminalPair(node)) return null
+    return node.children.map((child) => child.name).join(" ")
+  }
+
+  function getWordLines(node) {
+    const text = getTerminalText(node)
+    return text ? String(text).trim().split(/\s+/).filter(Boolean) : []
+  }
+
+  function getNodeHeight(node) {
+    const lineCount = getWordLines(node).length
+    return lineCount > 0 ? Math.max(NODE_H, 34 + lineCount * 15) : NODE_H
+  }
+
+  function getNodeWidth(node) {
+    const longestLine = [String(node.name || ""), ...getWordLines(node)]
+      .reduce((longest, line) => Math.max(longest, line.length), 0)
+    return Math.min(180, Math.max(NODE_W, 34 + longestLine * 8))
+  }
+
   function getWordsFromNode(node) {
-    if (isTerminalPair(node)) return [cleanWord(node.children[0].name)]
+    if (isTerminalPair(node)) {
+      return String(getTerminalText(node) || "")
+        .split(/\s+/)
+        .map(cleanWord)
+        .filter(Boolean)
+    }
 
     if (!node.children || node.children.length === 0) {
       if (isGrammarLabel(node.name)) return []
@@ -204,7 +232,6 @@ function getNodeStyle(node, depth) {
     if (!interactionEnabled) return
     if (event.pointerType === "mouse" && event.button !== 0) return
 
-    event.currentTarget.setPointerCapture(event.pointerId)
     pointersRef.current.set(event.pointerId, {
       id: event.pointerId,
       x: event.clientX,
@@ -277,6 +304,9 @@ function getNodeStyle(node, depth) {
       const deltaX = event.clientX - gesture.startX
       const deltaY = event.clientY - gesture.startY
       if (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3) {
+        if (!event.currentTarget.hasPointerCapture(event.pointerId)) {
+          event.currentTarget.setPointerCapture(event.pointerId)
+        }
         gesture.moved = true
         ignoreClickRef.current = true
       }
@@ -385,14 +415,16 @@ function getNodeStyle(node, depth) {
           const sourceY = link.source.y
           const targetX = link.target.x
           const targetY = link.target.y
+          const sourceHeight = getNodeHeight(link.source.data)
+          const targetHeight = getNodeHeight(link.target.data)
 
           return (
             <line
               key={`line-${index}`}
               x1={sourceX}
-              y1={sourceY + NODE_H / 2}
+              y1={sourceY + sourceHeight / 2}
               x2={targetX}
-              y2={targetY - NODE_H / 2}
+              y2={targetY - targetHeight / 2}
               stroke="#9ca3af"
               strokeWidth="2"
             />
@@ -403,7 +435,10 @@ function getNodeStyle(node, depth) {
           const node = item.data
           const x = item.x
           const y = item.y
-          const word = isTerminalPair(node) ? node.children[0].name : null
+          const word = getTerminalText(node)
+          const wordLines = getWordLines(node)
+          const nodeHeight = getNodeHeight(node)
+          const nodeWidth = getNodeWidth(node)
           const nodeWords = getWordsFromNode(node)
 
           const isSelected =
@@ -431,10 +466,10 @@ function getNodeStyle(node, depth) {
               className={nodeWords.length > 0 ? "cursor-pointer" : ""}
             >
               <rect
-                x={x - NODE_W / 2}
-                y={y - NODE_H / 2}
-                width={NODE_W}
-                height={NODE_H}
+                x={x - nodeWidth / 2}
+                y={y - nodeHeight / 2}
+                width={nodeWidth}
+                height={nodeHeight}
                 rx="9"
                 fill={isSelected ? "#fef3c7" : style.fill}
                 stroke={isSelected ? "#facc15" : style.stroke}
@@ -443,7 +478,7 @@ function getNodeStyle(node, depth) {
 
               <text
                 x={x}
-                y={word ? y - 6 : y + 4}
+                y={word ? y - nodeHeight / 2 + 19 : y + 4}
                 textAnchor="middle"
                 fontSize="15"
                 fontWeight="600"
@@ -456,13 +491,21 @@ function getNodeStyle(node, depth) {
               {word && (
                 <text
                   x={x}
-                  y={y + 14}
+                  y={y - nodeHeight / 2 + 38}
                   textAnchor="middle"
                   fontSize="12"
                   fill="#0f172a"
                   className="select-none"
                 >
-                  {word}
+                  {wordLines.map((line, lineIndex) => (
+                    <tspan
+                      key={`${line}-${lineIndex}`}
+                      x={x}
+                      dy={lineIndex === 0 ? 0 : 14}
+                    >
+                      {line}
+                    </tspan>
+                  ))}
                 </text>
               )}
 
@@ -470,7 +513,7 @@ function getNodeStyle(node, depth) {
                 <g>
                   <rect
                     x={x - 34}
-                    y={y + NODE_H / 2 + 8}
+                    y={y + nodeHeight / 2 + 8}
                     width="68"
                     height="22"
                     rx="11"
@@ -480,7 +523,7 @@ function getNodeStyle(node, depth) {
                   />
                   <text
                     x={x}
-                    y={y + NODE_H / 2 + 23}
+                    y={y + nodeHeight / 2 + 23}
                     textAnchor="middle"
                     fontSize="11"
                     fontWeight="600"

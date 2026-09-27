@@ -1,5 +1,4 @@
 import { useMemo } from "react"
-import { validateSentenceInput } from "../utils/sentenceValidation"
 
 function getMainStructure(tree) {
   const rootName = tree?.name || "S"
@@ -22,10 +21,8 @@ function getWordCount(sentence) {
 
 export default function AnalysisSummary({ analysis }) {
   const summary = useMemo(() => {
-    const validation = validateSentenceInput(analysis?.sentence || "")
-
     return {
-      sentenceType: validation.sentenceType,
+      sentenceType: analysis?.sentence_type || "Not classified",
       mainStructure: getMainStructure(analysis?.tree),
       wordCount: getWordCount(analysis?.sentence),
       status: analysis?.tree ? "Parsed Successfully" : "Not Parsed"

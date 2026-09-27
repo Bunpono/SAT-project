@@ -1,8 +1,5 @@
-export type SentenceType = "Simple" | "Compound" | "Complex" | "Unknown"
-
 export type SentenceValidationResult = {
   normalizedInput: string
-  sentenceType: SentenceType
   isEmpty: boolean
   isEnglishInput: boolean
   hasUnsupportedCharacters: boolean
@@ -90,30 +87,6 @@ const IMPERATIVE_STARTERS = [
   "write"
 ]
 
-const SUBORDINATORS = [
-  "after",
-  "although",
-  "as",
-  "because",
-  "before",
-  "even though",
-  "if",
-  "once",
-  "since",
-  "though",
-  "unless",
-  "until",
-  "when",
-  "whenever",
-  "where",
-  "whereas",
-  "wherever",
-  "while"
-]
-
-const RELATIVE_MARKERS = ["who", "whom", "whose", "which", "that"]
-const COORDINATORS = ["and", "but", "or", "nor", "for", "yet", "so"]
-
 const COMMON_SPELLING_FIXES: Record<string, string> = {
   abotu: "about",
   accomodate: "accommodate",
@@ -135,16 +108,8 @@ const WHOLE_SENTENCE_SUGGESTIONS: Record<string, string> = {
   "i lvoe you": "I love you."
 }
 
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-}
-
 function getWords(value: string) {
-  return value.toLowerCase().match(/[a-z]+(?:['’][a-z]+)?/g) ?? []
-}
-
-function includesPhrase(wordsText: string, phrase: string) {
-  return new RegExp(`\\b${escapeRegExp(phrase)}\\b`, "i").test(wordsText)
+  return value.toLowerCase().match(/\p{Script=Latin}[\p{Script=Latin}\p{M}]*(?:['’]\p{Script=Latin}[\p{Script=Latin}\p{M}]*)?/gu) ?? []
 }
 
 function startsWithQuestionStarter(words: string[]) {
@@ -155,63 +120,6 @@ function startsWithImperativeStarter(words: string[]) {
   if (words.length === 0) return false
   if (words[0] === "you") return false
   return IMPERATIVE_STARTERS.includes(words[0])
-}
-
-function hasLikelySubject(input: string, words: string[]) {
-  const subjectHints = [
-    "i",
-    "you",
-    "he",
-    "she",
-    "it",
-    "we",
-    "they",
-    "there",
-    "this",
-    "that",
-    "these",
-    "those",
-    "the",
-    "a",
-    "an",
-    "my",
-    "your",
-    "his",
-    "her",
-    "our",
-    "their"
-  ]
-  const hasSubjectHint = words.some(
-    (word, index) => index < 5 && subjectHints.includes(word)
-  )
-  const startsWithCapitalizedNoun = /^[A-Z][A-Za-z'’-]*\b/.test(input.trim())
-  return hasSubjectHint || startsWithCapitalizedNoun
-}
-
-function detectSentenceType(input: string, words: string[]): SentenceType {
-  if (words.length < 2 || !hasLikelySubject(input, words)) return "Unknown"
-
-  const wordsText = words.join(" ")
-  const hasComplexMarker =
-    SUBORDINATORS.some((marker) => includesPhrase(wordsText, marker)) ||
-    RELATIVE_MARKERS.some((marker) => includesPhrase(wordsText, marker))
-
-  if (hasComplexMarker) return "Complex"
-
-  const hasCompoundPunctuation = /;/.test(input)
-  const hasCompoundConjunction = COORDINATORS.some((coordinator) => {
-    // "for" is commonly a preposition (for the interview), so only treat it
-    // as a coordinator when punctuation clearly introduces a new clause.
-    if (coordinator === "for") return /,\s+for\b/i.test(input)
-
-    return new RegExp(
-      `,\\s+${coordinator}\\b|\\b${coordinator}\\b.+\\b(?:i|you|he|she|it|we|they|the|a|an)\\b`,
-      "i"
-    ).test(input)
-  })
-
-  if (hasCompoundPunctuation || hasCompoundConjunction) return "Compound"
-  return "Simple"
 }
 
 function applyCase(original: string, replacement: string) {
@@ -267,7 +175,7 @@ function getDeclarativeSuggestion(
     }
 
     const nounPhraseQuestion = content.match(
-      /^(is|are|was|were|can|could|will|would|should|may|might|must|have|has|had)\s+((?:the|a|an|this|that|these|those|my|your|his|her|our|their)\s+[A-Za-z'’-]+)\s+(.+)$/i
+      /^(is|are|was|were|can|could|will|would|should|may|might|must|have|has|had)\s+((?:the|a|an|this|that|these|those|my|your|his|her|our|their)\s+\p{Script=Latin}[\p{Script=Latin}\p{M}'’-]*)\s+(.+)$/iu
     )
     if (nounPhraseQuestion) {
       const [, auxiliary, subject, predicate] = nounPhraseQuestion
@@ -291,7 +199,7 @@ function getSpellingSuggestion(input: string) {
   }
 
   let changed = false
-  const corrected = trimmed.replace(/[A-Za-z]+(?:'[A-Za-z]+)?/g, (word) => {
+  const corrected = trimmed.replace(/\p{Script=Latin}[\p{Script=Latin}\p{M}]*(?:['’]\p{Script=Latin}[\p{Script=Latin}\p{M}]*)?/gu, (word) => {
     const replacement = COMMON_SPELLING_FIXES[word.toLowerCase()]
     if (!replacement) return word
     changed = true
@@ -308,14 +216,13 @@ export function validateSentenceInput(input: string): SentenceValidationResult {
   const warnings: string[] = []
   const isEmpty = normalizedInput.length === 0
   const isTooLong = normalizedInput.length > MAX_SENTENCE_LENGTH
-  const hasLetters = /[A-Za-z]/.test(normalizedInput)
-  const hasUnsupportedCharacters = /[^A-Za-z0-9\s.,;:'’"()!?-]/.test(normalizedInput)
+  const hasLetters = /\p{Script=Latin}/u.test(normalizedInput)
+  const hasUnsupportedCharacters = /[^\p{Script=Latin}\p{M}0-9\s.,;:'’"()!?-]/u.test(normalizedInput)
   const isEnglishInput = !isEmpty && hasLetters && !hasUnsupportedCharacters
   const isInterrogative = /\?$/.test(normalizedInput) || startsWithQuestionStarter(words)
   const isExclamatory = /!$/.test(normalizedInput) || normalizedInput.includes("!")
   const isImperative = startsWithImperativeStarter(words)
   const isDeclarative = isEnglishInput && !isInterrogative && !isImperative && !isExclamatory
-  const sentenceType = isDeclarative ? detectSentenceType(normalizedInput, words) : "Unknown"
   const declarativeSuggestion = isEnglishInput
     ? getDeclarativeSuggestion(
         normalizedInput,
@@ -331,7 +238,7 @@ export function validateSentenceInput(input: string): SentenceValidationResult {
   }
 
   if (hasUnsupportedCharacters) {
-    errors.push("This tool currently supports English letters, numbers and standard punctuation only.")
+    errors.push("This tool currently supports Latin-script letters, numbers and standard punctuation only.")
   }
 
   if (!isEmpty && !hasLetters) {
@@ -344,19 +251,12 @@ export function validateSentenceInput(input: string): SentenceValidationResult {
     )
   }
 
-  if (isDeclarative && sentenceType === "Unknown") {
-    warnings.push(
-      "We could not confidently detect the sentence type. You can still analyze it, but the result may be inaccurate."
-    )
-  }
-
   if (isDeclarative && normalizedInput && !/[.]$/.test(normalizedInput)) {
     warnings.push("Tip: Declarative sentences usually end with a period.")
   }
 
   return {
     normalizedInput,
-    sentenceType,
     isEmpty,
     isEnglishInput,
     hasUnsupportedCharacters,
