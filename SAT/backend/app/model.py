@@ -122,15 +122,35 @@ def is_balanced_s_expression(value: str) -> bool:
     return saw_open and depth == 0
 
 
-def _generate(tokenizer, model, inputs, *, num_beams: int, max_target_length: int) -> str:
+def _generate_candidates(
+    tokenizer,
+    model,
+    inputs,
+    *,
+    num_beams: int,
+    max_target_length: int,
+    num_return_sequences: int,
+) -> list[str]:
+    candidate_count = max(1, min(num_return_sequences, num_beams))
     with torch.inference_mode():
         outputs = model.generate(
             **inputs,
             max_length=max_target_length,
             num_beams=num_beams,
+            num_return_sequences=candidate_count,
             early_stopping=True,
         )
-    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+    return [
+        value.strip()
+        for value in tokenizer.batch_decode(outputs, skip_special_tokens=True)
+    ]
+
+
+def _first_balanced_candidate(candidates: list[str]) -> str | None:
+    return next(
+        (candidate for candidate in candidates if is_balanced_s_expression(candidate)),
+        None,
+    )
 
 
 def predict_s_expression(sentence: str) -> str:
@@ -142,24 +162,30 @@ def predict_s_expression(sentence: str) -> str:
         truncation=True,
         max_length=MODEL_MAX_SOURCE_LENGTH,
     )
-    prediction = _generate(
+    candidates = _generate_candidates(
         tokenizer,
         model,
         inputs,
         num_beams=MODEL_NUM_BEAMS,
         max_target_length=MODEL_MAX_TARGET_LENGTH,
+        num_return_sequences=MODEL_NUM_BEAMS,
     )
-    if is_balanced_s_expression(prediction):
+    prediction = _first_balanced_candidate(candidates)
+    if prediction is not None:
         return prediction
 
-    logger.warning("Primary generation was not balanced; retrying with fallback decoding")
-    retry = _generate(
+    logger.warning(
+        "No balanced primary candidate; retrying with fallback decoding"
+    )
+    retry_candidates = _generate_candidates(
         tokenizer,
         model,
         inputs,
         num_beams=MODEL_RETRY_NUM_BEAMS,
         max_target_length=MODEL_RETRY_MAX_TARGET_LENGTH,
+        num_return_sequences=MODEL_RETRY_NUM_BEAMS,
     )
-    if is_balanced_s_expression(retry):
+    retry = _first_balanced_candidate(retry_candidates)
+    if retry is not None:
         return retry
     raise ModelOutputError("The model did not produce a complete S-expression after retrying.")
