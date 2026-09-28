@@ -21,6 +21,7 @@ from app.auth import (  # noqa: E402
 )
 from app.model import (  # noqa: E402
     ModelLoadError,
+    ModelOutputError,
     get_model_status,
     load_model,
     predict_s_expression,
@@ -94,38 +95,6 @@ def validate_analysis_sentence(sentence: str) -> str:
             detail="Enter an English declarative sentence with at least two words.",
         )
     return sentence
-
-
-def select_model_prompt_type(sentence: str) -> str:
-    """Choose a legacy P8 instruction prefix; this is not the reported type."""
-    normalized = f" {sentence.lower()} "
-    complex_markers = [
-        " who ",
-        " whom ",
-        " whose ",
-        " which ",
-        " that ",
-        " because ",
-        " although ",
-        " when ",
-        " while ",
-        " if ",
-        " since ",
-        " before ",
-        " after ",
-        " unless ",
-    ]
-    if any(marker in normalized for marker in complex_markers):
-        return "Complex"
-
-    compound_markers = [" and ", " but ", " or ", " nor ", " yet ", " so ", ";"]
-    if any(marker in normalized for marker in compound_markers):
-        return "Compound"
-
-    if ", for " in normalized:
-        return "Compound"
-
-    return "Simple"
 
 
 def serialize_supabase_analysis(
@@ -271,16 +240,20 @@ def analyze(
     if not sentence:
         raise HTTPException(status_code=400, detail="Sentence is required.")
 
-    prompt_type = select_model_prompt_type(sentence)
-
     logger.info("Starting model inference")
     inference_started_at = time.perf_counter()
     try:
-        s_expression = predict_s_expression(sentence, prompt_type)
+        s_expression = predict_s_expression(sentence)
     except ModelLoadError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ModelOutputError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     logger.info("Model inference completed in %.2fs", time.perf_counter() - inference_started_at)
-    tree = s_expression_to_tree(s_expression)
+    try:
+        tree = s_expression_to_tree(s_expression)
+    except (TypeError, ValueError) as exc:
+        logger.exception("Model output could not be parsed")
+        raise HTTPException(status_code=502, detail="The model returned an invalid S-expression.") from exc
     sentence_type = classify_sentence_type(tree)
 
     history_payload = {
