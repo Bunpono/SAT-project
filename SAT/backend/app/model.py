@@ -7,6 +7,8 @@ import torch
 from dotenv import load_dotenv
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
+from app.parser import s_expression_to_tree
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -122,6 +124,80 @@ def is_balanced_s_expression(value: str) -> bool:
     return saw_open and depth == 0
 
 
+def repair_s_expression_parentheses(value: str) -> str | None:
+    """Append only missing closing parentheses, then validate the repaired tree."""
+    candidate = value.strip()
+    if not candidate.startswith("("):
+        return None
+
+    depth = 0
+    for char in candidate:
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth < 0:
+                # An extra closing parenthesis cannot be repaired safely by appending.
+                return None
+
+    if depth == 0:
+        repaired = candidate
+    else:
+        repaired = candidate + (")" * depth)
+
+    try:
+        tree = s_expression_to_tree(repaired)
+    except (IndexError, TypeError, ValueError):
+        return None
+
+    root_label = str(tree.get("name", "")).upper() if isinstance(tree, dict) else ""
+    if root_label not in {"S", "S1"}:
+        return None
+    return repaired
+
+
+def _tree_to_s_expression(node: dict) -> str:
+    name = str(node.get("name", "")).strip()
+    children = node.get("children")
+    if not isinstance(children, list) or not children:
+        return name
+    return f"({name} {' '.join(_tree_to_s_expression(child) for child in children)})"
+
+
+def repair_fragmented_compound(value: str) -> str | None:
+    """Repair the model's known `(S ...) (Coord ...) (S2 ...)` fragmentation."""
+    try:
+        tree = s_expression_to_tree(value.strip())
+    except (IndexError, TypeError, ValueError):
+        return None
+
+    if not isinstance(tree, dict) or str(tree.get("name", "")).upper() != "ROOT":
+        return None
+    children = tree.get("children")
+    if not isinstance(children, list) or len(children) != 3:
+        return None
+
+    labels = [str(child.get("name", "")).upper() for child in children]
+    if labels != ["S", "COORD", "S2"]:
+        return None
+
+    first_clause = dict(children[0])
+    first_clause["name"] = "S1"
+    repaired_tree = {
+        "name": "S",
+        "children": [first_clause, children[1], children[2]],
+    }
+    repaired = _tree_to_s_expression(repaired_tree)
+    return repaired if is_balanced_s_expression(repaired) else None
+
+
+def repair_s_expression(value: str) -> str | None:
+    return (
+        repair_s_expression_parentheses(value)
+        or repair_fragmented_compound(value)
+    )
+
+
 def _generate_candidates(
     tokenizer,
     model,
@@ -151,6 +227,14 @@ def _first_balanced_candidate(candidates: list[str]) -> str | None:
         (candidate for candidate in candidates if is_balanced_s_expression(candidate)),
         None,
     )
+
+
+def _first_repairable_candidate(candidates: list[str]) -> str | None:
+    for candidate in candidates:
+        repaired = repair_s_expression(candidate)
+        if repaired is not None:
+            return repaired
+    return None
 
 
 def predict_s_expression(sentence: str) -> str:
@@ -188,4 +272,10 @@ def predict_s_expression(sentence: str) -> str:
     retry = _first_balanced_candidate(retry_candidates)
     if retry is not None:
         return retry
+
+
+    repaired = _first_repairable_candidate(candidates + retry_candidates)
+    if repaired is not None:
+        logger.warning("Model output structure was repaired safely")
+        return repaired
     raise ModelOutputError("The model did not produce a complete S-expression after retrying.")
