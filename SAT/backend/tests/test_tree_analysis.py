@@ -33,6 +33,20 @@ class SentenceTypeClassificationTests(unittest.TestCase):
             "Complex",
         )
 
+    def test_s_root_is_simple_even_when_it_contains_nested_s2(self):
+        self.assertEqual(
+            self.classify(
+                "(S (NP (PRO She)) (VP (V says) (S2 (NP (PRO he)) (VP (V runs)))))"
+            ),
+            "Simple",
+        )
+
+    def test_s1_without_nested_s2_defaults_to_simple(self):
+        self.assertEqual(
+            self.classify("(S1 (NP (PRO She)) (VP (V runs)))"),
+            "Simple",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

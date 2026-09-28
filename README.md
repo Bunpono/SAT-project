@@ -98,9 +98,15 @@ application.
    (`parse: `) before passing the text to the Hugging Face model.
 4. The model returns an S-expression.
 5. The backend validates the parentheses and retries once with fallback
-   decoding when the first output is incomplete.
+   decoding when the first output is incomplete. If every candidate is still
+   incomplete, it may append only missing closing parentheses after structural
+   validation. It also repairs the narrowly defined fragmented Compound shape
+   `(S ...) (Coord ...) (S2 ...)` into the project shape
+   `(S (S1 ...) (Coord ...) (S2 ...))`.
 6. The backend converts the S-expression into a nested JSON tree and determines
-   Simple, Compound, or Complex from that tree.
+   the sentence type only from the model output: `(S ...)` is Simple,
+   `(S (S1 ...) (Coord ...) (S2 ...))` is Compound, and
+   `(S1 ... (S2 ...))` is Complex.
 7. The API returns the sentence, S-expression, sentence type, and tree to the
    frontend for visualization.
 
