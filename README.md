@@ -41,7 +41,7 @@ SAT/
 - Frontend: React 19, Vite, Tailwind CSS, D3 hierarchy, and react-d3-tree
 - Backend: Python, FastAPI, Uvicorn, and Pydantic
 - Machine learning: Hugging Face Transformers and PyTorch
-- Model: `SAT-Project/SAT-T5model-P8-v2.1` (deployable files at repository root)
+- Model: `SAT-Project/SAT-T5-P8-V2-Baseline` (deployable files at repository root)
 
 ## Prerequisites
 

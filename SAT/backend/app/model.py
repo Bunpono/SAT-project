@@ -11,7 +11,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-MODEL_ID = os.getenv("HF_MODEL_ID", "SAT-Project/SAT-T5model-P8")
+MODEL_ID = os.getenv("HF_MODEL_ID", "SAT-Project/SAT-T5-P8-V2-Baseline")
 MODEL_SUBFOLDER = os.getenv("HF_MODEL_SUBFOLDER", "").strip()
 HF_TOKEN = os.getenv("HF_TOKEN", "").strip()
 MODEL_LOCAL_PATH = os.getenv("MODEL_LOCAL_PATH", "").strip()
