@@ -105,7 +105,7 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(response.json()["user_id"])
         self.assertEqual(response.json()["sentence_type"], "Simple")
         self.assertIsNone(self.supabase.analyses[0]["user_id"])
-        predict.assert_called_once_with("She is a doctor.", "Simple")
+        predict.assert_called_once_with("She is a doctor.")
 
     @patch("main.predict_s_expression")
     async def test_invalid_token_is_not_treated_as_guest(self, predict):
