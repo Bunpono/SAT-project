@@ -41,7 +41,7 @@ SAT/
 - Frontend: React 19, Vite, Tailwind CSS, D3 hierarchy, and react-d3-tree
 - Backend: Python, FastAPI, Uvicorn, and Pydantic
 - Machine learning: Hugging Face Transformers and PyTorch
-- Model: `SAT-Project/SAT-T5model-P8` (`checkpoints/checkpoint-1935` artifact)
+- Model: `SAT-Project/SAT-T5model-P8-v2.1` (deployable files at repository root)
 
 ## Prerequisites
 
@@ -92,15 +92,17 @@ application.
 ## API flow
 
 1. A user enters an English sentence in the frontend.
-2. The frontend sends `POST /analyze` with the sentence and detected sentence
-   type, for example `{ "sentence": "...", "sentence_type": "Simple" }`.
-3. FastAPI validates the request and adds the matching training instruction
-   prefix (`parse simple:`, `parse compound:`, or `parse complex:`) before
-   passing the text to the Hugging Face model.
+2. The frontend sends `POST /analyze` with only the sentence, for example
+   `{ "sentence": "..." }`.
+3. FastAPI validates the request and adds the neutral instruction prefix
+   (`parse: `) before passing the text to the Hugging Face model.
 4. The model returns an S-expression.
-5. The backend converts the S-expression into a nested JSON tree.
-6. The API returns the sentence, S-expression, and tree to the frontend for
-   visualization.
+5. The backend validates the parentheses and retries once with fallback
+   decoding when the first output is incomplete.
+6. The backend converts the S-expression into a nested JSON tree and determines
+   Simple, Compound, or Complex from that tree.
+7. The API returns the sentence, S-expression, sentence type, and tree to the
+   frontend for visualization.
 
 Example response shape:
 
@@ -122,8 +124,11 @@ ignored by Git.
 
 - Backend: `HF_TOKEN` authorizes model downloads from Hugging Face,
   `HF_MODEL_ID` selects the model repository, `HF_MODEL_SUBFOLDER` selects the
-  deployable artifact folder inside that repository, and `HF_MODEL_CACHE_DIR`
-  selects the local model cache. `FRONTEND_URL` adds the deployed frontend
+  deployable artifact folder inside that repository, `MODEL_PROMPT_PREFIX`
+  configures the neutral prompt, and the generation variables configure the
+  primary and fallback decoding passes. `MODEL_LOCAL_PATH` optionally loads a
+  checked local artifact instead of the Hub. `HF_MODEL_CACHE_DIR` selects the
+  local model cache. `FRONTEND_URL` adds the deployed frontend
   origin to the CORS allowlist. Multiple production origins can be separated
   with commas.
 - Frontend: `VITE_API_URL` selects the FastAPI base URL and defaults to
