@@ -24,7 +24,7 @@ from app.model import (  # noqa: E402
     ModelOutputError,
     get_model_status,
     load_model,
-    predict_s_expression,
+    predict_s_expression_result,
 )
 from app.parser import s_expression_to_tree  # noqa: E402
 from app.tree_analysis import classify_sentence_type  # noqa: E402
@@ -107,10 +107,14 @@ def serialize_supabase_analysis(
         "id": item["id"],
         "user_id": item.get("user_id"),
         "sentence": item["sentence"],
+        "raw_model_output": item.get("raw_model_output"),
         "s_expression": item["s_expression"],
+        "output_modified": item.get("output_modified", False),
         "tree": item["tree_json"],
         "result": {
+            "raw_model_output": item.get("raw_model_output"),
             "s_expression": item["s_expression"],
+            "output_modified": item.get("output_modified", False),
             "tree": item["tree_json"],
         },
         "sentence_type": item.get("sentence_type", "Unknown"),
@@ -243,14 +247,14 @@ def analyze(
     logger.info("Starting model inference")
     inference_started_at = time.perf_counter()
     try:
-        s_expression = predict_s_expression(sentence)
+        prediction = predict_s_expression_result(sentence)
     except ModelLoadError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except ModelOutputError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     logger.info("Model inference completed in %.2fs", time.perf_counter() - inference_started_at)
     try:
-        tree = s_expression_to_tree(s_expression)
+        tree = s_expression_to_tree(prediction.s_expression)
     except (TypeError, ValueError) as exc:
         logger.exception("Model output could not be parsed")
         raise HTTPException(status_code=502, detail="The model returned an invalid S-expression.") from exc
@@ -259,7 +263,9 @@ def analyze(
     history_payload = {
         "user_id": current_user.id if current_user is not None else None,
         "sentence": sentence,
-        "s_expression": s_expression,
+        "raw_model_output": prediction.raw_model_output,
+        "s_expression": prediction.s_expression,
+        "output_modified": prediction.output_modified,
         "tree_json": tree,
         "sentence_type": sentence_type,
     }
@@ -268,9 +274,16 @@ def analyze(
     return {
         "user_id": history_payload["user_id"],
         "sentence": sentence,
-        "s_expression": s_expression,
+        "raw_model_output": prediction.raw_model_output,
+        "s_expression": prediction.s_expression,
+        "output_modified": prediction.output_modified,
         "tree": tree,
-        "result": {"s_expression": s_expression, "tree": tree},
+        "result": {
+            "raw_model_output": prediction.raw_model_output,
+            "s_expression": prediction.s_expression,
+            "output_modified": prediction.output_modified,
+            "tree": tree,
+        },
         "sentence_type": sentence_type,
     }
 

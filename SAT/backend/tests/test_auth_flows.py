@@ -8,6 +8,7 @@ import httpx
 
 import main
 from app.auth import create_access_token
+from app.model import ModelPrediction
 
 
 TEST_PASSWORD_HASH = "$2b$12$jeiRcLUUK3guRt.dLz/YPuJwjSIGfEW36.Qwa5DEeADosmaNlMmQW"
@@ -95,7 +96,13 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
             },
         )[0]
 
-    @patch("main.predict_s_expression", return_value="(S (NP She) (VP is (NP a doctor)))")
+    @patch(
+        "main.predict_s_expression_result",
+        return_value=ModelPrediction(
+            "(S (NP She) (VP is (NP a doctor)))",
+            "(S (NP She) (VP is (NP a doctor)))",
+        ),
+    )
     async def test_guest_analyze_saves_null_user_id(self, predict):
         response = await self.client.post(
             "/analyze", json={"sentence": "She is a doctor."}
@@ -107,7 +114,7 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(self.supabase.analyses[0]["user_id"])
         predict.assert_called_once_with("She is a doctor.")
 
-    @patch("main.predict_s_expression")
+    @patch("main.predict_s_expression_result")
     async def test_invalid_token_is_not_treated_as_guest(self, predict):
         response = await self.client.post(
             "/analyze", json={"sentence": "She is a doctor."}, headers={"Authorization": "Bearer invalid-token"}
@@ -116,7 +123,13 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code, 401)
         predict.assert_not_called()
 
-    @patch("main.predict_s_expression", return_value="(S (NP She) (VP is (NP a doctor)))")
+    @patch(
+        "main.predict_s_expression_result",
+        return_value=ModelPrediction(
+            "(S (NP She) (VP is (NP a doctor)))",
+            "(S (NP She) (VP is (NP a doctor)))",
+        ),
+    )
     async def test_logged_in_analyze_and_private_history(self, _predict):
         response = await self.client.post(
             "/analyze", json={"sentence": "She is a doctor."}, headers={"Authorization": f"Bearer {self.user_token}"}
@@ -188,7 +201,13 @@ class AuthenticationFlowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await self.client.get("/health")).status_code, 200)
         self.assertIn("/analyze", (await self.client.get("/openapi.json")).json()["paths"])
 
-    @patch("main.predict_s_expression", return_value="(S (NP She) (VP is (NP a doctor)))")
+    @patch(
+        "main.predict_s_expression_result",
+        return_value=ModelPrediction(
+            "(S (NP She) (VP is (NP a doctor)))",
+            "(S (NP She) (VP is (NP a doctor)))",
+        ),
+    )
     async def test_admin_history_includes_guest_and_registered(self, _predict):
         await self.client.post("/analyze", json={"sentence": "Guest sentence."})
         await self.client.post(

@@ -115,13 +115,20 @@ Example response shape:
 ```json
 {
   "sentence": "She is talking about her dog.",
+  "raw_model_output": "(S ...",
   "s_expression": "(S ...)",
+  "output_modified": true,
   "tree": {
     "name": "S",
     "children": []
   }
 }
 ```
+
+`raw_model_output` is the unchanged first-ranked model generation.
+`s_expression` is the validated final value used for parsing and visualization.
+`output_modified` explicitly records whether candidate selection or guarded
+repair made the final value differ from the raw output.
 
 ## Environment variables
 

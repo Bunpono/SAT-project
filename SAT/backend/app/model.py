@@ -1,5 +1,6 @@
 import logging
 import os
+from dataclasses import dataclass
 from pathlib import Path
 from threading import Lock
 
@@ -36,6 +37,16 @@ class ModelLoadError(RuntimeError):
 
 class ModelOutputError(RuntimeError):
     """Raised when generation does not produce a parseable S-expression."""
+
+
+@dataclass(frozen=True)
+class ModelPrediction:
+    raw_model_output: str
+    s_expression: str
+
+    @property
+    def output_modified(self) -> bool:
+        return self.raw_model_output != self.s_expression
 
 
 def get_model_status() -> dict:
@@ -237,7 +248,7 @@ def _first_repairable_candidate(candidates: list[str]) -> str | None:
     return None
 
 
-def predict_s_expression(sentence: str) -> str:
+def predict_s_expression_result(sentence: str) -> ModelPrediction:
     tokenizer, model = load_model()
     source_text = MODEL_PROMPT_PREFIX + sentence
     inputs = tokenizer(
@@ -254,9 +265,10 @@ def predict_s_expression(sentence: str) -> str:
         max_target_length=MODEL_MAX_TARGET_LENGTH,
         num_return_sequences=MODEL_NUM_BEAMS,
     )
+    raw_model_output = candidates[0] if candidates else ""
     prediction = _first_balanced_candidate(candidates)
     if prediction is not None:
-        return prediction
+        return ModelPrediction(raw_model_output, prediction)
 
     logger.warning(
         "No balanced primary candidate; retrying with fallback decoding"
@@ -271,11 +283,16 @@ def predict_s_expression(sentence: str) -> str:
     )
     retry = _first_balanced_candidate(retry_candidates)
     if retry is not None:
-        return retry
+        return ModelPrediction(raw_model_output, retry)
 
 
     repaired = _first_repairable_candidate(candidates + retry_candidates)
     if repaired is not None:
         logger.warning("Model output structure was repaired safely")
-        return repaired
+        return ModelPrediction(raw_model_output, repaired)
     raise ModelOutputError("The model did not produce a complete S-expression after retrying.")
+
+
+def predict_s_expression(sentence: str) -> str:
+    """Compatibility helper for callers that only need the final S-expression."""
+    return predict_s_expression_result(sentence).s_expression

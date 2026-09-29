@@ -40,6 +40,18 @@ class NeutralModelPromptTests(unittest.TestCase):
         self.assertEqual(prediction, "(S (NP (PRO She)) (VP (V runs)))")
         self.assertEqual(len(fake_model.generate_calls), 1)
 
+    def test_preserves_raw_output_separately_from_repaired_expression(self):
+        incomplete = "(S (NP (PRO She)) (VP (V runs))"
+        tokenizer = FakeTokenizer([[incomplete], [incomplete]])
+        fake_model = FakeModel()
+
+        with patch.object(model_module, "load_model", return_value=(tokenizer, fake_model)):
+            result = model_module.predict_s_expression_result("She runs.")
+
+        self.assertEqual(result.raw_model_output, incomplete)
+        self.assertEqual(result.s_expression, "(S (NP (PRO She)) (VP (V runs)))")
+        self.assertTrue(result.output_modified)
+
     def test_selects_balanced_candidate_without_retry(self):
         tokenizer = FakeTokenizer([
             ["(S (NP (PRO She))", "(S (NP (PRO She)) (VP (V runs)))"],
