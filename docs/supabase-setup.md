@@ -14,9 +14,16 @@ Use the **secret** key, not the publishable key. Keep it on the backend only:
 never commit it, add it to a `VITE_*` variable, or paste it into the frontend.
 
 The existing `analysis_history` table must contain these columns (as in the
-project's current table): `id`, `user_id`, `sentence`, `s_expression`,
-`tree_json`, `sentence_type`, and `created_at`. The `id` and `user_id` columns
-should remain integer-compatible with the application's existing user records.
+project's current table): `id`, `user_id`, `sentence`, `raw_model_output`,
+`s_expression`, `output_modified`, `tree_json`, `sentence_type`, and
+`created_at`. The `id` and `user_id` columns should remain integer-compatible
+with the application's existing user records.
+
+For a project created before raw and repaired model outputs were stored
+separately, apply
+[`003_add_raw_model_output.sql`](../SAT/backend/migrations/003_add_raw_model_output.sql)
+once. Existing history remains valid: its raw output is unknown (`NULL`) and
+`output_modified` defaults to `false`.
 
 For an existing project created before guest error reporting was supported, run
 [`002_allow_guest_error_reports.sql`](../SAT/backend/migrations/002_allow_guest_error_reports.sql)

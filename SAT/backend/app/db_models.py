@@ -35,7 +35,9 @@ class AnalysisHistory(Base):
         ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=True
     )
     sentence: Mapped[str] = mapped_column(Text, nullable=False)
+    raw_model_output: Mapped[str | None] = mapped_column(Text, nullable=True)
     s_expression: Mapped[str] = mapped_column(Text, nullable=False)
+    output_modified: Mapped[bool] = mapped_column(default=False, nullable=False)
     tree_json: Mapped[dict] = mapped_column(JSON, nullable=False)
     sentence_type: Mapped[str] = mapped_column(String(40), default="Unknown", nullable=False)
     created_at: Mapped[datetime] = mapped_column(
