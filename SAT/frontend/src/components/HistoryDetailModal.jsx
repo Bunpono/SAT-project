@@ -64,7 +64,9 @@ export default function HistoryDetailModal({ entry, showDeveloperOutput = false,
 
   const analysis = {
     sentence: entry.sentence,
+    raw_model_output: entry.raw_model_output,
     s_expression: entry.s_expression,
+    output_modified: entry.output_modified,
     tree: entry.tree
   }
 

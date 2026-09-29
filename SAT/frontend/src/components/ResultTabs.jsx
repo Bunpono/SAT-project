@@ -327,8 +327,22 @@ export default function ResultTabs({ analysis, showDeveloperOutput = false }) {
 
           {isModelOutputOpen && (
             <div id="model-output" className="mt-3 min-w-0 rounded-2xl border border-[#E5E7EB] bg-[#F7F8FC] p-4 transition-all duration-300 dark:border-[#263042] dark:bg-[#0B1120]">
-              <p className="text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
-                Developer output (S-expression)
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
+                  Raw model output (unchanged)
+                </p>
+                {analysis?.raw_model_output && (
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${analysis.output_modified ? "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200" : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"}`}>
+                    {analysis.output_modified ? "Backend repair applied" : "No backend repair"}
+                  </span>
+                )}
+              </div>
+              <pre className="mt-3 max-w-full overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white p-4 text-base text-[#374151] transition-colors duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
+                {analysis?.raw_model_output || "Raw output was not recorded for this earlier analysis."}
+              </pre>
+
+              <p className="mt-4 text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF]">
+                Final S-expression used by the system
               </p>
               <pre className="mt-3 max-w-full overflow-x-auto rounded-xl border border-[#E5E7EB] bg-white p-4 text-base text-[#374151] transition-colors duration-300 dark:border-[#263042] dark:bg-[#151B2D] dark:text-[#D1D5DB]">
                 {analysis?.s_expression || "No analysis yet."}

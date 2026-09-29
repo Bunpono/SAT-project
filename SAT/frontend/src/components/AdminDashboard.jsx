@@ -49,7 +49,9 @@ function getHistoryPreview(entry) {
   const result = entry?.result || entry?.analysis_result || {}
   return {
     ...entry,
+    raw_model_output: entry?.raw_model_output || result?.raw_model_output,
     s_expression: entry?.s_expression || result?.s_expression,
+    output_modified: entry?.output_modified ?? result?.output_modified ?? false,
     tree: entry?.tree || result?.tree
   }
 }
@@ -64,7 +66,9 @@ function getReportedAnalysis(report) {
   return {
     id: `report-${report.id}`,
     sentence: report.sentence,
+    raw_model_output: result.raw_model_output,
     s_expression: result.s_expression,
+    output_modified: result.output_modified,
     tree: result.tree,
     created_at: report.created_at
   }
